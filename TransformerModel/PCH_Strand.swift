@@ -62,11 +62,11 @@ class PCH_Strand: PCH_Conductor {
         :param: resistivity The resistivity of the conductor in Ω・m at 20°C
         :param: tempCoeff The temperature coefficient of the conductor in 'per °K'
         :param: shape The Shape of the strand
-        :param: xRadius
-        :param: yRadius
-        :param: edgeRadius
-        :param: coverInsulation
-        :param: coverThickness
+        :param: xRadius The distance from the cross-sectional center of the conductor to its edge in the x-direction
+        :param: yRadius The distance from the cross-sectional center of the conductor to its edge in the y-direction
+        :param: edgeRadius The edge radius of Rectangular strands
+        :param: coverInsulation The insulating cover of the strand
+        :param: coverThickness The radial thickness of the cover insulation
     
         :returns: A new Strand
     */
@@ -88,12 +88,12 @@ class PCH_Strand: PCH_Conductor {
     
         :param: condType The type of conductor (Copper or Aluminum)
         :param: shape The Shape of the strand
-        :param: xRadius
-        :param: yRadius
-        :param: edgeRadius
-        :param: coverInsulation
-        :param: coverThickness
-        
+        :param: xRadius The distance from the cross-sectional center of the conductor to its edge in the x-direction
+        :param: yRadius The distance from the cross-sectional center of the conductor to its edge in the y-direction
+        :param: edgeRadius The edge radius of Rectangular strands
+        :param: coverInsulation The insulating cover of the strand
+        :param: coverThickness The radial thickness of the cover insulation
+    
         :returns: A new Strand
     */
     init(condType:Conductor, shape:Shape, xRadius:Double, yRadius:Double, edgeRadius:Double, coverInsulation:PCH_Insulation, coverThickness:Double)
@@ -120,6 +120,38 @@ class PCH_Strand: PCH_Conductor {
                 super.init(name:"Steel", density:7850.0, cost:0.50, resistivity:1.43E-7, tempCoeff:0.0)
             
         }
+    }
+    
+    /**
+        Convenience initializer for rectangular strands
+        
+        :param: condType The type of conductor
+        :param: width The (usually) axial dimension of the conductor
+        :param: thickness The (usually) radial dimension of the conductor
+        :param: edgeRadius The edge radius of the strand
+        :param: coverInsulation The insulating cover of the strand
+        :param: coverThickness The radial thickness of the cover insulation
+    
+        :returns: A new rectangular Strand
+    */
+    convenience init(condType:Conductor, width:Double, thickness:Double, edgeRadius:Double, coverInsulation:PCH_Insulation, coverThickness:Double)
+    {
+        self.init(condType:condType, shape:Shape.Rectangular, xRadius:width / 2.0, yRadius:thickness / 2.0, edgeRadius:edgeRadius, coverInsulation:coverInsulation, coverThickness:coverThickness)
+    }
+    
+    /**
+        Convenience initializer for round strands
+        
+        :param: condType The type of conductor
+        :param: diameter The diameter of the conductor
+        :param: coverInsulation The insulating cover of the strand
+        :param: coverThickness The radial thickness of the cover insulation
+    
+        :returns: A new rectangular Strand
+    */
+    convenience init(condType:Conductor, diameter:Double,  coverInsulation:PCH_Insulation, coverThickness:Double)
+    {
+        self.init(condType:condType, shape:Shape.Round, xRadius:diameter / 2.0, yRadius:diameter / 2.0, edgeRadius:0.0, coverInsulation:coverInsulation, coverThickness:coverThickness)
     }
 
     /**
