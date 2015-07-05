@@ -176,6 +176,29 @@ class PCH_Strand: PCH_Conductor {
         }
     }
     
+    /**
+        Function to calculate the average perimeter of the covered conductor (for insulation weight calculations)
+    
+        :returns: The average perimeter (ie: following a line through the center of the insulating cover)
+    */
+    func AveragePerimeter() -> Double
+    {
+        switch self.shape
+        {
+        case .Round:
+            
+            return 2.0 * pi * (xRadius + coverThickness)
+            
+        case .Rectangular:
+            
+            let r = self.edgeRadius + coverThickness / 2.0
+            let x = 2.0 * (self.xRadius - self.edgeRadius)
+            let y = 2.0 * (self.yRadius - self.edgeRadius)
+            
+            return 2.0 * (x + y + pi * r)
+        }
+    }
+    
     /** 
         Calculate the resistance of a given length of the strand at a given temperature
         
@@ -189,7 +212,21 @@ class PCH_Strand: PCH_Conductor {
         let result = super.Resistance(self.Area(), length: length, temperature: temperature)
     }
     
+    /**
+        Calculate the weight of a given length of strand. Note that this weight includes the metal and insulation cover (if any)
     
+        :param: length The length of the strand
+        
+        :returns: The total weight of the strand, including its insulating cover
+    */
+    func Weight(length:Double) -> Double
+    {
+        let metalWeight = super.Weight(area:self.Area(), length: length)
+        
+        let coverWeight = self.coverInsulation.Weight(area: self.coverThickness * self.AveragePerimeter(), length: length)
+        
+        return metalWeight + coverWeight
+    }
     
 }
 

@@ -42,7 +42,7 @@ class PCH_RawMaterial {
     }
     
     /**
-        Calculate the weight of a piece of material with given dimensions
+        Calculate the weight of a piece of material with given dimensions (for a 'rectangular box' shape)
     
         :param: length The 'length' dimension of the piece of material
         :param: width The 'width' dimension of the piece of material
@@ -54,6 +54,34 @@ class PCH_RawMaterial {
     func Weight(length:Double, width:Double, height:Double) -> Double
     {
         return length * width * height * self.density
+    }
+    
+    /**
+        Calculate the weight of a piece of material with given dimensions (for a 'cylindrical' shape)
+        
+        :param: diameter The 'diameter' of the piece of material
+        :param: length The 'length' dimension of the piece of material
+        
+        :returns: The weight of the piece in kilograms (Double)
+    */
+    func Weight(#diameter:Double, length:Double) -> Double
+    {
+        let radius = diameter / 2.0
+        
+        return pi * radius * radius * length * self.density
+    }
+    
+    /**
+        Calculate the weight of a piece of material with given area and length
+        
+        :param: area The area of the piece of material
+        :param: length The length  of the piece of material
+        
+        :returns: The weight of the piece in kilograms (Double)
+    */
+    func Weight(#area:Double, length:Double) -> Double
+    {
+        return area * length * self.density
     }
     
     /**
