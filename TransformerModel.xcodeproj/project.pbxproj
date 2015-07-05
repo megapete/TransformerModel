@@ -11,6 +11,11 @@
 		D37FFBEF1B471B86008DBDDA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D37FFBEE1B471B86008DBDDA /* Images.xcassets */; };
 		D37FFBF21B471B86008DBDDA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37FFBF01B471B86008DBDDA /* MainMenu.xib */; };
 		D37FFBFE1B471B86008DBDDA /* TransformerModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFBFD1B471B86008DBDDA /* TransformerModelTests.swift */; };
+		D37FFC081B471BE3008DBDDA /* PCH_RawMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC071B471BE2008DBDDA /* PCH_RawMaterial.swift */; };
+		D37FFC0A1B472DEF008DBDDA /* PCH_Conductor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC091B472DEF008DBDDA /* PCH_Conductor.swift */; };
+		D37FFC0C1B494EDD008DBDDA /* PCH_Strand.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */; };
+		D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */; };
+		D37FFC101B495CCA008DBDDA /* GlobalDefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +37,11 @@
 		D37FFBF71B471B86008DBDDA /* TransformerModelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TransformerModelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37FFBFC1B471B86008DBDDA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D37FFBFD1B471B86008DBDDA /* TransformerModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformerModelTests.swift; sourceTree = "<group>"; };
+		D37FFC071B471BE2008DBDDA /* PCH_RawMaterial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_RawMaterial.swift; sourceTree = "<group>"; };
+		D37FFC091B472DEF008DBDDA /* PCH_Conductor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Conductor.swift; sourceTree = "<group>"; };
+		D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Strand.swift; sourceTree = "<group>"; };
+		D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Insulation.swift; sourceTree = "<group>"; };
+		D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalDefs.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +84,11 @@
 			isa = PBXGroup;
 			children = (
 				D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */,
+				D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */,
+				D37FFC071B471BE2008DBDDA /* PCH_RawMaterial.swift */,
+				D37FFC091B472DEF008DBDDA /* PCH_Conductor.swift */,
+				D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */,
+				D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */,
 				D37FFBEE1B471B86008DBDDA /* Images.xcassets */,
 				D37FFBF01B471B86008DBDDA /* MainMenu.xib */,
 				D37FFBEA1B471B86008DBDDA /* Supporting Files */,
@@ -206,6 +221,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				D37FFBED1B471B86008DBDDA /* AppDelegate.swift in Sources */,
+				D37FFC0C1B494EDD008DBDDA /* PCH_Strand.swift in Sources */,
+				D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */,
+				D37FFC0A1B472DEF008DBDDA /* PCH_Conductor.swift in Sources */,
+				D37FFC101B495CCA008DBDDA /* GlobalDefs.swift in Sources */,
+				D37FFC081B471BE3008DBDDA /* PCH_RawMaterial.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
