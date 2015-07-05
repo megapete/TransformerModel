@@ -207,9 +207,9 @@ class PCH_Strand: PCH_Conductor {
     
         :returns: The resistance in ohms
     */
-    func Resistance(length:Double, temperature:Double)
+    func Resistance(length:Double, temperature:Double) -> Double
     {
-        let result = super.Resistance(self.Area(), length: length, temperature: temperature)
+        return super.Resistance(self.Area(), length: length, temperature: temperature)
     }
     
     /**
