@@ -8,8 +8,38 @@
 
 /// Base class for all materials
 
-class PCH_RawMaterial {
 
+class PCH_RawMaterial {
+    
+    /** Costing key definitions (used to access details in MaterialCost.plist)
+    
+        - Copper
+        - Aluminum
+        - CoreSteel
+        - Nomex
+        - Paper
+        - Glastic
+        - TIV
+        - TX
+        - Oil
+        - Formel
+        - Varnish
+    */
+    enum CostKey : String {
+        
+        case Copper      = "CopperCostKey"
+        case Aluminum    = "AluminumCostKey"
+        case CoreSteel   = "CoreSteelCostKey"
+        case Nomex       = "NomexCostKey"
+        case Paper       = "PaperCostKey"
+        case Glastic     = "GlasticCostKey"
+        case TIV         = "TIVCostKey"
+        case TX          = "TXCostKey"
+        case Oil         = "OilCostKey"
+        case Formel      = "FormelCostKey"
+        case Varnish     = "VarnishCostKey"
+    }
+    
     /** 
         An optional name property (String)
     */
