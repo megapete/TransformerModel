@@ -12,6 +12,9 @@ import Cocoa
 
 class PCH_Costs {
 
+    /**
+        The one and only PCH_Costs instance
+    */
     static let sharedInstance = PCH_Costs()
     
     private var costDictionary: NSDictionary?
@@ -181,5 +184,13 @@ class PCH_Costs {
         
         costDictionary?.writeToFile(filePath, atomically: true)
         
+    }
+    
+    /**
+        Deinit routine to make sure that the new prices are saved to the file
+    */
+    deinit
+    {
+        FlushCostsFile()
     }
 }
