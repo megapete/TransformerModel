@@ -14,7 +14,7 @@ class PCH_Costs {
 
     static let sharedInstance = PCH_Costs()
     
-    private var costDictionary: Dictionary<String, Double>?
+    private var costDictionary: NSDictionary?
     
     var fileIsValid = false
     
@@ -24,8 +24,6 @@ class PCH_Costs {
     let costFileName = "Costs"
     let costFileType = "plist"
     
-    /**
-    */
     
     /** Costing key definitions (used to access details in Costs.plist)
     
@@ -85,38 +83,41 @@ class PCH_Costs {
     */
     private init()
     {
-        if let path = NSBundle.mainBundle().pathForResource(costFileName, ofType: costFileType)
+        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true) as NSArray
+        let documentsDir = paths.firstObject as! String
+        let fileName = costFileName + "." + costFileType
+        let filePath = documentsDir.stringByAppendingPathComponent(fileName)
+        
+        let fileManager = NSFileManager.defaultManager()
+        if (fileManager.fileExistsAtPath(filePath))
         {
-            if let dict = NSDictionary(contentsOfFile:path) as? Dictionary<String, Double>
+            if let dict = NSDictionary(contentsOfFile: filePath)
             {
-                if dict.count == 0
-                {
-                    costDictionary = CreateDefaultCostDictionary()
-                }
-                else
-                {
-                    costDictionary = dict
-                }
-                
+                // This should be better checked to make sure that dict is actually the cost file with all the required costs
+                costDictionary = dict
                 fileIsValid = true
+            }
+            else
+            {
+                println("Costs.plist is not a correctly-formatted plist (Dictionary) file. Using default values")
+                costDictionary = self.CreateDefaultCostDictionary()
             }
         }
         else
         {
-            println("Cannot open 'Costs.plist' file - using default values for costs")
-            
-            costDictionary = CreateDefaultCostDictionary()
+            println("Costs.plist does not exist. Using default values")
+            costDictionary = self.CreateDefaultCostDictionary()
         }
     }
     
     /**
-        Private function to create a cost dictionary with default values. Note that this function will probably never be called under normal circumstances.
+        Private function to create a cost dictionary with default values. Note that this function will only be called under "error" circumstances.
+    
+        :returns: Cost dictionary filled with default values
     */
-    private func CreateDefaultCostDictionary() -> Dictionary<String, Double>
+    private func CreateDefaultCostDictionary() -> NSDictionary
     {
-        let tst:String = PCH_Costs.CostKey.Copper.rawValue
-        
-        var result = [
+        var result:NSDictionary = [
             
             CostKey.Copper.rawValue : 3.00,
             CostKey.Aluminum.rawValue : 3.00,
@@ -143,6 +144,42 @@ class PCH_Costs {
     }
     
     /**
+        Get the currently-saved cost for the given CostCode
+    
+        :param: CostCode for the material or labour unit desired
+    
+        :returns: The cost as a double
+    */
+    func CostForKey(theKey: CostKey) -> Double
+    {
+        let theNum:NSNumber = costDictionary?.valueForKey(theKey.rawValue) as! NSNumber
+        
+        return theNum.doubleValue
+    }
+    
+    /**
+        Set a new cost for the given CostCode
+    
+        :param: The new cost (as a Double)
+        :param: CostCode for the material or labour unit desired
+    
+    */
+    func SetCost(cost:Double, forKey:CostKey)
+    {
+        costDictionary?.setValue(cost, forKey:forKey.rawValue)
+    }
+    
+    /**
         Flush the data currently in the dictionary to the plist file.
     */
+    func FlushCostsFile()
+    {
+        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true) as NSArray
+        let documentsDir = paths.firstObject as! String
+        let fileName = costFileName + "." + costFileType
+        let filePath = documentsDir.stringByAppendingPathComponent(fileName)
+        
+        costDictionary?.writeToFile(filePath, atomically: true)
+        
+    }
 }

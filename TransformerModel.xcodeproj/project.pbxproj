@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		D342BF111B56BC1E00BCD3E7 /* PCH_Costs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D342BF101B56BC1E00BCD3E7 /* PCH_Costs.swift */; };
-		D342BF131B56BE5300BCD3E7 /* Costs.plist in Resources */ = {isa = PBXBuildFile; fileRef = D342BF121B56BE5300BCD3E7 /* Costs.plist */; };
 		D37FFBED1B471B86008DBDDA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */; };
 		D37FFBEF1B471B86008DBDDA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D37FFBEE1B471B86008DBDDA /* Images.xcassets */; };
 		D37FFBF21B471B86008DBDDA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37FFBF01B471B86008DBDDA /* MainMenu.xib */; };
@@ -33,7 +32,6 @@
 
 /* Begin PBXFileReference section */
 		D342BF101B56BC1E00BCD3E7 /* PCH_Costs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Costs.swift; sourceTree = "<group>"; };
-		D342BF121B56BE5300BCD3E7 /* Costs.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Costs.plist; sourceTree = "<group>"; };
 		D37FFBE71B471B86008DBDDA /* TransformerModel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TransformerModel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D37FFBEB1B471B86008DBDDA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -92,7 +90,6 @@
 				D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */,
 				D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */,
 				D342BF101B56BC1E00BCD3E7 /* PCH_Costs.swift */,
-				D342BF121B56BE5300BCD3E7 /* Costs.plist */,
 				D37FFC071B471BE2008DBDDA /* PCH_RawMaterial.swift */,
 				D37FFC091B472DEF008DBDDA /* PCH_Conductor.swift */,
 				D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */,
@@ -211,7 +208,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D37FFBEF1B471B86008DBDDA /* Images.xcassets in Resources */,
-				D342BF131B56BE5300BCD3E7 /* Costs.plist in Resources */,
 				D37FFBF21B471B86008DBDDA /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
