@@ -17,6 +17,7 @@
 		D37FFC0C1B494EDD008DBDDA /* PCH_Strand.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */; };
 		D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */; };
 		D37FFC101B495CCA008DBDDA /* GlobalDefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */; };
+		D3956A891B5728D900676FF5 /* PCH_Defs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3956A881B5728D900676FF5 /* PCH_Defs.swift */; };
 		D3E13C6F1B4DFDCE006E75AD /* PCH_Paper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E13C6E1B4DFDCE006E75AD /* PCH_Paper.swift */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +46,7 @@
 		D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Strand.swift; sourceTree = "<group>"; };
 		D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Insulation.swift; sourceTree = "<group>"; };
 		D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalDefs.swift; sourceTree = "<group>"; };
+		D3956A881B5728D900676FF5 /* PCH_Defs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Defs.swift; sourceTree = "<group>"; };
 		D3E13C6E1B4DFDCE006E75AD /* PCH_Paper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Paper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -88,6 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */,
+				D3956A881B5728D900676FF5 /* PCH_Defs.swift */,
 				D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */,
 				D342BF101B56BC1E00BCD3E7 /* PCH_Costs.swift */,
 				D37FFC071B471BE2008DBDDA /* PCH_RawMaterial.swift */,
@@ -232,6 +235,7 @@
 				D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */,
 				D37FFC0A1B472DEF008DBDDA /* PCH_Conductor.swift in Sources */,
 				D3E13C6F1B4DFDCE006E75AD /* PCH_Paper.swift in Sources */,
+				D3956A891B5728D900676FF5 /* PCH_Defs.swift in Sources */,
 				D37FFC101B495CCA008DBDDA /* GlobalDefs.swift in Sources */,
 				D37FFC081B471BE3008DBDDA /* PCH_RawMaterial.swift in Sources */,
 			);

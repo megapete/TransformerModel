@@ -101,11 +101,11 @@ class PCH_Conductor: PCH_RawMaterial {
         {
             case .Copper:
             
-                self.init(name:"Copper", density:8940.0, cost:3.00, resistivity:1.72E-8, tempCoeff:0.003862)
+                self.init(name:"Copper", density:8940.0, cost:PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Copper), resistivity:1.72E-8, tempCoeff:0.003862)
             
             case .Aluminum:
             
-                self.init(name:"Aluminum", density:2700.0, cost:2.00, resistivity:2.82E-8, tempCoeff:0.0039)
+                self.init(name:"Aluminum", density:2700.0, cost:PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Aluminum), resistivity:2.82E-8, tempCoeff:0.0039)
             
             case .Steel:
             

@@ -6,9 +6,9 @@
 //  Copyright (c) 2015 Peter Huber. All rights reserved.
 //
 
-/// Class for getting/setting costs for materials and labour from the file Costs.plist. Note that this is a singleton class.
-
 import Cocoa
+
+/// Class for getting/setting costs for materials and labour from the file Costs.plist. Note that this is a singleton class. All public methods and properties are available through PCH_Costs.sharedInstance.methodName
 
 class PCH_Costs {
 
@@ -34,6 +34,7 @@ class PCH_Costs {
     
         - Copper
         - Aluminum
+        - CarbonSteel
         - CoreSteel
         - Nomex
         - Paper
@@ -60,6 +61,7 @@ class PCH_Costs {
         // Materials
         case Copper      = "CopperCostKey"
         case Aluminum    = "AluminumCostKey"
+        case CarbonSteel = "CarbonSteelCostKey"
         case CoreSteel   = "CoreSteelCostKey"
         case Nomex       = "NomexCostKey"
         case Paper       = "PaperCostKey"
@@ -125,6 +127,7 @@ class PCH_Costs {
             CostKey.Copper.rawValue : 3.00,
             CostKey.Aluminum.rawValue : 3.00,
             CostKey.CoreSteel.rawValue : 1.90,
+            CostKey.CarbonSteel.rawValue : 0.50,
             CostKey.Nomex.rawValue : 1.00,
             CostKey.Paper.rawValue : 1.00,
             CostKey.Glastic.rawValue : 1.00,
@@ -155,7 +158,7 @@ class PCH_Costs {
     */
     func CostForKey(theKey: CostKey) -> Double
     {
-        let theNum:NSNumber = costDictionary?.valueForKey(theKey.rawValue) as! NSNumber
+        let theNum:NSNumber = costDictionary!.valueForKey(theKey.rawValue) as! NSNumber
         
         return theNum.doubleValue
     }
@@ -169,7 +172,7 @@ class PCH_Costs {
     */
     func SetCost(cost:Double, forKey:CostKey)
     {
-        costDictionary?.setValue(cost, forKey:forKey.rawValue)
+        costDictionary!.setValue(cost, forKey:forKey.rawValue)
     }
     
     /**
@@ -182,7 +185,14 @@ class PCH_Costs {
         let fileName = costFileName + "." + costFileType
         let filePath = documentsDir.stringByAppendingPathComponent(fileName)
         
-        costDictionary?.writeToFile(filePath, atomically: true)
+        if costDictionary!.writeToFile(filePath, atomically: true)
+        {
+            fileIsValid = true
+        }
+        else
+        {
+            
+        }
         
     }
     
