@@ -165,13 +165,13 @@ class PCH_Strand: PCH_Conductor {
         {
             case .Round:
                 
-                return pi * xRadius * xRadius
+                return π * xRadius * xRadius
             
             case .Rectangular:
                 
                 // This is a formula that I developed myself. It calculates the rectagular area and subtracts the part outside the radii of the corners.
                 let x = self.edgeRadius * 2.0
-                let areaToSubtract = x * x * (4.0 - pi) / 4.0
+                let areaToSubtract = x * x * (4.0 - π) / 4.0
                 return (2.0 * xRadius) * (2.0 * yRadius) - areaToSubtract
         }
     }
@@ -187,7 +187,7 @@ class PCH_Strand: PCH_Conductor {
         {
         case .Round:
             
-            return 2.0 * pi * (xRadius + coverThickness)
+            return 2.0 * π * (xRadius + coverThickness)
             
         case .Rectangular:
             
@@ -195,7 +195,7 @@ class PCH_Strand: PCH_Conductor {
             let x = 2.0 * (self.xRadius - self.edgeRadius)
             let y = 2.0 * (self.yRadius - self.edgeRadius)
             
-            return 2.0 * (x + y + pi * r)
+            return 2.0 * (x + y + π * r)
         }
     }
     

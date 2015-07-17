@@ -13,27 +13,27 @@ class PCH_Conductor: PCH_RawMaterial {
     /**
         Resistivity, ⍴,  (at 20°C) of the conductor in Ω・m
     */
-    var resistivity = 0.0 // at 20°C
+    var ρ = 0.0 // at 20°C
     
     /** 
-        Conductivity (inverse of Resistivity) [This is a computed property] in S/m at 20°C
+        Conductivity, σ,  (inverse of Resistivity) [This is a computed property] in S/m at 20°C
     */
-    var conductivity: Double
+    var σ: Double
     {
         get
         {
-            return (resistivity != 0.0 ? 1.0 / resistivity : 0.0)
+            return (ρ != 0.0 ? 1.0 / ρ : 0.0)
         }
         
         set(newConductivity)
         {
             if (newConductivity == 0.0)
             {
-                resistivity = 0.0
+                ρ = 0.0
             }
             else
             {
-                resistivity = 1.0 / newConductivity
+                ρ = 1.0 / newConductivity
             }
         }
     }
@@ -57,7 +57,7 @@ class PCH_Conductor: PCH_RawMaterial {
     init(name: String, density: Double, cost: Double, resistivity:Double, tempCoeff:Double)
     {
         super.init(name: name, density: density, cost: cost)
-        self.resistivity = resistivity
+        self.ρ = resistivity
         self.temperatureCoefficient = tempCoeff
     }
     
@@ -125,7 +125,7 @@ class PCH_Conductor: PCH_RawMaterial {
     */
     func Resistance(condArea:Double, length:Double, temperature:Double) -> Double
     {
-        let resistivityAtNewTemp = self.resistivity * (1.0 + self.temperatureCoefficient * (temperature - 20.0))
+        let resistivityAtNewTemp = self.ρ * (1.0 + self.temperatureCoefficient * (temperature - 20.0))
         
         return resistivityAtNewTemp * length / condArea
     }

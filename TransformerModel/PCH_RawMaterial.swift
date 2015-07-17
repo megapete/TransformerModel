@@ -68,7 +68,7 @@ class PCH_RawMaterial {
     {
         let radius = diameter / 2.0
         
-        return pi * radius * radius * length * self.density
+        return π * radius * radius * length * self.density
     }
     
     /**

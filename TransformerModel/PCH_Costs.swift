@@ -104,13 +104,13 @@ class PCH_Costs {
             }
             else
             {
-                println("Costs.plist is not a correctly-formatted plist (Dictionary) file. Using default values")
+                DLog("Costs.plist is not a correctly-formatted plist (Dictionary) file. Using default values")
                 costDictionary = self.CreateDefaultCostDictionary()
             }
         }
         else
         {
-            println("Costs.plist does not exist. Using default values")
+            DLog("Costs.plist does not exist. Using default values")
             costDictionary = self.CreateDefaultCostDictionary()
         }
     }
