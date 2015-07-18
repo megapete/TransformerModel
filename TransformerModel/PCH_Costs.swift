@@ -191,7 +191,7 @@ class PCH_Costs {
         }
         else
         {
-            
+            DLog("Could not write costs to file!")
         }
         
     }

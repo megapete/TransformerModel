@@ -72,7 +72,7 @@ class PCH_Strand: PCH_Conductor {
     */
     init(name: String, density: Double, cost: Double, resistivity:Double, tempCoeff:Double, shape:Shape, xRadius:Double, yRadius:Double, edgeRadius:Double, coverInsulation:PCH_Insulation, coverThickness:Double)
     {
-        // Swift peculiarity: You have to initialize this class' properties BEFORE calling the super class' init() function (???)
+        // Swift peculiarity: You have to initialize this subclass' properties BEFORE calling the super class' init() function (???)
         self.shape = shape
         self.xRadius = xRadius
         self.yRadius = yRadius

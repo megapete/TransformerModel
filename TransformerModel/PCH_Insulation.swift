@@ -17,7 +17,7 @@ class PCH_Insulation: PCH_RawMaterial {
         case Nomex, Glastic, Paper, TIV, TX, Air, Oil, Vacuum, Formel, Varnish
     }
     
-    var material: Insulation
+    let material: Insulation
     
     /** The relative permittivity of the material
     */
@@ -39,11 +39,17 @@ class PCH_Insulation: PCH_RawMaterial {
     }
     
     /**
+        The "shrinkage factor" of the material (eg: if the material shrinks by 10% when dried, its shrinkage factor is equal to 0.9)
+    */
+    let shrinkageFactor:Double
+    
+    /**
         Designated initializer
     */
-    init(name: String, density: Double, cost: Double, material:Insulation, εRel:Double)
+    init(name: String, density: Double, cost: Double, material:Insulation, shrinkageFactor:Double, εRel:Double)
     {
         self.material = material
+        self.shrinkageFactor = shrinkageFactor
         self.εRel = εRel
         
         super.init(name: name, density: density, cost: cost)

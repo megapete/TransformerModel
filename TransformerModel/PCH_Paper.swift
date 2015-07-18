@@ -28,6 +28,6 @@ class PCH_Paper: PCH_Insulation {
         self.width = width
         self.length = length
         
-        super.init(name: "Kraft paper", density: 1000.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Paper), material: Insulation.Paper, εRel: 1.0)
+        super.init(name: "Kraft paper", density: 1000.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Paper), material: Insulation.Paper, shrinkageFactor:0.85, εRel: 1.0)
     }
 }
