@@ -29,12 +29,12 @@ class PCH_Strand: PCH_Conductor {
     let shape:Shape
     
     /** 
-        The distance from the cross-sectional center of the conductor to its edge in the x-direction
+        The distance from the cross-sectional center of the conductor to its edge in the x-direction (usually axial)
     */
     let xRadius:Double
     
     /**
-        The distance from the cross-sectional center of the conductor to its edge in the y-direction
+        The distance from the cross-sectional center of the conductor to its edge in the y-direction (usually radial)
     */
     var yRadius:Double
     
@@ -49,9 +49,31 @@ class PCH_Strand: PCH_Conductor {
     let coverInsulation:PCH_Insulation
     
     /**
-        The radial thickness of the cover insulation
+        The unshrunken radial thickness of the cover insulation
     */
     let coverThickness:Double
+    
+    /**
+        The unshrunk dimensions of the strand over the insulation (x [axial], y [radial])
+    */
+    var unshrunkDimensionOverCover:(axial:Double, radial:Double)
+    {
+        get
+        {
+            return (2.0 * (xRadius + coverThickness), 2.0 * (yRadius + coverThickness))
+        }
+    }
+    
+    /**
+        The  dimensions of the strand over the insulation with the x dimension shrunk (x [axial], y [radial])
+    */
+    var shrunkDimensionOverCover:(axial:Double, radial:Double)
+    {
+        get
+        {
+            return (2.0 * (xRadius + coverThickness * coverInsulation.shrinkageFactor), 2.0 * (yRadius + coverThickness))
+        }
+    }
 
     /**
         Most complicated initializer.
@@ -155,7 +177,7 @@ class PCH_Strand: PCH_Conductor {
     }
 
     /**
-        Calculate the cross-sectional area of the strand
+        Calculate the conducting cross-sectional area of the strand
         
         :returns: The x-section in meters-squared
     */

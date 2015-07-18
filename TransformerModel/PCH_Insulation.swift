@@ -41,15 +41,35 @@ class PCH_Insulation: PCH_RawMaterial {
     /**
         The "shrinkage factor" of the material (eg: if the material shrinks by 10% when dried, its shrinkage factor is equal to 0.9)
     */
-    let shrinkageFactor:Double
+    var shrinkageFactor:Double
+    {
+        get
+        {
+            switch(self.material)
+            {
+            case .Nomex:
+                return 1.0
+            case .Glastic:
+                return 1.0
+            case .Paper:
+                return 0.85
+            case .TIV:
+                return 0.95
+            case .TX:
+                return 0.98
+            default:
+                return 1.0
+                
+            }
+        }
+    }
     
     /**
         Designated initializer
     */
-    init(name: String, density: Double, cost: Double, material:Insulation, shrinkageFactor:Double, εRel:Double)
+    init(name: String, density: Double, cost: Double, material:Insulation, εRel:Double)
     {
         self.material = material
-        self.shrinkageFactor = shrinkageFactor
         self.εRel = εRel
         
         super.init(name: name, density: density, cost: cost)
