@@ -8,7 +8,7 @@
 
 import Cocoa
 
-/// The basic cable, one or more of which, will make up a "turn" (note that a WdgCable may actually be a single strand). A cable is an entirely "packaged" subunit of a turn (ie: this is what is sepcified to and ordered from suppliers)
+/// The basic cable, one or more of which will make up a "turn" (note that a WdgCable may actually be a single strand). A cable is an entirely "packaged" subunit of a turn (ie: this is what is sepcified to and ordered from suppliers)
 
 class PCH_WdgCable {
     
@@ -181,6 +181,21 @@ class PCH_WdgCable {
     }
     
     /**
+        Function to calculate the average perimeter of the covered cable (for insulation weight calculations)
+        
+        :returns: The average perimeter (ie: following a line through the center of the insulating cover)
+    */
+    func AveragePerimeter() -> Double
+    {
+        let cover = coverInsulation == nil ? 0.0 : self.coverThickness
+        
+        let width = self.unshrunkDimensionOverCover.axial - cover
+        let thickness = self.unshrunkDimensionOverCover.radial - cover
+        
+        return 2.0 * (width + thickness)
+    }
+    
+    /**
         Calculate the conducting cross-sectional area of the strand
     
         :returns: The x-section in meters-squared
@@ -200,4 +215,28 @@ class PCH_WdgCable {
     {
         return self.strand.Resistance(length, temperature: temperature) / Double(self.totalStrands)
     }
+    
+    /**
+        Calculate the weight of a given length of cable. Note that this weight includes the metal and insulation cover (if any)
+        
+        :param: length The length of the strand
+        
+        :returns: The total weight of the cable, including its insulating cover
+    */
+    func Weight(length:Double) -> Double
+    {
+        var cableWeight:Double = Double(self.totalStrands) * self.strand.Weight(length)
+        
+        if (self.coverInsulation != nil)
+        {
+            let coverWeight = self.coverInsulation!.Weight(area: self.coverThickness * self.AveragePerimeter(), length: length)
+            
+            cableWeight += coverWeight
+            
+        }
+        
+        return cableWeight
+    }
+    
+    
 }

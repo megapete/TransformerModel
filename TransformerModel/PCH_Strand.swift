@@ -92,7 +92,7 @@ class PCH_Strand: PCH_Conductor {
     
         :returns: A new Strand
     */
-    init(name: String, density: Double, cost: Double, resistivity:Double, tempCoeff:Double, shape:Shape, xRadius:Double, yRadius:Double, edgeRadius:Double, coverInsulation:PCH_Insulation, coverThickness:Double)
+    init(type: Conductor, density: Double, cost: Double, resistivity:Double, tempCoeff:Double, shape:Shape, xRadius:Double, yRadius:Double, edgeRadius:Double, coverInsulation:PCH_Insulation, coverThickness:Double)
     {
         // Swift peculiarity: You have to initialize this subclass' properties BEFORE calling the super class' init() function (???)
         self.shape = shape
@@ -102,7 +102,7 @@ class PCH_Strand: PCH_Conductor {
         self.coverInsulation = coverInsulation
         self.coverThickness = coverThickness
         
-        super.init(name: name, density: density, cost: cost, resistivity: resistivity, tempCoeff: tempCoeff)
+        super.init(type: type, density: density, cost: cost, resistivity: resistivity, tempCoeff: tempCoeff)
     }
     
     /** 
@@ -131,15 +131,15 @@ class PCH_Strand: PCH_Conductor {
         {
             case .Copper:
                 
-                super.init(name:"Copper", density:8940.0, cost:3.00, resistivity:1.72E-8, tempCoeff:0.003862)
+                super.init(type:condType, density:8940.0, cost:3.00, resistivity:1.72E-8, tempCoeff:0.003862)
                 
             case .Aluminum:
                 
-                super.init(name:"Aluminum", density:2700.0, cost:2.00, resistivity:2.82E-8, tempCoeff:0.0039)
+                super.init(type:condType, density:2700.0, cost:2.00, resistivity:2.82E-8, tempCoeff:0.0039)
                 
             case .Steel:
                 
-                super.init(name:"Steel", density:7850.0, cost:0.50, resistivity:1.43E-7, tempCoeff:0.0)
+                super.init(type:condType, density:7850.0, cost:0.50, resistivity:1.43E-7, tempCoeff:0.0)
             
         }
     }
