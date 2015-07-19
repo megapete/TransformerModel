@@ -6,12 +6,13 @@
 //  Copyright (c) 2015 Peter Huber. All rights reserved.
 //
 
-/// Base class for all materials
+
+/// Base class for all materials. Base class is NSObject to get the -description function.
 
 class PCH_RawMaterial {
     
     /**
-        An optional name property (String)
+        An optional name property (String). 
     */
     var name = ""
     

@@ -6,28 +6,68 @@
 //  Copyright (c) 2015 Peter Huber. All rights reserved.
 //
 
-import Cocoa
+/// Paper (insuldur) class. Used for sheets of paper (ie: not conductor cover).
 
 class PCH_Paper: PCH_Insulation {
 
+    /**
+        The different types of paper available.
+    
+        - Plain
+        - SingleSideDot
+        - DoubleSideDot
+    */
     enum PaperType
     {
         case Plain, SingleSideDot, DoubleSideDot
     }
     
-    var paperType:PaperType
+    /**
+        The type of paper.
+    */
+    var type:PaperType
     
-    var thickness:Double
-    var width:Double
-    var length:Double
+    /**
+        The description of the insulating paper
+    */
+    var description: String
+    {
+        get
+        {
+            switch (self.type)
+            {
+                case .Plain:
+                    return "Insuldur"
+                case .SingleSideDot:
+                    return "One sided epoxy diamond-dot, insuldur"
+                case .DoubleSideDot:
+                    return "Double-sided epoxy diamond dot, insuldur"
+            }
+        }
+    }
     
+    /**
+        Dimensions of the paper. Width is the axial-direction dimension. 
+    */
+    var dimensions: (thickness:Double, width:Double, length:Double)
+    
+    /**
+        Designated initializer
+    
+        :param: type The type of paper
+        :param: thickness The thickness of the paper used
+        :param: width The width of the paper (only used for interlayer or hilo sheets)
+        :param: length The length of the paper (only used for interlayer or hilo sheets)
+    */
     init(type:PaperType, thickness:Double, width:Double, length:Double)
     {
-        self.paperType = type
-        self.thickness = thickness
-        self.width = width
-        self.length = length
+        self.type = type
+        self.dimensions.thickness = thickness
+        self.dimensions.width = width
+        self.dimensions.length = length
         
-        super.init(name: "Kraft paper", density: 1000.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Paper), material: Insulation.Paper, εRel: 1.0)
+        super.init(name: "", density: 1000.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Paper), material: Insulation.Paper, εRel: 1.0)
+        
+        self.name = self.description
     }
 }

@@ -11,6 +11,23 @@
 class PCH_Conductor: PCH_RawMaterial {
 
     /**
+    Built-in conductor types
+    
+        - Copper
+        - Aluminum
+        - Steel
+    */
+    enum Conductor
+    {
+        case Copper, Aluminum, Steel
+    }
+
+    /**
+        The material of the conductor
+    */
+    let material:Conductor
+    
+    /**
         Resistivity, ⍴,  (at 20°C) of the conductor in Ω・m
     */
     var ρ = 0.0 // at 20°C
@@ -39,6 +56,25 @@ class PCH_Conductor: PCH_RawMaterial {
     }
     
     /**
+        Description of the conductor
+    */
+    var description: String
+    {
+        get
+        {
+            switch (self.material)
+            {
+                case .Copper:
+                    return "Copper"
+                case .Aluminum:
+                    return "Aluminum"
+                case .Steel:
+                    return "Steel"
+            }
+        }
+    }
+    
+    /**
         Temperature coefficient of the conductor in 'per °K'
     */
     var temperatureCoefficient = 0.0 // per °K
@@ -54,11 +90,15 @@ class PCH_Conductor: PCH_RawMaterial {
     
         :returns: Conductor
     */
-    init(name: String, density: Double, cost: Double, resistivity:Double, tempCoeff:Double)
+    init(type: Conductor, density: Double, cost: Double, resistivity:Double, tempCoeff:Double)
     {
-        super.init(name: name, density: density, cost: cost)
         self.ρ = resistivity
         self.temperatureCoefficient = tempCoeff
+        self.material = type
+
+        super.init(name: "", density: density, cost: cost)
+        
+        self.name = self.description
     }
     
     /**
@@ -72,22 +112,11 @@ class PCH_Conductor: PCH_RawMaterial {
         
         :returns: Conductor
     */
-    convenience init(name: String, density: Double, cost: Double, conductivity:Double, tempCoeff:Double) {
+    convenience init(type: Conductor, density: Double, cost: Double, conductivity:Double, tempCoeff:Double) {
         
-        self.init(name:name, density:density, cost:cost, resistivity: 1.0 / conductivity, tempCoeff:tempCoeff)
+        self.init(type:type, density:density, cost:cost, resistivity: 1.0 / conductivity, tempCoeff:tempCoeff)
     }
     
-    /**
-        Built-in conductor types
-    
-        - Copper
-        - Aluminum
-        - Steel
-    */
-    enum Conductor
-    {
-        case Copper, Aluminum, Steel
-    }
     
     /**
         Convenience initializer for built-in materials
@@ -101,15 +130,15 @@ class PCH_Conductor: PCH_RawMaterial {
         {
             case .Copper:
             
-                self.init(name:"Copper", density:8940.0, cost:PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Copper), resistivity:1.72E-8, tempCoeff:0.003862)
+                self.init(type: .Copper, density:8940.0, cost:PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Copper), resistivity:1.72E-8, tempCoeff:0.003862)
             
             case .Aluminum:
             
-                self.init(name:"Aluminum", density:2700.0, cost:PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Aluminum), resistivity:2.82E-8, tempCoeff:0.0039)
+                self.init(type: .Aluminum, density:2700.0, cost:PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Aluminum), resistivity:2.82E-8, tempCoeff:0.0039)
             
             case .Steel:
             
-                self.init(name:"Steel", density:7850.0, cost:0.50, resistivity:1.43E-7, tempCoeff:0.0)
+                self.init(type: .Steel, density:7850.0, cost:0.50, resistivity:1.43E-7, tempCoeff:0.0)
             
         }
     }
