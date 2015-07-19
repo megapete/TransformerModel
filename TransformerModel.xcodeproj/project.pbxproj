@@ -18,6 +18,7 @@
 		D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */; };
 		D37FFC101B495CCA008DBDDA /* GlobalDefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */; };
 		D3956A891B5728D900676FF5 /* PCH_Defs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3956A881B5728D900676FF5 /* PCH_Defs.swift */; };
+		D3C27ADD1B5C328D00FC553E /* PCH_RadialSpacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C27ADC1B5C328D00FC553E /* PCH_RadialSpacer.swift */; };
 		D3CC87D31B5AA8FC00EBD121 /* PCH_WdgCable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3CC87D21B5AA8FC00EBD121 /* PCH_WdgCable.swift */; };
 		D3E13C6F1B4DFDCE006E75AD /* PCH_Paper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E13C6E1B4DFDCE006E75AD /* PCH_Paper.swift */; };
 /* End PBXBuildFile section */
@@ -48,6 +49,7 @@
 		D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Insulation.swift; sourceTree = "<group>"; };
 		D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalDefs.swift; sourceTree = "<group>"; };
 		D3956A881B5728D900676FF5 /* PCH_Defs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Defs.swift; sourceTree = "<group>"; };
+		D3C27ADC1B5C328D00FC553E /* PCH_RadialSpacer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_RadialSpacer.swift; sourceTree = "<group>"; };
 		D3CC87D21B5AA8FC00EBD121 /* PCH_WdgCable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_WdgCable.swift; sourceTree = "<group>"; };
 		D3E13C6E1B4DFDCE006E75AD /* PCH_Paper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Paper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -100,6 +102,7 @@
 				D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */,
 				D3CC87D21B5AA8FC00EBD121 /* PCH_WdgCable.swift */,
 				D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */,
+				D3C27ADC1B5C328D00FC553E /* PCH_RadialSpacer.swift */,
 				D3E13C6E1B4DFDCE006E75AD /* PCH_Paper.swift */,
 				D37FFBEE1B471B86008DBDDA /* Images.xcassets */,
 				D37FFBF01B471B86008DBDDA /* MainMenu.xib */,
@@ -238,6 +241,7 @@
 				D37FFC0C1B494EDD008DBDDA /* PCH_Strand.swift in Sources */,
 				D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */,
 				D37FFC0A1B472DEF008DBDDA /* PCH_Conductor.swift in Sources */,
+				D3C27ADD1B5C328D00FC553E /* PCH_RadialSpacer.swift in Sources */,
 				D3E13C6F1B4DFDCE006E75AD /* PCH_Paper.swift in Sources */,
 				D3956A891B5728D900676FF5 /* PCH_Defs.swift in Sources */,
 				D37FFC101B495CCA008DBDDA /* GlobalDefs.swift in Sources */,

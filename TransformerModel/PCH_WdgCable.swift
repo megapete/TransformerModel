@@ -210,6 +210,8 @@ class PCH_WdgCable {
     
         :param: length The length of the cable
         :param: temperature The temperature at which we want to know the resistance
+    
+        ;returns: The resistance (in ohms) of the cable
     */
     func Resistance(length:Double, temperature:Double) -> Double
     {
