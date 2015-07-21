@@ -19,7 +19,8 @@ class PCH_WdgTurn {
         
         let cable:PCH_WdgCable
         let radialInsulation:PCH_Insulation?
-        let radialInsulationThickness:Double?
+        let radialInsulationThickness:Double
+        let carriesCurrent:Bool // used for intershield conductor
     }
     
     var cableArray = [[radialCableArrangement]]()
@@ -40,25 +41,51 @@ class PCH_WdgTurn {
         The  dimensions of the turn over the insulation with the x dimension shrunk (x [axial], y [radial])
     */
     var shrunkDimensionOverCover:(axial:Double, radial:Double)
-        {
+    {
         get
         {
             let shrunkAxialIns = (self.axialInsulation == nil ? 0.0 : self.axialInsulation!.shrinkageFactor * self.axialInsulationThickness)
             
+            var radialDim:Double = 0.0
+            for i in 0..<cableArray[0].count
+            {
+                let radArrg = cableArray[0][i]
+                radialDim += radArrg.cable.shrunkDimensionOverCover.radial
+                
+                // Ignore any radial insulation that may be stored in the final radial arrangement
+                if (radArrg.radialInsulation != nil) && (i != cableArray[0].count - 1)
+                {
+                    radialDim += radArrg.radialInsulationThickness
+                }
+            }
             
-            
-            
+            return (Double(numAxial) * cableArray[0][0].cable.shrunkDimensionOverCover.axial + Double(numAxial - 1) * shrunkAxialIns, radialDim)
         }
     }
     
     /**
-    The  dimensions of the strand over the insulation with the x dimension unshrunk (x [axial], y [radial])
+        The  dimensions of the turn over the insulation with the x dimension unshrunk (x [axial], y [radial])
     */
     var unshrunkDimensionOverCover:(axial:Double, radial:Double)
-        {
+    {
         get
         {
+            let unshrunkAxialIns = (self.axialInsulation == nil ? 0.0 : self.axialInsulationThickness)
             
+            var radialDim:Double = 0.0
+            for i in 0..<cableArray[0].count
+            {
+                let radArrg = cableArray[0][i]
+                radialDim += radArrg.cable.shrunkDimensionOverCover.radial
+                
+                // Ignore any radial insulation that may be stored in the final radial arrangement
+                if (radArrg.radialInsulation != nil) && (i != cableArray[0].count - 1)
+                {
+                    radialDim += radArrg.radialInsulationThickness
+                }
+            }
+            
+            return (Double(numAxial) * cableArray[0][0].cable.shrunkDimensionOverCover.axial + Double(numAxial - 1) * unshrunkAxialIns, radialDim)
         }
     }
     
@@ -78,8 +105,77 @@ class PCH_WdgTurn {
     
     convenience init(singleCable:PCH_WdgCable)
     {
-        self.init(numAxial:1, axialIns:nil, axialInsThk:0.0, radArrgs:radialCableArrangement(cable: singleCable, radialInsulation: nil, radialInsulationThickness: nil))
+        self.init(numAxial:1, axialIns:nil, axialInsThk:0.0, radArrgs:radialCableArrangement(cable: singleCable, radialInsulation: nil, radialInsulationThickness: 0.0, carriesCurrent: true))
     }
     
+    /**
+        Calculate the current-carrying conductor cross-sectional area of the turn
+        
+        :returns: The x-section in meters-squared
+    */
+    func Area() -> Double
+    {
+        var result:Double = 0.0
+        
+        for nextArrg in cableArray[0]
+        {
+            if (nextArrg.carriesCurrent)
+            {
+                result += nextArrg.cable.Area()
+            }
+        }
+        
+        return result * Double(numAxial)
+    }
+    
+    /**
+        Find the resistance of the given length of turn at the given temperature. Note that this ony returns the resistance of the current-carrying part of the turn
+        
+        :param: length The length of the cable
+        :param: temperature The temperature at which we want to know the resistance
+        
+        :returns: The resistance (in ohms) of the cable
+    */
+    func Resistance(length:Double, temperature:Double) -> Double
+    {
+        var inverseResistances:Double = 0.0
+        
+        for nextArrg in cableArray[0]
+        {
+            if (nextArrg.carriesCurrent)
+            {
+                let nextRes = nextArrg.cable.Resistance(length, temperature: temperature)
+                inverseResistances += 1.0 / nextRes
+            }
+        }
+        
+        return (1.0 / inverseResistances) / Double(self.numAxial)
+    }
+    
+    /**
+        Calculate the weight of a given length of turn. Note that this weight includes the metal and insulation cover (if any) of everything in the turn, INCLUDING any non-current-carrying conductors.
+        
+        :param: length The length of the strand
+        
+        :returns: The total weight of the turn, including radial inter-cable insulation, but NOT inter-cable axial insulation, which must be calculated elsewhere
+    */
+    func Weight(length:Double) -> Double
+    {
+        var radialWt:Double = 0.0
+        
+        for nextArrg in cableArray[0]
+        {
+            radialWt += nextArrg.cable.Weight(length)
+            
+            if (nextArrg.radialInsulation != nil)
+            {
+                radialWt += nextArrg.radialInsulation!.Weight(area: nextArrg.cable.unshrunkDimensionOverCover.axial * nextArrg.radialInsulationThickness, length: length)
+                
+            }
+        }
+        
+        return radialWt * Double(self.numAxial)
+    }
+
     
 }
