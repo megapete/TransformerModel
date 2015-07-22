@@ -26,6 +26,19 @@ class PCH_DuctStrip {
     let ccDist:Double
     
     /**
+        The radial dimension of the duct spacer
+    */
+    var radialDimension:Double
+    {
+        get
+        {
+            var paperDim = (backingPaper == nil ? 0.0 : backingPaper!.dimensions.thickness)
+            
+            return strip.thickness + paperDim
+        }
+    }
+    
+    /**
         Designated initializer
     
         :param: paper The backing paper for the duct strip
@@ -38,4 +51,6 @@ class PCH_DuctStrip {
         self.strip = strip
         self.ccDist = ccDistance
     }
+    
+    
 }
