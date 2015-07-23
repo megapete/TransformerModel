@@ -74,10 +74,10 @@ class PCH_WdgDisk {
         
         // we calculate the radial build here and stuff it into a property
         var radBuild:Double = (ductStrip == nil ? 0.0 : Double(self.numDucts) * ductStrip!.radialDimension)
-        radBuild += (woundTurns * turn.unshrunkDimensionOverCover.radial)
+        radBuild += (woundTurns * Double(self.interleaveLevel) * turn.unshrunkDimensionOverCover.radial)
         
         // We add one turn's dimension for the 'roundup' field
-        self.radialBuild = (radBuild, radBuild + turn.unshrunkDimensionOverCover.radial)
+        self.radialBuild = (radBuild, radBuild + Double(self.interleaveLevel) * turn.unshrunkDimensionOverCover.radial)
         
     }
 }
