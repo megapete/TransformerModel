@@ -55,12 +55,12 @@ class PCH_WdgLayer {
     /**
         Designated initializer
     
-        :param: startOnBottom Bool to indicate whether the start of the disk is on bottom or top of the coil
-        :param: interleaveLevel UInt which indicates the "interleave level" of the layer (1 = no interleave, 2 = 2 conds, 3 = 3 conds, etc)
-        :param: turnDef The turn definition used for the layer
-        :param: woundTurns The number of turns the winder must wind
-        :param: vertSpBoardDef The PCH_Board definition for vertical spaces in the layer (if any)
-        :param: numVertSpBoard The number of vertical spacers in the layer
+        - parameter startOnBottom: Bool to indicate whether the start of the disk is on bottom or top of the coil
+        - parameter interleaveLevel: UInt which indicates the "interleave level" of the layer (1 = no interleave, 2 = 2 conds, 3 = 3 conds, etc)
+        - parameter turnDef: The turn definition used for the layer
+        - parameter woundTurns: The number of turns the winder must wind
+        - parameter vertSpBoardDef: The PCH_Board definition for vertical spaces in the layer (if any)
+        - parameter numVertSpBoard: The number of vertical spacers in the layer
     */
     init(startOnBottom:Bool, interleaveLevel:UInt, turnDef:PCH_WdgTurn, woundTurns:Double, vertSpBoardDef:PCH_Board? = nil, numVerticalSpacers:Int = 0)
     {

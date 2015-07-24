@@ -32,7 +32,7 @@ class PCH_DuctStrip {
     {
         get
         {
-            var paperDim = (backingPaper == nil ? 0.0 : backingPaper!.dimensions.thickness)
+            let paperDim = (backingPaper == nil ? 0.0 : backingPaper!.dimensions.thickness)
             
             return strip.thickness + paperDim
         }
@@ -41,9 +41,9 @@ class PCH_DuctStrip {
     /**
         Designated initializer
     
-        :param: paper The backing paper for the duct strip
-        :param: strip The insulating strip used on the duct strip
-        :param: ccDistance The distance (center-center) between strips
+        - parameter paper: The backing paper for the duct strip
+        - parameter strip: The insulating strip used on the duct strip
+        - parameter ccDistance: The distance (center-center) between strips
     */
     init(paper:PCH_Paper?, strip:PCH_Strip, ccDistance:Double)
     {

@@ -91,7 +91,7 @@ class PCH_WdgTurn {
     
     init(numAxial:Int, axialIns:PCH_Insulation?, axialInsThk:Double, radArrgs:radialCableArrangement...)
     {
-        ZAssert(radArrgs.count > 0, "You must define at least one radial cable arrangement!")
+        ZAssert(radArrgs.count > 0, message: "You must define at least one radial cable arrangement!")
         
         self.numAxial = numAxial
         self.axialInsulation = axialIns
@@ -111,7 +111,7 @@ class PCH_WdgTurn {
     /**
         Calculate the current-carrying conductor cross-sectional area of the turn
         
-        :returns: The x-section in meters-squared
+        - returns: The x-section in meters-squared
     */
     func Area() -> Double
     {
@@ -131,10 +131,10 @@ class PCH_WdgTurn {
     /**
         Find the resistance of the given length of turn at the given temperature. Note that this ony returns the resistance of the current-carrying part of the turn
         
-        :param: length The length of the cable
-        :param: temperature The temperature at which we want to know the resistance
+        - parameter length: The length of the cable
+        - parameter temperature: The temperature at which we want to know the resistance
         
-        :returns: The resistance (in ohms) of the cable
+        - returns: The resistance (in ohms) of the cable
     */
     func Resistance(length:Double, temperature:Double) -> Double
     {
@@ -155,9 +155,9 @@ class PCH_WdgTurn {
     /**
         Calculate the weight of a given length of turn. Note that this weight includes the metal and insulation cover (if any) of everything in the turn, INCLUDING any non-current-carrying conductors.
         
-        :param: length The length of the strand
+        - parameter length: The length of the strand
         
-        :returns: The total weight of the turn, including radial inter-cable insulation, but NOT inter-cable axial insulation, which must be calculated elsewhere
+        - returns: The total weight of the turn, including radial inter-cable insulation, but NOT inter-cable axial insulation, which must be calculated elsewhere
     */
     func Weight(length:Double) -> Double
     {

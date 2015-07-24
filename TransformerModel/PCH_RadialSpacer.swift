@@ -29,15 +29,15 @@ class PCH_RadialSpacer: PCH_Insulation {
     /**
         Designated initializer
         
-        :param: type The type of insulation used (usually, T-IV)
-        :param: thickness The thickness of the radial spacer
-        :param: width The width of the radial spacer
-        :param: slLength The SL (overall) length of the radial spacer
-        :param: dLength The D ("effective") length of the radial spacer
-        :param: aEnd The A-end (per Weidmann) configuration of the radial spacer
-        :param: bEnd The B-end (per Weidmann) configuration of the radial spacer
+        - parameter type: The type of insulation used (usually, T-IV)
+        - parameter thickness: The thickness of the radial spacer
+        - parameter width: The width of the radial spacer
+        - parameter slLength: The SL (overall) length of the radial spacer
+        - parameter dLength: The D ("effective") length of the radial spacer
+        - parameter aEnd: The A-end (per Weidmann) configuration of the radial spacer
+        - parameter bEnd: The B-end (per Weidmann) configuration of the radial spacer
     
-        :returns: A radial spacer
+        - returns: A radial spacer
     */
     init(type:Insulation, thickness:Double, width:Double, slLength:Double, dLength:Double, aEnd:Int = 0, bEnd:Int = 0)
     {

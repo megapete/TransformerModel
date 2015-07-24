@@ -83,7 +83,7 @@ class PCH_Insulation: PCH_RawMaterial {
     /**
         Designated initializer
     
-        :param: material The material used to make the insulator. Note that the densities used are either "typical" or "average", depending on what I found on websites.
+        - parameter material: The material used to make the insulator. Note that the densities used are either "typical" or "average", depending on what I found on websites.
     */
     init(material:Insulation)
     {
@@ -127,7 +127,7 @@ class PCH_Insulation: PCH_RawMaterial {
     /**
         Some materials (eg: Nomex) have different εRel values for different thicknesses. Use this function for those materials.
     
-        :param: thickness The thickness of the material in meters to use to get the permittivity
+        - parameter thickness: The thickness of the material in meters to use to get the permittivity
     */
     func εRel(thickness:Double) -> Double
     {

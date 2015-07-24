@@ -55,12 +55,12 @@ class PCH_WdgDisk {
     /**
         Designated initializer
         
-        :param: startInside Boolean to indicate whether the start of the disk is on top or bottom (generally only useful for winding starts, finishes, or breaks)
-        :param: interleaveLevel UInt which indicates the "interleave level" of the disk (1 = no interleave, 2 = 2 conds, 4 = 4 conds, etc)
-        :param: turn The PCH_WdgTurn that defines each turn of the disk
-        :param: woundTurns The number of turns the winder will actually put on the disk
-        :param: ducstStrip A PCH_DuctStrip that defines all ducts in the disk. Pass nil for no ducts. Note that ducts will be evenly distributed in the disk.
-        :param: numDucts The number of ducts in the disk
+        - parameter startInside: Boolean to indicate whether the start of the disk is on top or bottom (generally only useful for winding starts, finishes, or breaks)
+        - parameter interleaveLevel: UInt which indicates the "interleave level" of the disk (1 = no interleave, 2 = 2 conds, 4 = 4 conds, etc)
+        - parameter turn: The PCH_WdgTurn that defines each turn of the disk
+        - parameter woundTurns: The number of turns the winder will actually put on the disk
+        - parameter ducstStrip: A PCH_DuctStrip that defines all ducts in the disk. Pass nil for no ducts. Note that ducts will be evenly distributed in the disk.
+        - parameter numDucts: The number of ducts in the disk
     */
     init(startInside:Bool, interleaveLevel:UInt, turn:PCH_WdgTurn, woundTurns:Double, ductStrip:PCH_DuctStrip? = nil, numDucts:Int = 0)
     {

@@ -107,10 +107,10 @@ class PCH_WdgCable {
     /**
         Designated initializer
     
-        :param: type The CableType
-        :param: strand The strand that makes up the cable
-        :param: numRadial The number of strands radially. Note that for CTC, this  includes the "odd" cable - that is, for a 23-strand CTC cable, this would be equal to 12.
-        :param: numAxial The number of strands axially
+        - parameter type: The CableType
+        - parameter strand: The strand that makes up the cable
+        - parameter numRadial: The number of strands radially. Note that for CTC, this  includes the "odd" cable - that is, for a 23-strand CTC cable, this would be equal to 12.
+        - parameter numAxial: The number of strands axially
     */
     init(type:CableType, strand:PCH_Strand, numRadial:Int = 1, numAxial:Int = 1, coverInsulation:PCH_Insulation? = nil, coverThickness:Double = 0.0)
     {
@@ -135,7 +135,7 @@ class PCH_WdgCable {
     /**
         Convenience initializer for single-strand cable
         
-        :param: strand The strand that makes up the cable
+        - parameter strand: The strand that makes up the cable
     */
     convenience init(strand:PCH_Strand)
     {
@@ -145,7 +145,7 @@ class PCH_WdgCable {
     /**
         Convenience initializer for double-radial-strand cable
     
-        :param: doubledRadialStrand The strand that makes up the cable
+        - parameter doubledRadialStrand: The strand that makes up the cable
     */
     convenience init(doubledRadialStrand:PCH_Strand, coverInsulation:PCH_Insulation, coverThickness:Double)
     {
@@ -155,7 +155,7 @@ class PCH_WdgCable {
     /**
         Convenience initializer for double-axial-strand cable
     
-        :param: doubledAxialStrand The strand that makes up the cable
+        - parameter doubledAxialStrand: The strand that makes up the cable
     */
     convenience init(doubledAxialStrand:PCH_Strand, coverInsulation:PCH_Insulation, coverThickness:Double)
     {
@@ -165,8 +165,8 @@ class PCH_WdgCable {
     /**
         Convenience initializer for CTC cable
     
-        :param: strand The strand that makes up the cable
-        :param: totalCTCStrands The total number of strands in the cable (must be odd)
+        - parameter strand: The strand that makes up the cable
+        - parameter totalCTCStrands: The total number of strands in the cable (must be odd)
     */
     convenience init(strand:PCH_Strand, totalCTCStrands:Int, coverInsulation:PCH_Insulation, coverThickness:Double)
     {
@@ -183,7 +183,7 @@ class PCH_WdgCable {
     /**
         Function to calculate the average perimeter of the covered cable (for insulation weight calculations)
         
-        :returns: The average perimeter (ie: following a line through the center of the insulating cover)
+        - returns: The average perimeter (ie: following a line through the center of the insulating cover)
     */
     func AveragePerimeter() -> Double
     {
@@ -198,7 +198,7 @@ class PCH_WdgCable {
     /**
         Calculate the conducting cross-sectional area of the strand
     
-        :returns: The x-section in meters-squared
+        - returns: The x-section in meters-squared
     */
     func Area() -> Double
     {
@@ -208,8 +208,8 @@ class PCH_WdgCable {
     /**
         Find the resistance of the given length of cable at the given temperature
     
-        :param: length The length of the cable
-        :param: temperature The temperature at which we want to know the resistance
+        - parameter length: The length of the cable
+        - parameter temperature: The temperature at which we want to know the resistance
     
         ;returns: The resistance (in ohms) of the cable
     */
@@ -221,9 +221,9 @@ class PCH_WdgCable {
     /**
         Calculate the weight of a given length of cable. Note that this weight includes the metal and insulation cover (if any)
         
-        :param: length The length of the strand
+        - parameter length: The length of the strand
         
-        :returns: The total weight of the cable, including its insulating cover
+        - returns: The total weight of the cable, including its insulating cover
     */
     func Weight(length:Double) -> Double
     {

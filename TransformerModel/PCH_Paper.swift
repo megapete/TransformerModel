@@ -54,10 +54,10 @@ class PCH_Paper: PCH_Insulation {
     /**
         Designated initializer
     
-        :param: type The type of paper
-        :param: thickness The thickness of the paper used
-        :param: width The width of the paper (only used for interlayer or hilo sheets)
-        :param: length The length of the paper (only used for interlayer or hilo sheets)
+        - parameter type: The type of paper
+        - parameter thickness: The thickness of the paper used
+        - parameter width: The width of the paper (only used for interlayer or hilo sheets)
+        - parameter length: The length of the paper (only used for interlayer or hilo sheets)
     */
     init(type:PaperType, thickness:Double, width:Double, length:Double)
     {

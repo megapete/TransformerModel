@@ -14,10 +14,10 @@ import Foundation
 
     My standard debug logging function (this will probably change with time)
     
-    :param: message The debug message
-    :param: file The name of the file where the debug message was invoked
-    :param: function The name of the function where the debug message was invoked
-    :param: line The line number of the file where the debug message was invoked
+    - parameter message: The debug message
+    - parameter file: The name of the file where the debug message was invoked
+    - parameter function: The name of the function where the debug message was invoked
+    - parameter line: The line number of the file where the debug message was invoked
 
 */
 func DLog(message:String, file:String = __FILE__, function:String = __FUNCTION__, line:Int = __LINE__)
@@ -33,23 +33,23 @@ func DLog(message:String, file:String = __FILE__, function:String = __FUNCTION__
 
     My standard assertion/debugging logging function (this will probably change with time)
 
-    :param: message The debug message
-    :param: file The name of the file where the debug message was invoked
-    :param: function The name of the function where the debug message was invoked
-    :param: line The line number of the file where the debug message was invoked
+    - parameter message: The debug message
+    - parameter file: The name of the file where the debug message was invoked
+    - parameter function: The name of the function where the debug message was invoked
+    - parameter line: The line number of the file where the debug message was invoked
 
 */
 func ALog(message:String, file:String = __FILE__, function:String = __FUNCTION__, line:Int = __LINE__)
 {
     #if DEBUG
     
-        msgString = file + " : " + function + " : " + String(line) + " : " + message
+        let msgString = file + " : " + function + " : " + String(line) + " : " + message
         
         assert(false, msgString)
         
     #else
     
-        print("\(file) : \(function) : \(line) : \(message)\n")
+        print("\(file) : \(function) : \(line) : \(message)\n", appendNewline: false)
         
     #endif
 }
@@ -57,8 +57,8 @@ func ALog(message:String, file:String = __FILE__, function:String = __FUNCTION__
 /**
     My standard "assert" function
     
-    :param: condition The condition that must be true to not assert
-    :param: message The message to show if condition is false
+    - parameter condition: The condition that must be true to not assert
+    - parameter message: The message to show if condition is false
 */
 func ZAssert(condition:Bool, message:String)
 {

@@ -118,11 +118,11 @@ class PCH_Costs {
     /**
         Private function to create a cost dictionary with default values. Note that this function will only be called under "error" circumstances.
     
-        :returns: Cost dictionary filled with default values
+        - returns: Cost dictionary filled with default values
     */
     private func CreateDefaultCostDictionary() -> NSDictionary
     {
-        var result:NSDictionary = [
+        let result:NSDictionary = [
             
             CostKey.Copper.rawValue : 3.00,
             CostKey.Aluminum.rawValue : 3.00,
@@ -152,9 +152,9 @@ class PCH_Costs {
     /**
         Get the currently-saved cost for the given CostCode
     
-        :param: CostCode for the material or labour unit desired
+        - parameter CostCode: for the material or labour unit desired
     
-        :returns: The cost as a double
+        - returns: The cost as a double
     */
     func CostForKey(theKey: CostKey) -> Double
     {
@@ -166,8 +166,8 @@ class PCH_Costs {
     /**
         Set a new cost for the given CostCode
     
-        :param: The new cost (as a Double)
-        :param: CostCode for the material or labour unit desired
+        - parameter The: new cost (as a Double)
+        - parameter CostCode: for the material or labour unit desired
     
     */
     func SetCost(cost:Double, forKey:CostKey)

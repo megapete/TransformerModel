@@ -29,11 +29,11 @@ class PCH_RawMaterial {
     /**
         Designated initializer
     
-        :param: name The optional name of the material
-        :param: density The density of the material in kg/m3, at 0C and 100 kPa
-        :param: cost The cost of the material in CDN$, per unit volume (kg/m3)
+        - parameter name: The optional name of the material
+        - parameter density: The density of the material in kg/m3, at 0C and 100 kPa
+        - parameter cost: The cost of the material in CDN$, per unit volume (kg/m3)
     
-        :returns: A raw material object
+        - returns: A raw material object
     */
     init(name: String, density: Double, cost: Double)
     {
@@ -45,11 +45,11 @@ class PCH_RawMaterial {
     /**
         Calculate the weight of a piece of material with given dimensions (for a 'rectangular box' shape)
     
-        :param: length The 'length' dimension of the piece of material
-        :param: width The 'width' dimension of the piece of material
-        :param: height The 'height' dimension of the piece of material
+        - parameter length: The 'length' dimension of the piece of material
+        - parameter width: The 'width' dimension of the piece of material
+        - parameter height: The 'height' dimension of the piece of material
     
-        :returns: The weight of the piece in kilograms (Double)
+        - returns: The weight of the piece in kilograms (Double)
     */
     
     func Weight(length:Double, width:Double, height:Double) -> Double
@@ -60,12 +60,12 @@ class PCH_RawMaterial {
     /**
         Calculate the weight of a piece of material with given dimensions (for a 'cylindrical' shape)
         
-        :param: diameter The 'diameter' of the piece of material
-        :param: length The 'length' dimension of the piece of material
+        - parameter diameter: The 'diameter' of the piece of material
+        - parameter length: The 'length' dimension of the piece of material
         
-        :returns: The weight of the piece in kilograms (Double)
+        - returns: The weight of the piece in kilograms (Double)
     */
-    func Weight(#diameter:Double, length:Double) -> Double
+    func Weight(diameter diameter:Double, length:Double) -> Double
     {
         let radius = diameter / 2.0
         
@@ -75,12 +75,12 @@ class PCH_RawMaterial {
     /**
         Calculate the weight of a piece of material with given area and length
         
-        :param: area The area of the piece of material
-        :param: length The length  of the piece of material
+        - parameter area: The area of the piece of material
+        - parameter length: The length  of the piece of material
         
-        :returns: The weight of the piece in kilograms (Double)
+        - returns: The weight of the piece in kilograms (Double)
     */
-    func Weight(#area:Double, length:Double) -> Double
+    func Weight(area area:Double, length:Double) -> Double
     {
         return area * length * self.density
     }
@@ -88,11 +88,11 @@ class PCH_RawMaterial {
     /**
         Calculate the cost of a piece of material with given dimensions
         
-        :param: length The 'length' dimension of the piece of material
-        :param: width The 'width' dimension of the piece of material
-        :param: height The 'height' dimension of the piece of material
+        - parameter length: The 'length' dimension of the piece of material
+        - parameter width: The 'width' dimension of the piece of material
+        - parameter height: The 'height' dimension of the piece of material
         
-        :returns: The cost of the piece in Canadian dollars (Double)
+        - returns: The cost of the piece in Canadian dollars (Double)
     */
     
     func CanadianDollarValue(length:Double, width:Double, height:Double) -> Double
