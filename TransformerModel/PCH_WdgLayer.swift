@@ -8,7 +8,7 @@
 
 import Cocoa
 
-// A standard winding layer
+/// A standard winding layer
 
 class PCH_WdgLayer {
 

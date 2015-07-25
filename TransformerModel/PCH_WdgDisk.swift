@@ -38,6 +38,11 @@ class PCH_WdgDisk {
     let effectiveTurns:Double
     
     /**
+        The number of turns that are active (carrying current) on the disk (equal to 0.0 or effectiveTurns, which is the default)
+    */
+    var activeTurns:Double
+    
+    /**
         Definition of duct strips. Ducts are distributed evenly through the turns of the disk.
     */
     let ductStrip:PCH_DuctStrip?
@@ -69,6 +74,7 @@ class PCH_WdgDisk {
         self.turnDef = turn
         self.woundTurns = woundTurns
         self.effectiveTurns = woundTurns * Double(self.interleaveLevel)
+        self.activeTurns = self.effectiveTurns
         self.ductStrip = ductStrip
         self.numDucts = (ductStrip == nil ? 0 : numDucts)
         
@@ -79,5 +85,21 @@ class PCH_WdgDisk {
         // We add one turn's dimension for the 'roundup' field
         self.radialBuild = (radBuild, radBuild + Double(self.interleaveLevel) * turn.unshrunkDimensionOverCover.radial)
         
+    }
+    
+    /**
+        Activate all the effective turns of the disk
+    */
+    func activateDisk()
+    {
+        self.activeTurns = self.effectiveTurns
+    }
+    
+    /**
+        Deactivate all the effective turns of the disk
+    */
+    func deactivateDisk()
+    {
+        self.activeTurns = 0.0
     }
 }
