@@ -88,6 +88,27 @@ class PCH_WdgDisk {
     }
     
     /**
+        Convenience initializer that uses a given disk and gives the caller the option to switch the startInside and to keep whatever interleave level of the source. This is handy to create disk-pairs in standard (oil-filled) disk windings
+    */
+    convenience init(srcDisk:PCH_WdgDisk, sameInterleave:Bool = true, flipStart:Bool = false)
+    {
+        let newStart = (flipStart ? !srcDisk.startOnID : srcDisk.startOnID)
+        
+        var interleaveLevel = srcDisk.interleaveLevel
+        var woundTurns = srcDisk.woundTurns
+        
+        if (!sameInterleave)
+        {
+            interleaveLevel = 1
+            woundTurns = srcDisk.effectiveTurns
+        }
+        
+        self.init(startInside:newStart, interleaveLevel:interleaveLevel, turn:srcDisk.turnDef, woundTurns:woundTurns, ductStrip:srcDisk.ductStrip, numDucts:srcDisk.numDucts)
+        
+    
+    }
+    
+    /**
         Activate all the effective turns of the disk
     */
     func activateDisk()

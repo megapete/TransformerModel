@@ -37,6 +37,17 @@ class PCH_WdgTappedDisk: PCH_WdgDisk {
     }
     
     /**
+        Convenience initializer that takes an existing disk as its base and adds taps in the given locations
+    
+        - parameter srcDisk: The disk to use as a base
+        - parameter tapLocs: The turn number(s) where taps are to be located
+    */
+    convenience init(srcDisk:PCH_WdgDisk, tapLocs:[Double])
+    {
+        self.init(startInside:srcDisk.startOnID, interleaveLevel:srcDisk.interleaveLevel, turn:srcDisk.turnDef, woundTurns:srcDisk.woundTurns, tapLocs:tapLocs, ductStrip:srcDisk.ductStrip, numDucts:srcDisk.numDucts)
+    }
+    
+    /**
         Function to activate only some turns of the disk. The tap index is the index into the tapLocations property. If index is less than 0 all the turns are deactivated. If index is greater than the highest index, all turns are activated.
     */
     func activateToTapIndex(index:Int)
