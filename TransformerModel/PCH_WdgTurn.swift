@@ -11,9 +11,14 @@ import Cocoa
 /// This class represents the combination of cables that make up a winding "turn" (ie: this is what the winder has to wind onto the winding mould). There are a couple of assumptions made in this class. First of all, it is assumed that for some given pattern of radial cable/insulation pairs, those pairs are repeated in 0 or more axial arrays. That is, if a turn is made up of cable1/radialIns1/cable2, then that pattern may be paralleled in axial copies, but those copies MUST be exact copies of the original turn. It is also assumed that any axial insulation between cables will be constant
 
 class PCH_WdgTurn {
-    
+        
     /**
         Struct to define a radial cable/insulation pair
+    
+        - cable: The definition of the cable
+        - radialInsulation: The type of any radial insulation within the arrangement
+        - radialInsulationThickness: The thickness of the radial insulation within the arrangement
+        - carriesCurrent: A Bool that indicates whether the cable carries current (useful for intershields)
     */
     struct radialCableArrangement {
         
@@ -23,8 +28,14 @@ class PCH_WdgTurn {
         let carriesCurrent:Bool // used for intershield conductor
     }
     
+    /**
+        Two-dimensional array holding the radial arrangements. The firts index is the axial position, the second is radial. It is assumed that all the radial arrangements are the same, so this method of accessing the turn arrangement (with a 2D array) is sort of a 'convenience'.
+    */
     var cableArray = [[radialCableArrangement]]()
     
+    /**
+        The radial arrangement of each axial position in the turn
+    */
     var radialCables:radialCableArrangement
     {
         get
@@ -33,8 +44,15 @@ class PCH_WdgTurn {
         }
     }
 
+    /**
+        The axial insulation within the turn (if any)
+    */
     let axialInsulation:PCH_Insulation?
     let axialInsulationThickness:Double
+    
+    /**
+        The number of axial positions in the turn (at least 1)
+    */
     let numAxial:Int
     
     /**
@@ -89,6 +107,14 @@ class PCH_WdgTurn {
         }
     }
     
+    /**
+        Designated initializer
+    
+        - parameter numAxial: The number of axial positions in the turn
+        - parameter axialIns: The axial insulation (if any) within the turn
+        - parameter axialInsThk: The thickness of any axial insulation within the turn
+        - parameter radArrgs: A list (array) of radial cable arragmements
+    */
     init(numAxial:Int, axialIns:PCH_Insulation?, axialInsThk:Double, radArrgs:radialCableArrangement...)
     {
         ZAssert(radArrgs.count > 0, message: "You must define at least one radial cable arrangement!")

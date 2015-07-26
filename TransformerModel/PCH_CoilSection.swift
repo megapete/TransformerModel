@@ -8,10 +8,24 @@
 
 import Foundation
 
-/// Base class for the concrete coil section classes PCH_CoilDisk, PCH_CoilLayer, PCH_CoilHelix. This could have been designed as a protocol but I thought it would have been more work than just creating a base class that is designed to be subclassed.
+/// Base class for the concrete coil section classes PCH_CoilSectionDisk, PCH_CoilSectionLayer, PCH_CoilSectionHelix. This could have been designed as a protocol but I thought it would have been more work than just creating a base class that is designed to be subclassed.
 
 class PCH_CoilSection
 {
+    /**
+        Enum to describe the winding direction of the section (used for voltage, impedance, etc. calculations).
+    
+        - clockwise
+        - counterclockwise
+    */
+    enum WindingDirection:Int {
+        
+        case clockwise = 1
+        case counterclockwise = -1
+    }
+    
+    var direction:WindingDirection
+    
     /**
         The physical inner radius of the coil.
     */
@@ -117,18 +131,20 @@ class PCH_CoilSection
         - parameter zMinElectrical: The lowest electrical point of the coil section (ie: without the helix)
         - parameter electricalHt: The electrical height of the coil section
         - parameter physicalHt: The physical height of the coil section
+        - parameter wdgDirection: The direction of the winding (default is clockwise, this value can be changed)
     */
-    init(innerRadius:Double, radBuildPhysical:Double, radBuildElectrical:Double, zMinPhysical:Double, zMinElectrical:Double, electricalHt:Double, physicalHt:Double)
+    init(innerRadius:Double, radBuildPhysical:Double, radBuildElectrical:Double, zMinPhysical:Double, zMinElectrical:Double, electricalHt:Double, physicalHt:Double, wdgDirection:WindingDirection = .clockwise)
     {
         self.innerRadius = innerRadius
         self.radialBuild = (radBuildPhysical, radBuildElectrical)
         self.zMin = (zMinPhysical, zMinElectrical)
         self.electricalHt = electricalHt
         self.physicalHt = physicalHt
+        self.direction = wdgDirection
     }
     
     /**
-        Convenience init that accepts an inner diameter as the first argument
+        Convenience initializer that accepts an inner diameter as the first argument
     
         - parameter innerDiameter: The inner diameter
         - parameter radBuildPhysical: The copper-to-copper radial build
@@ -137,10 +153,11 @@ class PCH_CoilSection
         - parameter zMinElectrical: The lowest electrical point of the coil section (ie: without the helix)
         - parameter electricalHt: The electrical height of the coil section
         - parameter physicalHt: The physical height of the coil section
+        - parameter wdgDirection: The direction of the winding (default is clockwise, this value can be changed)
     */
-    convenience init(innerDiameter:Double, radBuildPhysical:Double, radBuildElectrical:Double, zMinPhysical:Double, zMinElectrical:Double, electricalHt:Double, physicalHt:Double)
+    convenience init(innerDiameter:Double, radBuildPhysical:Double, radBuildElectrical:Double, zMinPhysical:Double, zMinElectrical:Double, electricalHt:Double, physicalHt:Double, wdgDirection:WindingDirection = .clockwise)
     {
-        self.init(innerRadius: innerDiameter / 2.0, radBuildPhysical: radBuildPhysical, radBuildElectrical: radBuildElectrical, zMinPhysical: zMinPhysical, zMinElectrical: zMinElectrical, electricalHt: electricalHt, physicalHt: physicalHt)
+        self.init(innerRadius: innerDiameter / 2.0, radBuildPhysical: radBuildPhysical, radBuildElectrical: radBuildElectrical, zMinPhysical: zMinPhysical, zMinElectrical: zMinElectrical, electricalHt: electricalHt, physicalHt: physicalHt, wdgDirection:wdgDirection)
     }
     
 }
