@@ -10,6 +10,7 @@
 		D341931F1B62B29000C4A7F8 /* PCH_CoilSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D341931E1B62B29000C4A7F8 /* PCH_CoilSection.swift */; };
 		D34193211B62E5BA00C4A7F8 /* PCH_WdgTappedDisk.swift in Sources */ = {isa = PBXBuildFile; fileRef = D34193201B62E5BA00C4A7F8 /* PCH_WdgTappedDisk.swift */; };
 		D342BF111B56BC1E00BCD3E7 /* PCH_Costs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D342BF101B56BC1E00BCD3E7 /* PCH_Costs.swift */; };
+		D35654501B6514E900A1259E /* PCH_WdgTappedLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D356544F1B6514E900A1259E /* PCH_WdgTappedLayer.swift */; };
 		D37D84E81B612D5300549E5C /* PCH_WdgLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37D84E71B612D5300549E5C /* PCH_WdgLayer.swift */; };
 		D37D84EA1B612E7D00549E5C /* PCH_Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37D84E91B612E7D00549E5C /* PCH_Board.swift */; };
 		D37FFBED1B471B86008DBDDA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */; };
@@ -45,6 +46,7 @@
 		D341931E1B62B29000C4A7F8 /* PCH_CoilSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoilSection.swift; sourceTree = "<group>"; };
 		D34193201B62E5BA00C4A7F8 /* PCH_WdgTappedDisk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_WdgTappedDisk.swift; sourceTree = "<group>"; };
 		D342BF101B56BC1E00BCD3E7 /* PCH_Costs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Costs.swift; sourceTree = "<group>"; };
+		D356544F1B6514E900A1259E /* PCH_WdgTappedLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_WdgTappedLayer.swift; sourceTree = "<group>"; };
 		D37D84E71B612D5300549E5C /* PCH_WdgLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_WdgLayer.swift; sourceTree = "<group>"; };
 		D37D84E91B612E7D00549E5C /* PCH_Board.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Board.swift; sourceTree = "<group>"; };
 		D37FFBE71B471B86008DBDDA /* TransformerModel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TransformerModel.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -121,6 +123,7 @@
 				D3CE0CF41B5F16DE0060B71C /* PCH_WdgDisk.swift */,
 				D34193201B62E5BA00C4A7F8 /* PCH_WdgTappedDisk.swift */,
 				D37D84E71B612D5300549E5C /* PCH_WdgLayer.swift */,
+				D356544F1B6514E900A1259E /* PCH_WdgTappedLayer.swift */,
 				D341931E1B62B29000C4A7F8 /* PCH_CoilSection.swift */,
 				D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */,
 				D37D84E91B612E7D00549E5C /* PCH_Board.swift */,
@@ -271,6 +274,7 @@
 				D3CE0CF51B5F16DE0060B71C /* PCH_WdgDisk.swift in Sources */,
 				D37D84E81B612D5300549E5C /* PCH_WdgLayer.swift in Sources */,
 				D341931F1B62B29000C4A7F8 /* PCH_CoilSection.swift in Sources */,
+				D35654501B6514E900A1259E /* PCH_WdgTappedLayer.swift in Sources */,
 				D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */,
 				D3C27ADF1B5C492E00FC553E /* PCH_WdgTurn.swift in Sources */,
 				D37FFC0A1B472DEF008DBDDA /* PCH_Conductor.swift in Sources */,

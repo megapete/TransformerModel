@@ -38,6 +38,11 @@ class PCH_WdgLayer {
     let effectiveTurns:Double
     
     /**
+        The number of turns that are active (carrying current) on the disk (equal to 0.0 or effectiveTurns, which is the default)
+    */
+    var activeTurns:Double
+    
+    /**
         The board used for any vertical spacing in the layer. These boards are evenly distributed in the layer.
     */
     let verticalSpacingBoard:PCH_Board?
@@ -69,6 +74,7 @@ class PCH_WdgLayer {
         self.turnDef = turnDef
         self.woundTurns = woundTurns
         self.effectiveTurns = woundTurns * Double(self.interleaveLevel)
+        self.activeTurns = self.effectiveTurns
         self.verticalSpacingBoard = vertSpBoardDef
         self.numVerticalSpacers = (vertSpBoardDef == nil ? 0 : numVerticalSpacers)
         
@@ -79,5 +85,21 @@ class PCH_WdgLayer {
         
         axialBuild = (axialHt, axialHt + turnDef.shrunkDimensionOverCover.axial * Double(self.interleaveLevel))
         
+    }
+    
+    /**
+        Activate all the effective turns of the layer
+    */
+    func activateLayer()
+    {
+        self.activeTurns = self.effectiveTurns
+    }
+    
+    /**
+        Deactivate all the effective turns of the layer
+    */
+    func deactivateLayer()
+    {
+        self.activeTurns = 0.0
     }
 }
