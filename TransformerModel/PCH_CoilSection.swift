@@ -112,12 +112,12 @@ class PCH_CoilSection
     }
     
     /**
-        The current vector of the current in the coil section. This property may not be retained.
+        The vector of the current in the coil section. This property may not be retained for future versions.
     */
     var currentVector:(i:Double, θ:Double) = (0.0, 0.0)
     
     /**
-        The voltage vector of the current in the coil section. This property may not be retained.
+        The vector of the voltage in the coil section. This property may not be retained for future versions.
     */
     var voltageVector:(v:Double, θ:Double) = (0.0, 0.0)
     
