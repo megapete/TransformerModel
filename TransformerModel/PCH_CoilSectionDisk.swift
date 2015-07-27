@@ -74,7 +74,7 @@ class PCH_CoilSectionDisk: PCH_CoilSection {
         
         let height = Double(numDisks) * firstDisk.turnDef.shrunkDimensionOverCover.axial + Double(numDisks - 1) * radialSpacerThickness
         
-        super.init(innerRadius: innerRadius, radBuildPhysical: firstDisk.radialBuild.roundup, radBuildElectrical: firstDisk.radialBuild.exact, zMinPhysical: zMinPhysical, zMinElectrical: zMinPhysical, electricalHt: height, physicalHt: height)
+        super.init(innerRadius: innerRadius, radBuildPhysical: firstDisk.radialBuild.roundup, radBuildElectrical: firstDisk.radialBuild.exact, zMinPhysical: zMinPhysical, zMinElectrical: zMinPhysical, electricalHt: height, physicalHt: height, wdgDirection:wdgDirection)
     }
     
     /**
@@ -82,7 +82,7 @@ class PCH_CoilSectionDisk: PCH_CoilSection {
     
         - parameter turns: A list of turn numbers
     */
-    func AddTapsAtTurns(turns:Double...)
+    override func AddTapsAtTurns(turns:Double...)
     {
         // Store the number of turns per disk for convenience
         let turnsPerDisk = disks[0].effectiveTurns

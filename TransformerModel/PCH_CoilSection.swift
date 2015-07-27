@@ -160,4 +160,13 @@ class PCH_CoilSection
         self.init(innerRadius: innerDiameter / 2.0, radBuildPhysical: radBuildPhysical, radBuildElectrical: radBuildElectrical, zMinPhysical: zMinPhysical, zMinElectrical: zMinElectrical, electricalHt: electricalHt, physicalHt: physicalHt, wdgDirection:wdgDirection)
     }
     
+    /**
+        Function to add taps at given turn numbers (in terms of this coil section). In the base class, this method will cause an assert - it MUST be overridden by subclasses
+        
+        - parameter turns: A list of turn numbers
+    */
+    func AddTapsAtTurns(turns:Double...)
+    {
+        ZAssert(false, message: "Base class function called - this must be overridden by subclasses!")
+    }
 }

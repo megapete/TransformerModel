@@ -84,7 +84,25 @@ class PCH_WdgLayer {
         axialHt += turnDef.shrunkDimensionOverCover.axial * Double(self.interleaveLevel) * self.woundTurns
         
         axialBuild = (axialHt, axialHt + turnDef.shrunkDimensionOverCover.axial * Double(self.interleaveLevel))
+    }
+    
+    /**
+        Convenience initializer that uses a given layer and gives the caller the option to switch the startOnBottom and to keep whatever interleave level of the source. This is handy to create layer-pairs in standard multi-layer windings
+    */
+    convenience init(srcLayer:PCH_WdgLayer, sameInterleave:Bool = true, flipStart:Bool = false)
+    {
+        let newStart = (flipStart ? !srcLayer.startOnBottom : srcLayer.startOnBottom)
         
+        var interleaveLevel = srcLayer.interleaveLevel
+        var woundTurns = srcLayer.woundTurns
+        
+        if (!sameInterleave)
+        {
+            interleaveLevel = 1
+            woundTurns = srcLayer.effectiveTurns
+        }
+        
+        self.init(startOnBottom:newStart, interleaveLevel:interleaveLevel, turnDef:srcLayer.turnDef, woundTurns:woundTurns, vertSpBoardDef:srcLayer.verticalSpacingBoard, numVerticalSpacers:srcLayer.numVerticalSpacers)
     }
     
     /**

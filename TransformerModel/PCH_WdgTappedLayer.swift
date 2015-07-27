@@ -36,6 +36,17 @@ class PCH_WdgTappedLayer: PCH_WdgLayer {
     }
     
     /**
+        Convenience initializer that takes an existing layer as its base and adds taps in the given locations
+        
+        - parameter srcLayer: The layer to use as a base
+        - parameter tapLocs: The turn number(s) where taps are to be located
+    */
+    convenience init(srcLayer:PCH_WdgLayer, tapLocs:[Double])
+    {
+        self.init(startOnBottom:srcLayer.startOnBottom, interleaveLevel:srcLayer.interleaveLevel, turnDef:srcLayer.turnDef, woundTurns:srcLayer.woundTurns, tapLocs:tapLocs, vertSpBoardDef:srcLayer.verticalSpacingBoard, numVerticalSpacers:srcLayer.numVerticalSpacers)
+    }
+    
+    /**
         Function to activate only some turns of the layer. The tap index is the index into the tapLocations property. If index is less than 0 all the turns are deactivated. If index is greater than the highest index, all turns are activated.
     */
     func activateToTapIndex(index:Int)

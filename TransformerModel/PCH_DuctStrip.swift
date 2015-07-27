@@ -8,7 +8,9 @@
 
 import Cocoa
 
-class PCH_DuctStrip {
+/// A class for creating instances of duct strip. Note that this class is derived from PCH_Insulation even though it is actually a combination of other materials. It has to be derived from PCH_Insulation so that it can be "downcast".
+
+class PCH_DuctStrip:PCH_Insulation {
 
     /**
         The backing paper of the duct strip. Note that the backing paper is an optional property (it makes life easier to define simple ducts as a ductsrip with no paper)
@@ -50,6 +52,9 @@ class PCH_DuctStrip {
         self.backingPaper = paper
         self.strip = strip
         self.ccDist = ccDistance
+        
+        // A duct strip is mostly oil, so we'll define it as such. However, the permittivity should be overriden to take into account the solids in the duct strip.
+        super.init(material: .Oil)
     }
     
     
