@@ -84,7 +84,33 @@ class PCH_CoilSectionDisk: PCH_CoilSection {
     */
     func AddTapsAtTurns(turns:Double...)
     {
+        // Store the number of turns per disk for convenience
+        let turnsPerDisk = disks[0].effectiveTurns
         
+        // A dictionary of DiskNumber:TurnsArray
+        var disksToTurns = [Int : [Double]]()
+        
+        for nextTurn in turns
+        {
+            let theDisk = Int(nextTurn / turnsPerDisk)
+            
+            if (disksToTurns[theDisk] == nil)
+            {
+                disksToTurns[theDisk] = [nextTurn - Double(theDisk) * turnsPerDisk]
+            }
+            else
+            {
+                disksToTurns[theDisk]!.append(nextTurn - Double(theDisk) * turnsPerDisk)
+            }
+        }
+        
+        for (disk, turnArray) in disksToTurns
+        {
+            let newDisk = PCH_WdgTappedDisk(srcDisk: disks[disk], tapLocs: turnArray)
+            
+            disks[disk] = newDisk
+        }
     }
+    
 
 }
