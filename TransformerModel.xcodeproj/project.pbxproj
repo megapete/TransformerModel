@@ -28,6 +28,7 @@
 		D39E46D21B66EF8C00A5EBAD /* PCH_Coil.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39E46D11B66EF8C00A5EBAD /* PCH_Coil.swift */; };
 		D39E46D41B66F4F600A5EBAD /* PCH_CommonBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39E46D31B66F4F600A5EBAD /* PCH_CommonBlock.swift */; };
 		D39E46D61B66F7EF00A5EBAD /* PCH_Plate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39E46D51B66F7EF00A5EBAD /* PCH_Plate.swift */; };
+		D39E46D81B67D16E00A5EBAD /* PCH_ConnectionNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39E46D71B67D16E00A5EBAD /* PCH_ConnectionNode.swift */; };
 		D3C27ADD1B5C328D00FC553E /* PCH_RadialSpacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C27ADC1B5C328D00FC553E /* PCH_RadialSpacer.swift */; };
 		D3C27ADF1B5C492E00FC553E /* PCH_WdgTurn.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C27ADE1B5C492E00FC553E /* PCH_WdgTurn.swift */; };
 		D3CC87D31B5AA8FC00EBD121 /* PCH_WdgCable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3CC87D21B5AA8FC00EBD121 /* PCH_WdgCable.swift */; };
@@ -73,6 +74,7 @@
 		D39E46D11B66EF8C00A5EBAD /* PCH_Coil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Coil.swift; sourceTree = "<group>"; };
 		D39E46D31B66F4F600A5EBAD /* PCH_CommonBlock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CommonBlock.swift; sourceTree = "<group>"; };
 		D39E46D51B66F7EF00A5EBAD /* PCH_Plate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Plate.swift; sourceTree = "<group>"; };
+		D39E46D71B67D16E00A5EBAD /* PCH_ConnectionNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_ConnectionNode.swift; sourceTree = "<group>"; };
 		D3C27ADC1B5C328D00FC553E /* PCH_RadialSpacer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_RadialSpacer.swift; sourceTree = "<group>"; };
 		D3C27ADE1B5C492E00FC553E /* PCH_WdgTurn.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_WdgTurn.swift; sourceTree = "<group>"; };
 		D3CC87D21B5AA8FC00EBD121 /* PCH_WdgCable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_WdgCable.swift; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 				D39E46CF1B66A9F100A5EBAD /* PCH_CoilSectionLayer.swift */,
 				D35654511B651D3000A1259E /* PCH_CoilSectionDisk.swift */,
 				D39E46D11B66EF8C00A5EBAD /* PCH_Coil.swift */,
+				D39E46D71B67D16E00A5EBAD /* PCH_ConnectionNode.swift */,
 				D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */,
 				D37D84E91B612E7D00549E5C /* PCH_Board.swift */,
 				D39E46D51B66F7EF00A5EBAD /* PCH_Plate.swift */,
@@ -290,6 +293,7 @@
 				D37FFC0C1B494EDD008DBDDA /* PCH_Strand.swift in Sources */,
 				D3CE0CF51B5F16DE0060B71C /* PCH_WdgDisk.swift in Sources */,
 				D37D84E81B612D5300549E5C /* PCH_WdgLayer.swift in Sources */,
+				D39E46D81B67D16E00A5EBAD /* PCH_ConnectionNode.swift in Sources */,
 				D341931F1B62B29000C4A7F8 /* PCH_CoilSection.swift in Sources */,
 				D35654521B651D3000A1259E /* PCH_CoilSectionDisk.swift in Sources */,
 				D35654501B6514E900A1259E /* PCH_WdgTappedLayer.swift in Sources */,

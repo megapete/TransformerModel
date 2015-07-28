@@ -18,6 +18,12 @@ class PCH_WdgLayer {
     let startOnBottom:Bool
     
     /**
+        Nodes for the start and finish leads of the disk
+    */
+    var startNode:PCH_ConnectionNode? = nil
+    var finishNode:PCH_ConnectionNode? = nil
+    
+    /**
         UInt which indicates the "interleave level" of the layer (1 = no interleave, 2 = 2 conds, 3 = 3 conds, etc)
     */
     let interleaveLevel:UInt

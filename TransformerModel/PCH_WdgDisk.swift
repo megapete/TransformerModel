@@ -18,6 +18,12 @@ class PCH_WdgDisk {
     let startOnID:Bool
     
     /**
+        Nodes for the start and finish leads of the disk
+    */
+    var startNode:PCH_ConnectionNode? = nil
+    var finishNode:PCH_ConnectionNode? = nil
+    
+    /**
         UInt which indicates the "interleave level" of the disk (1 = no interleave, 2 = 2 conds, 4 = 4 conds, etc)
     */
     let interleaveLevel:UInt

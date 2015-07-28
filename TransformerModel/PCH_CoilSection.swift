@@ -8,12 +8,12 @@
 
 import Foundation
 
-/// Base class for the concrete coil section classes PCH_CoilSectionDisk, PCH_CoilSectionLayer, PCH_CoilSectionHelix. This could have been designed as a protocol but I thought it would have been more work than just creating a base class that is designed to be subclassed.
+/// Base class for the concrete coil section classes PCH_CoilSectionDisk, PCH_CoilSectionLayer, PCH_CoilSectionHelix. This could have been designed as a protocol but I thought it would have been more work than just creating a base class that is designed to be subclassed. Note that a coil section is made up of Disks, Layers, or Turns connected in series.
 
 class PCH_CoilSection
 {
     /**
-        Enum to describe the winding direction of the section (used for voltage, impedance, etc. calculations).
+        Enum to describe the winding direction of the section (used for voltage, impedance, etc. calculations), from start to finish of the section
     
         - clockwise
         - counterclockwise
