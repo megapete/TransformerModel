@@ -41,12 +41,17 @@ class PCH_ConnectionNode
     
     /**
         Convenience initializer. This is the initializer that is exposed to the outside world.
+    
+        - parameter isTerminal: Set to 'true' if the node is an external terminal
     */
     convenience init(isTerminal:Bool = false)
     {
         self.init(identification:PCH_ConnectionNode.GetNextSerialNumber(), isTerminal:isTerminal)
     }
     
+    /**
+        A private function to get and increment (atomically) the next serial number
+    */
     private static func GetNextSerialNumber() -> String
     {
         // I think that this might actually be thread-safe, but I'm not 100% sure

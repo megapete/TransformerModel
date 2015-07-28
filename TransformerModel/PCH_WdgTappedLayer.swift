@@ -28,11 +28,11 @@ class PCH_WdgTappedLayer: PCH_WdgLayer {
         - parameter vertSpBoardDef: The PCH_Board definition for vertical spaces in the layer (if any)
         - parameter numVertSpBoard: The number of vertical spacers in the layer
     */
-    init(startOnBottom:Bool, interleaveLevel:UInt, turnDef:PCH_WdgTurn, woundTurns:Double, tapLocs:[Double], vertSpBoardDef:PCH_Board? = nil, numVerticalSpacers:Int = 0)
+    init(startOnBottom:Bool, interleaveLevel:UInt, turnDef:PCH_WdgTurn, woundTurns:Double, tapLocs:[Double], axialGaps:[AxialGaps]?)
     {
         self.tapLocations = tapLocs
         
-        super.init(startOnBottom: startOnBottom, interleaveLevel: interleaveLevel, turnDef: turnDef, woundTurns: woundTurns, vertSpBoardDef: vertSpBoardDef, numVerticalSpacers: numVerticalSpacers)
+        super.init(startOnBottom: startOnBottom, interleaveLevel: interleaveLevel, turnDef: turnDef, woundTurns: woundTurns, axialGaps:axialGaps)
     }
     
     /**
@@ -43,7 +43,7 @@ class PCH_WdgTappedLayer: PCH_WdgLayer {
     */
     convenience init(srcLayer:PCH_WdgLayer, tapLocs:[Double])
     {
-        self.init(startOnBottom:srcLayer.startOnBottom, interleaveLevel:srcLayer.interleaveLevel, turnDef:srcLayer.turnDef, woundTurns:srcLayer.woundTurns, tapLocs:tapLocs, vertSpBoardDef:srcLayer.verticalSpacingBoard, numVerticalSpacers:srcLayer.numVerticalSpacers)
+        self.init(startOnBottom:srcLayer.startOnBottom, interleaveLevel:srcLayer.interleaveLevel, turnDef:srcLayer.turnDef, woundTurns:srcLayer.woundTurns, tapLocs:tapLocs, axialGaps:srcLayer.gaps)
     }
     
     /**

@@ -34,12 +34,12 @@ class PCH_WdgLayer {
     let turnDef:PCH_WdgTurn
     
     /**
-        The amount of wound turns of the disk
+        The amount of wound turns of the layer
     */
     let woundTurns:Double
     
     /**
-        The effective number of turns on the disk
+        The effective number of turns on the layer
     */
     let effectiveTurns:Double
     
@@ -49,14 +49,22 @@ class PCH_WdgLayer {
     var activeTurns:Double
     
     /**
-        The board used for any vertical spacing in the layer. These boards are evenly distributed in the layer.
+        Struct that defines an axial gap in the layer winding. 
+    
+        - board: A PCH_Board that defines the material used for the gap.
+        - htFraction: The fraction of the electrical height where the center of the gap is located
     */
-    let verticalSpacingBoard:PCH_Board?
+    struct AxialGaps {
+        
+        let board:PCH_Board
+        let htFraction:Double
+    }
     
     /**
-        The number of vertical spacers in the layer.
+        An array of the axial gaps located within the layer
     */
-    let numVerticalSpacers:Int
+    var gaps = [AxialGaps]()
+    
     
     /**
         Axial dimensions of the layer (exact, withHelix)
@@ -70,10 +78,10 @@ class PCH_WdgLayer {
         - parameter interleaveLevel: UInt which indicates the "interleave level" of the layer (1 = no interleave, 2 = 2 conds, 3 = 3 conds, etc)
         - parameter turnDef: The turn definition used for the layer
         - parameter woundTurns: The number of turns the winder must wind
-        - parameter vertSpBoardDef: The PCH_Board definition for vertical spaces in the layer (if any)
+        - parameter axialGaps: An array of any gaps within the layer
         - parameter numVertSpBoard: The number of vertical spacers in the layer
     */
-    init(startOnBottom:Bool, interleaveLevel:UInt, turnDef:PCH_WdgTurn, woundTurns:Double, vertSpBoardDef:PCH_Board? = nil, numVerticalSpacers:Int = 0)
+    init(startOnBottom:Bool, interleaveLevel:UInt, turnDef:PCH_WdgTurn, woundTurns:Double, axialGaps:[AxialGaps]?)
     {
         self.startOnBottom = startOnBottom
         self.interleaveLevel = interleaveLevel
@@ -81,11 +89,18 @@ class PCH_WdgLayer {
         self.woundTurns = woundTurns
         self.effectiveTurns = woundTurns * Double(self.interleaveLevel)
         self.activeTurns = self.effectiveTurns
-        self.verticalSpacingBoard = vertSpBoardDef
-        self.numVerticalSpacers = (vertSpBoardDef == nil ? 0 : numVerticalSpacers)
         
         // calculate the axial height and stuff it into a property
-        var axialHt = (self.verticalSpacingBoard == nil ? 0.0 : Double(self.numVerticalSpacers) * self.verticalSpacingBoard!.width)
+        var axialHt = 0.0
+        
+        if (axialGaps != nil)
+        {
+            for nextGap in axialGaps!
+            {
+                self.gaps.append(nextGap)
+                axialHt += nextGap.board.width
+            }
+        }
         
         axialHt += turnDef.shrunkDimensionOverCover.axial * Double(self.interleaveLevel) * self.woundTurns
         
@@ -108,7 +123,8 @@ class PCH_WdgLayer {
             woundTurns = srcLayer.effectiveTurns
         }
         
-        self.init(startOnBottom:newStart, interleaveLevel:interleaveLevel, turnDef:srcLayer.turnDef, woundTurns:woundTurns, vertSpBoardDef:srcLayer.verticalSpacingBoard, numVerticalSpacers:srcLayer.numVerticalSpacers)
+        self.init(startOnBottom:newStart, interleaveLevel:interleaveLevel, turnDef:srcLayer.turnDef, woundTurns:woundTurns, axialGaps:srcLayer.gaps)
+        
     }
     
     /**

@@ -8,7 +8,7 @@
 
 import Cocoa
 
-/// A concrete subclass of PCH_CoilSection with PCH_WdgDisk as the basic building block. Note that within a section, all disks and interdisk insulation are identical. However, also note that while disks are physically identical, they may contain taps (ie: some may be PCH_WdgTappedDisks). The correct way to use this class is to initialize it with the starting (lowest Z) disk, the number of disks, and whether the disk starts should alternate (defaults to true). Afterwards, set any tapping disks.
+/// A concrete subclass of PCH_CoilSection with PCH_WdgDisk as the basic building block. Note that within a section, all disks and interdisk insulation are identical. If there are axial gaps in a disk coil, define those gaps at the PCH_Coil level and create multiple PCH_CoilSectionDisks. Also note that while disks are physically identical, they may contain taps (ie: some may be PCH_WdgTappedDisks). The correct way to use this class is to initialize it with the starting (lowest Z) disk, the number of disks, and whether the disk starts should alternate (defaults to true). Afterwards, set any tapping disks.
 
 class PCH_CoilSectionDisk: PCH_CoilSection {
     
