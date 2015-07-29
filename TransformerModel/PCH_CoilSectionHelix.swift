@@ -79,6 +79,11 @@ class PCH_CoilSectionHelix: PCH_CoilSection
     */
     let gaps:[AxialGaps]?
     
+    /** 
+        The locations (in turns from the start) of any taps on the helix
+    */
+    var taps = Set<Int>()
+    
     /**
         Designated initializer
     */
@@ -118,6 +123,19 @@ class PCH_CoilSectionHelix: PCH_CoilSection
         let physHt = woundTurns * turnDef.shrunkDimensionOverCover.axial + numDefSpacers * defSpacerDim + totalGapDim
         
         super.init(innerRadius: innerRadius, radBuildPhysical: turnDef.shrunkDimensionOverCover.radial, radBuildElectrical: turnDef.shrunkDimensionOverCover.radial, zMinPhysical: zMinPhysical, zMinElectrical: zMinPhysical + defHelixDim / 2.0, electricalHt: physHt - defHelixDim, physicalHt: physHt)
+    }
+    
+    /**
+        Function to add taps at given turn numbers (in terms of the start of this coil section). Note that for this class, the turns are converted to integers before storage
+    
+        - parameter turns: A list of turn numbers
+    */
+    override func AddTapsAtTurns(turns: Double...)
+    {
+        for nextTurn in turns
+        {
+            taps.insert(Int(nextTurn))
+        }
     }
     
 }
