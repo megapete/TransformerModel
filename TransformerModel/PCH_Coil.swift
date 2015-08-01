@@ -13,9 +13,9 @@ import Cocoa
 class PCH_Coil
 {
     /**
-        The array of coil sections that make up the coil
+        The array of coil sections that make up the coil. This member is private to ensure that the caller uses instance methods to acces it.
     */
-    var coilSections:[[PCH_CoilSection]]?
+    private var coilSections:[[PCH_CoilSection?]]
     
     /**
         A struct that defines one "chunk" of intersection insulation
@@ -103,8 +103,97 @@ class PCH_Coil
         }
     }
     
-    var intersectionInsulation:[[InterSectionInsulation]]?
+    /**
+        A private array to hold the axial intersecion insulation chunks. The index (i,j) points at the insulation chunk between axial sections i and i+1 in radial section j
+    */
+    private var axialInterSectionInsulation:[[InterSectionInsulation?]]?
     
+    /**
+        A private array to hold the radial intersecion insulation chunks. The index (i,j) points at the insulation chunk between radial sections j and j+1 in axial section i
+    */
+    private var radialInterSectionInsulation:[[InterSectionInsulation?]]?
     
+    /**
+        The number of axial and radial coil sections
+    */
+    private var  numAxialSections:Int
+    private var numRadialSections:Int
+    
+    /**
+        Designated initializer, which only sets the number of axial and radial coil sections in the coil. It also "primes" the coilSections private member so that it already holds the right number of coil sctions elements (they all hold 'nil' after initialization).
+    */
+    init(numAxialSections:Int, numRadialSections:Int)
+    {
+        self.numAxialSections = numAxialSections
+        self.numRadialSections = numRadialSections
+        
+        let nilRadialArray = [PCH_CoilSection?](count: numRadialSections, repeatedValue: nil)
+        
+        self.coilSections = [[PCH_CoilSection?]](count: numAxialSections, repeatedValue: nilRadialArray)
+        
+    }
+    
+    /**
+        Function to set a given axial and radial position of the array. This will grow the array (with nil values) as necessary.
+    
+        - parameter axialPos: The axial position of the element we want to set
+        - parameter radialPos: The radial position of the element we want to set
+        - parameter coilSection: The coil section to set (cannot be nil)
+    */
+    func SetCoilSectionAtAxialPos(axialPos:Int, radialPos:Int, coilSection:PCH_CoilSection)
+    {
+        ZAssert(axialPos >= 0 && radialPos >= 0, message: "Indices must be greater or equal to zero!")
+        
+        // First we'll grow the array axially, if necessary, adding nil-value radial arrays
+        if (axialPos >= self.numAxialSections)
+        {
+            DLog("The axial position specified is greater than what is currently in the array - adding elements as necessary")
+            
+            let newRadialArray = [PCH_CoilSection?](count: self.numRadialSections, repeatedValue: nil)
+            
+            for _ in self.numAxialSections...axialPos
+            {
+                self.coilSections.append(newRadialArray)
+            }
+            
+            self.numAxialSections = axialPos + 1
+        }
+        
+        // Now we check if the number of radial positions increased, and if so, we add nil values to each existing radial array.
+        if (radialPos >= self.numRadialSections)
+        {
+            DLog("The radial position specified is greater than what is currently in the array - adding elements as necessary")
+            
+            for i in 0..<self.numAxialSections
+            {
+                var replacementRadialArray = self.coilSections[i]
+                
+                for _ in self.numRadialSections...radialPos
+                {
+                    replacementRadialArray.append(nil)
+                }
+                
+                self.coilSections[i] = replacementRadialArray
+            }
+            
+            self.numRadialSections = radialPos + 1
+        }
+        
+        // finally, we set the element
+        self.coilSections[axialPos][radialPos] = coilSection
+        
+    }
+    
+    func CoilSectionAtAxialPos(axialPos:Int, radialPos:Int) -> PCH_CoilSection?
+    {
+        ZAssert(axialPos >= 0 && radialPos >= 0, message: "Indices must be greater or equal to zero!")
+        
+        if (axialPos >= numAxialSections) || (radialPos >= numRadialSections)
+        {
+            return nil
+        }
+        
+        return self.coilSections[axialPos][radialPos]
+    }
     
 }
