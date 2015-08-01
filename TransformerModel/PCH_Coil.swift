@@ -184,6 +184,14 @@ class PCH_Coil
         
     }
     
+    /**
+        Function to get the coil section at a given axial and radial position
+        
+        - parameter axialPos: The axial position of the element we want to set
+        - parameter radialPos: The radial position of the element we want to set
+    
+        - returns: The PCH_CoilSection at the given axial and radial positions (may be nil)
+    */
     func CoilSectionAtAxialPos(axialPos:Int, radialPos:Int) -> PCH_CoilSection?
     {
         ZAssert(axialPos >= 0 && radialPos >= 0, message: "Indices must be greater or equal to zero!")

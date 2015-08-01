@@ -18,12 +18,6 @@ class PCH_CoilSectionHelix: PCH_CoilSection
     let startOnBottom:Bool
     
     /**
-        Nodes for the start and finish leads of the helical section
-    */
-    var startNode:PCH_ConnectionNode? = nil
-    var finishNode:PCH_ConnectionNode? = nil
-    
-    /**
         The turn definition for the helical section
     */
     let turn:PCH_WdgTurn

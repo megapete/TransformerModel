@@ -27,6 +27,12 @@ class PCH_CoilSection
     var direction:WindingDirection
     
     /**
+        Nodes for the start and finish leads of the  section
+    */
+    var startNode:PCH_ConnectionNode? = nil
+    var finishNode:PCH_ConnectionNode? = nil
+    
+    /**
         The physical inner radius of the coil.
     */
     var innerRadius:Double
