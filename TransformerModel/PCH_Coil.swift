@@ -204,4 +204,81 @@ class PCH_Coil
         return self.coilSections[axialPos][radialPos]
     }
     
+    /**
+        Function to check whether all the coil sections in the coil are non-nil
+    
+        - returns: true if all coil sections have been defined (ie: they are non-nil), otherwise false
+    */
+    func CoilIsValid() -> Bool
+    {
+        for i in 0...self.numAxialSections
+        {
+            for j in 0...self.numRadialSections
+            {
+                if self.coilSections[i][j] == nil
+                {
+                    return false
+                }
+            }
+        }
+        
+        return true
+    }
+    
+    /**
+        Function to set the interaxial insulation after a given axial coil section and on a given radial coil section index
+    
+        (Note: This function does index checking but only asserts in Debug mode)
+    
+        - parameter afterAxialPos: The axial coil section position index AFTER which the insulation should be placed
+        - parameter onRadialPos: The radial coil section position index where the insulation should be placed
+        - paramater axialIns: The InterSectionInsulation (must have the isAxial property set!)
+    */
+    func SetAxialInsulationAfterAxialPos(afterAxialPos:Int, onRadialPos:Int, axialIns:PCH_Coil.InterSectionInsulation)
+    {
+        ZAssert(axialIns.isAxial, message: "Illegal inter-section insulation type - must be axial")
+        ZAssert(afterAxialPos >= 0 && onRadialPos >= 0, message: "Indices must be greater or equal to zero!")
+        ZAssert(afterAxialPos < (self.numAxialSections - 1), message: "After axial position index too great!")
+        ZAssert(onRadialPos < self.numRadialSections, message: "Radial position index too great!")
+        
+        // first check if the axial interinsulation array has been initialized, and if not, do it
+        if self.axialInterSectionInsulation == nil
+        {
+            let radialArray = [InterSectionInsulation?](count: numRadialSections, repeatedValue: nil)
+            
+            self.axialInterSectionInsulation = [[InterSectionInsulation?]](count: numAxialSections - 1, repeatedValue: radialArray)
+        }
+        
+        self.axialInterSectionInsulation![afterAxialPos][onRadialPos] = axialIns
+        
+    }
+    
+    /**
+        Function to set the interradial insulation after a given radial coil section and on a given axial coil section index
+        
+        (Note: This function does index checking but only asserts in Debug mode)
+        
+        - parameter afterRadialPos: The radial coil section position index AFTER which the insulation should be placed
+        - parameter onAxialPos: The axial coil section position index where the insulation should be placed
+        - paramater axialIns: The InterSectionInsulation (must have the isRadial property set!)
+    */
+
+    func SetRadialInsulationAfterRadialPos(afterRadialPos:Int, onAxialPos:Int, radialIns:PCH_Coil.InterSectionInsulation)
+    {
+        ZAssert(!radialIns.isAxial, message: "Illegal inter-section insulation type - must be radial")
+        ZAssert(afterRadialPos >= 0 && onAxialPos >= 0, message: "Indices must be greater or equal to zero!")
+        ZAssert(afterRadialPos < (self.numRadialSections - 1), message: "After radial position index too great!")
+        ZAssert(onAxialPos < self.numAxialSections, message: "Axial position index too great!")
+        
+        // first check if the radial interinsulation array has been initialized, and if not, do it
+        if self.radialInterSectionInsulation == nil
+        {
+            let radialArray = [InterSectionInsulation?](count: numRadialSections - 1, repeatedValue: nil)
+            
+            self.radialInterSectionInsulation = [[InterSectionInsulation?]](count: numAxialSections, repeatedValue: radialArray)
+        }
+        
+        self.axialInterSectionInsulation![onAxialPos][afterRadialPos] = radialIns
+        
+    }
 }
