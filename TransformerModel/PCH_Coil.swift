@@ -120,9 +120,52 @@ class PCH_Coil
     private var numRadialSections:Int
     
     /**
-        Designated initializer, which only sets the number of axial and radial coil sections in the coil. It also "primes" the coilSections private member so that it already holds the right number of coil sctions elements (they all hold 'nil' after initialization).
+        The edge insulation for a coil is always comprised of a common block, followed by either radial spacers (disk & helical coils) or a board (layer).
     */
-    init(numAxialSections:Int, numRadialSections:Int)
+    struct EdgeInsulation
+    {
+        /**
+            The common block used between the core yoke and the coil edgepack
+        */
+        let commonBlock:PCH_CommonBlock
+        
+        /**
+            The edgepack of the coil (either a board or a collection of radial spacers
+        */
+        let edgePack:[PCH_Insulation]
+        
+        func AxialDimension() -> Double
+        {
+            var result:Double = 0.0
+            
+            if (edgePack[0] is PCH_RadialSpacer)
+            {
+                for nextSpacer in edgePack
+                {
+                    result += (nextSpacer as! PCH_RadialSpacer).T * nextSpacer.shrinkageFactor
+                }
+            }
+            else // must be PCH_Board
+            {
+                result += (edgePack[0] as! PCH_Board).width
+            }
+            
+            result += commonBlock.plate.thickness + commonBlock.strip.thickness
+            
+            return result
+        }
+    }
+    
+    /**
+        The top and bottom edge insulation. Note that these are currently created as vars to allow for tweaking of the edgpacks if necessary.
+    */
+    var topEdgeInsulation:EdgeInsulation?
+    var bottomEdgeInsulation:EdgeInsulation?
+    
+    /**
+        Designated initializer, which sets the number of axial and radial coil sections in the coil. It also "primes" the coilSections private member so that it already holds the right number of coil sctions elements (they all hold 'nil' after initialization). The caller may also set the top and bottom edge insulation if desired
+    */
+    init(numAxialSections:Int, numRadialSections:Int, topEdgeInsulation:EdgeInsulation? = nil, bottomEdgeInsulation:EdgeInsulation? = nil)
     {
         self.numAxialSections = numAxialSections
         self.numRadialSections = numRadialSections
@@ -131,6 +174,8 @@ class PCH_Coil
         
         self.coilSections = [[PCH_CoilSection?]](count: numAxialSections, repeatedValue: nilRadialArray)
         
+        self.topEdgeInsulation = topEdgeInsulation
+        self.bottomEdgeInsulation = bottomEdgeInsulation
     }
     
     /**
