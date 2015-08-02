@@ -8,7 +8,7 @@
 
 import Cocoa
 
-/// The coil class. A coil is a collection (array) of PCH_CoilSections and occupying a fixed radial location and full electrical height of the transformer. There is always a PCH_Hilo on each side (radially) of the coil (but these are defined in the class PCH_Phase). There is insulation to the top and bottom yoke (edge packs or blocks, or a combination of both). There may be axial insulation and/or radial insulation between sections. The indices of the PCH_CoilSection array start at (axial=0, radial=0) being the section closest to the core and closest to the bottom yoke. Axial insulation indices match the lower section (ie: axial insulation between sections (0,0) and (1,0) would be at index 0. The same is true for radial insulations.
+/// The coil class. A coil is a collection (array) of PCH_CoilSections and occupying a fixed radial location and full electrical height of the transformer. There is always a PCH_Hilo on each side (radially) of the coil (but these are defined in the class PCH_Phase). There is insulation to the top and bottom yoke (edge packs or blocks, or a combination of both). There may be axial insulation and/or radial insulation between sections. The indices of the PCH_CoilSection array start at (axial=0, radial=0) being the section closest to the core and closest to the bottom yoke. Axial insulation indices match the lower section (ie: axial insulation between sections (0,0) and (1,0) would be at index 0. The same is true for radial insulations. Current is defined to enter at the start lead of the coil and exit at the finish lead.
 
 class PCH_Coil
 {
@@ -156,11 +156,18 @@ class PCH_Coil
         }
     }
     
+    
     /**
         The top and bottom edge insulation. Note that these are currently created as vars to allow for tweaking of the edgpacks if necessary.
     */
     var topEdgeInsulation:EdgeInsulation?
     var bottomEdgeInsulation:EdgeInsulation?
+    
+    /**
+        The start and finish nodes of the coil. These correspond to already-existing PCH_ConnectionNodes of one or two of the coil sections.
+    */
+    var startNode:PCH_ConnectionNode?
+    var finishNode:PCH_ConnectionNode?
     
     /**
         Designated initializer, which sets the number of axial and radial coil sections in the coil. It also "primes" the coilSections private member so that it already holds the right number of coil sctions elements (they all hold 'nil' after initialization). The caller may also set the top and bottom edge insulation if desired
@@ -177,6 +184,7 @@ class PCH_Coil
         self.topEdgeInsulation = topEdgeInsulation
         self.bottomEdgeInsulation = bottomEdgeInsulation
     }
+    
     
     /**
         Function to set a given axial and radial position of the array. This will grow the array (with nil values) as necessary.
@@ -229,6 +237,7 @@ class PCH_Coil
         
     }
     
+    
     /**
         Function to get the coil section at a given axial and radial position
         
@@ -248,6 +257,7 @@ class PCH_Coil
         
         return self.coilSections[axialPos][radialPos]
     }
+    
     
     /**
         Function to check whether all the coil sections in the coil are non-nil
@@ -269,6 +279,7 @@ class PCH_Coil
         
         return true
     }
+    
     
     /**
         Function to set the interaxial insulation after a given axial coil section and on a given radial coil section index
@@ -297,6 +308,7 @@ class PCH_Coil
         self.axialInterSectionInsulation![afterAxialPos][onRadialPos] = axialIns
         
     }
+    
     
     /**
         Function to set the interradial insulation after a given radial coil section and on a given axial coil section index

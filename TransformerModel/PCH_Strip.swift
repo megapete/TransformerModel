@@ -11,14 +11,30 @@ import Cocoa
 class PCH_Strip: PCH_Insulation {
 
     /**
+        The different types of strips that are available
+    */
+    enum Type {
+        
+        case rectangular
+        case dovetail
+        case tstrip
+    }
+    
+    /**
+        The strip type
+    */
+    let type:Type
+    
+    /**
         Dimensions of the strip
     */
     let width:Double
     let thickness:Double
     let length:Double
     
-    init(materialType:PCH_Insulation.Insulation, width:Double, thickness:Double, length:Double)
+    init(materialType:PCH_Insulation.Insulation, stripType:Type, width:Double, thickness:Double, length:Double)
     {
+        self.type = stripType
         self.width = width
         self.thickness = thickness
         self.length = length
