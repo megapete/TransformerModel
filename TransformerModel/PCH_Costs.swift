@@ -8,7 +8,7 @@
 
 import Cocoa
 
-/// Class for getting/setting costs for materials and labour from the file Costs.plist. Note that this is a singleton class. All public methods and properties are available through PCH_Costs.sharedInstance.methodName
+/// Class for getting/setting basic costs for materials and labour from the file Costs.plist. A "basic cost" may be adjusted by some modifying factor defined in subclasses. Note that this is a singleton class. All public methods and properties are available through PCH_Costs.sharedInstance.methodName
 
 class PCH_Costs {
 
@@ -81,6 +81,10 @@ class PCH_Costs {
         case Testing            = "TestingCostKey"
         case Packaging          = "PackagingCostKey"
         
+        // Exchange Rates
+        case UStoCDN            = "UStoCDN"
+        case EUROtoCDN          = "EUROtoCDN"
+        
     }
 
     /**
@@ -89,7 +93,7 @@ class PCH_Costs {
     private init()
     {
         let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true) as NSArray
-        let documentsDir = paths.firstObject as! String
+        let documentsDir = paths.firstObject as! NSString
         let fileName = costFileName + "." + costFileType
         let filePath = documentsDir.stringByAppendingPathComponent(fileName)
         
@@ -143,7 +147,10 @@ class PCH_Costs {
             CostKey.CoreCoilAssy.rawValue : 50.00,
             CostKey.TransformerAssy.rawValue : 50.00,
             CostKey.Testing.rawValue : 50.00,
-            CostKey.Packaging.rawValue : 50.00
+            CostKey.Packaging.rawValue : 50.00,
+            
+            CostKey.UStoCDN.rawValue : 1.31,
+            CostKey.EUROtoCDN.rawValue : 1.44
         ]
     
         return result
@@ -181,7 +188,7 @@ class PCH_Costs {
     func FlushCostsFile()
     {
         let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true) as NSArray
-        let documentsDir = paths.firstObject as! String
+        let documentsDir = paths.firstObject as! NSString
         let fileName = costFileName + "." + costFileType
         let filePath = documentsDir.stringByAppendingPathComponent(fileName)
         
@@ -191,7 +198,7 @@ class PCH_Costs {
         }
         else
         {
-            DLog("Could not write costs to file!")
+            ALog("Could not write costs to file!")
         }
         
     }

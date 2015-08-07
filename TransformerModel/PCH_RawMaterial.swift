@@ -22,7 +22,7 @@ class PCH_RawMaterial {
     var density = 0.0   // in kg/m3, at 0C and 100kPa
     
     /**
-        The cost (in Canadian dollars) per unit volume (cubic meters)
+        The cost (including modifying factors, in Canadian dollars) per unit volume (cubic meters)
     */
     var cost = 0.0      // in CDN$/m3
     
