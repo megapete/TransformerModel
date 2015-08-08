@@ -27,6 +27,9 @@ class PCH_CoreSteel: PCH_RawMaterial
     /// The coefficients to calculate the specific loss for a given induction (in Gauss). The index of each corresponds to the power that the induction must be raised to. Cool eh?
     let lossCoeffs:[Double]
     
+    /// Thickness of the material
+    let thickness:Double
+    
     /**
         Designated initializer
     */
@@ -42,6 +45,7 @@ class PCH_CoreSteel: PCH_RawMaterial
         
         var usCost = 0.0
         var lossCoeffArray = [Double](count: 5, repeatedValue: 0)
+        var thickness = 0.23
         if let dict = dataDict
         {
             if let steelDict = dict[type.rawValue]
@@ -57,10 +61,13 @@ class PCH_CoreSteel: PCH_RawMaterial
                 }
                 
                 usCost = (steelDict["Cost"] as! NSNumber) as Double
+                
+                thickness = (steelDict["Thickness"] as! NSNumber) as Double
             }
         }
         
         self.lossCoeffs = lossCoeffArray
+        self.thickness = thickness
         
         super.init(name: type.rawValue, density: 7490.0, cost: usCost * PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.UStoCDN))
     }

@@ -4,6 +4,8 @@
 <dict>
 	<key>ZDKH</key>
 	<dict>
+		<key>Thickness</key>
+		<real>0.23</real>
 		<key>Cost</key>
 		<real>2.23</real>
 		<key>LossCoefficients</key>
@@ -17,6 +19,8 @@
 	</dict>
 	<key>M0H</key>
 	<dict>
+		<key>Thickness</key>
+		<real>0.23</real>
 		<key>Cost</key>
 		<real>1.95</real>
 		<key>LossCoefficients</key>
@@ -30,6 +34,8 @@
 	</dict>
 	<key>M3</key>
 	<dict>
+		<key>Thickness</key>
+		<real>0.23</real>
 		<key>Cost</key>
 		<real>1.95</real>
 		<key>LossCoefficients</key>
@@ -43,6 +49,8 @@
 	</dict>
 	<key>M3-T23</key>
 	<dict>
+		<key>Thickness</key>
+		<real>0.23</real>
 		<key>Cost</key>
 		<real>1.95</real>
 		<key>LossCoefficients</key>
@@ -56,6 +64,8 @@
 	</dict>
 	<key>M4</key>
 	<dict>
+		<key>Thickness</key>
+		<real>0.28</real>
 		<key>Cost</key>
 		<real>1.8</real>
 		<key>LossCoefficients</key>
@@ -69,6 +79,8 @@
 	</dict>
 	<key>M5</key>
 	<dict>
+		<key>Thickness</key>
+		<real>0.28</real>
 		<key>Cost</key>
 		<real>1.7</real>
 		<key>LossCoefficients</key>

@@ -42,6 +42,8 @@
 		D3E13C6F1B4DFDCE006E75AD /* PCH_Paper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E13C6E1B4DFDCE006E75AD /* PCH_Paper.swift */; };
 		D3EE6B601B74FC6F00332EEC /* PCH_CoreSteel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B5F1B74FC6F00332EEC /* PCH_CoreSteel.swift */; };
 		D3EE6B621B75039000332EEC /* CoreData.plist in Resources */ = {isa = PBXBuildFile; fileRef = D3EE6B611B75039000332EEC /* CoreData.plist */; };
+		D3EE6B641B7638EC00332EEC /* PCH_Lamination.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B631B7638EC00332EEC /* PCH_Lamination.swift */; };
+		D3EE6B661B763CDD00332EEC /* PCH_CoreStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B651B763CDD00332EEC /* PCH_CoreStep.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +96,8 @@
 		D3E13C6E1B4DFDCE006E75AD /* PCH_Paper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Paper.swift; sourceTree = "<group>"; };
 		D3EE6B5F1B74FC6F00332EEC /* PCH_CoreSteel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoreSteel.swift; sourceTree = "<group>"; };
 		D3EE6B611B75039000332EEC /* CoreData.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CoreData.plist; sourceTree = "<group>"; };
+		D3EE6B631B7638EC00332EEC /* PCH_Lamination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Lamination.swift; sourceTree = "<group>"; };
+		D3EE6B651B763CDD00332EEC /* PCH_CoreStep.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoreStep.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +145,8 @@
 				D342BF101B56BC1E00BCD3E7 /* PCH_Costs.swift */,
 				D37FFC071B471BE2008DBDDA /* PCH_RawMaterial.swift */,
 				D3EE6B5F1B74FC6F00332EEC /* PCH_CoreSteel.swift */,
+				D3EE6B631B7638EC00332EEC /* PCH_Lamination.swift */,
+				D3EE6B651B763CDD00332EEC /* PCH_CoreStep.swift */,
 				D3EE6B611B75039000332EEC /* CoreData.plist */,
 				D37FFC091B472DEF008DBDDA /* PCH_Conductor.swift */,
 				D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */,
@@ -307,6 +313,7 @@
 				D39E46D61B66F7EF00A5EBAD /* PCH_Plate.swift in Sources */,
 				D37FFBED1B471B86008DBDDA /* AppDelegate.swift in Sources */,
 				D3CE0CF71B5F19FC0060B71C /* PCH_DuctStrip.swift in Sources */,
+				D3EE6B661B763CDD00332EEC /* PCH_CoreStep.swift in Sources */,
 				D3CC87D31B5AA8FC00EBD121 /* PCH_WdgCable.swift in Sources */,
 				D39E46D01B66A9F100A5EBAD /* PCH_CoilSectionLayer.swift in Sources */,
 				D37FFC0C1B494EDD008DBDDA /* PCH_Strand.swift in Sources */,
@@ -322,6 +329,7 @@
 				D3C27ADF1B5C492E00FC553E /* PCH_WdgTurn.swift in Sources */,
 				D37FFC0A1B472DEF008DBDDA /* PCH_Conductor.swift in Sources */,
 				D3EE6B601B74FC6F00332EEC /* PCH_CoreSteel.swift in Sources */,
+				D3EE6B641B7638EC00332EEC /* PCH_Lamination.swift in Sources */,
 				D3C27ADD1B5C328D00FC553E /* PCH_RadialSpacer.swift in Sources */,
 				D35CAC191B6EACC10086EC0F /* PCH_Phase.swift in Sources */,
 				D3E13C6F1B4DFDCE006E75AD /* PCH_Paper.swift in Sources */,
