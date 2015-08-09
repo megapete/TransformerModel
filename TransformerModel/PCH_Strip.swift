@@ -13,17 +13,15 @@ class PCH_Strip: PCH_Insulation {
     /**
         The different types of strips that are available
     */
-    enum Type {
+    enum StripShape {
         
-        case rectangular
-        case dovetail
-        case tstrip
+        case rectangular, dovetail, tstrip
     }
     
     /**
         The strip type
     */
-    let type:Type
+    let type:StripShape
     
     /**
         Dimensions of the strip
@@ -32,7 +30,7 @@ class PCH_Strip: PCH_Insulation {
     let thickness:Double
     let length:Double
     
-    init(materialType:PCH_Insulation.Insulation, stripType:Type, width:Double, thickness:Double, length:Double)
+    init(materialType:PCH_Insulation.Insulation, stripType:StripShape, width:Double, thickness:Double, length:Double)
     {
         self.type = stripType
         self.width = width

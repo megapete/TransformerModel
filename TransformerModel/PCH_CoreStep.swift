@@ -13,7 +13,7 @@ import Cocoa
 class PCH_CoreStep
 {
     /// The lamination that is used to make the step
-    let lamination:PCH_Lamination
+    let lamination:PCH_Lamination?
     
     /// The number of laminations in a pack (the minimum stack height increment/decrement, usually 2
     let lamsPerPack:Int
@@ -32,7 +32,7 @@ class PCH_CoreStep
         - parameter lamsPerPack: The number of laminations in each pack (effectively, the minimum increment/decrement of the stack height). Defaults to 2
         - parameter stackingFactor: The fraction of the stack height that is used to calculate the net area of the core. Defaults to 0.96
     */
-    init(lamination:PCH_Lamination, stackHeight:Double, lamsPerPack:Int = 2, stackingFactor:Double = 0.96)
+    init(lamination:PCH_Lamination?, stackHeight:Double, lamsPerPack:Int = 2, stackingFactor:Double = 0.96)
     {
         self.lamination = lamination
         self.stackHeight = stackHeight
@@ -41,11 +41,19 @@ class PCH_CoreStep
     }
     
     /**
+        Returns the net area of the step
+    */
+    func NetArea() -> Double
+    {
+        return self.lamination!.width * self.stackHeight * self.stackingFactor
+    }
+    
+    /**
         Given the length of this step, this function returns the weight of the step.
     */
     func WeightForLength(length:Double) -> Double
     {
-        return self.lamination.steelType.Weight(length, width: self.lamination.width, height: self.stackHeight)
+        return self.lamination!.steelType.Weight(length, width: self.lamination!.width, height: self.stackHeight)
     }
     
     /**
@@ -56,6 +64,6 @@ class PCH_CoreStep
     */
     func SpecificLossForLength(length:Double, atBmax:Double) -> Double
     {
-        return self.lamination.steelType.SpecificLossAtBmax(atBmax) * self.WeightForLength(length)
+        return self.lamination!.steelType.SpecificLossAtBmax(atBmax) * self.WeightForLength(length)
     }
 }

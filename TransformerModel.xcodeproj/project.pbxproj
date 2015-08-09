@@ -44,6 +44,8 @@
 		D3EE6B621B75039000332EEC /* CoreData.plist in Resources */ = {isa = PBXBuildFile; fileRef = D3EE6B611B75039000332EEC /* CoreData.plist */; };
 		D3EE6B641B7638EC00332EEC /* PCH_Lamination.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B631B7638EC00332EEC /* PCH_Lamination.swift */; };
 		D3EE6B661B763CDD00332EEC /* PCH_CoreStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B651B763CDD00332EEC /* PCH_CoreStep.swift */; };
+		D3EE6B681B76665100332EEC /* PCH_CoreCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B671B76665100332EEC /* PCH_CoreCircle.swift */; };
+		D3EE6B6A1B76678400332EEC /* PCH_CoreDuct.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B691B76678400332EEC /* PCH_CoreDuct.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +100,8 @@
 		D3EE6B611B75039000332EEC /* CoreData.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CoreData.plist; sourceTree = "<group>"; };
 		D3EE6B631B7638EC00332EEC /* PCH_Lamination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Lamination.swift; sourceTree = "<group>"; };
 		D3EE6B651B763CDD00332EEC /* PCH_CoreStep.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoreStep.swift; sourceTree = "<group>"; };
+		D3EE6B671B76665100332EEC /* PCH_CoreCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoreCircle.swift; sourceTree = "<group>"; };
+		D3EE6B691B76678400332EEC /* PCH_CoreDuct.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoreDuct.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +151,8 @@
 				D3EE6B5F1B74FC6F00332EEC /* PCH_CoreSteel.swift */,
 				D3EE6B631B7638EC00332EEC /* PCH_Lamination.swift */,
 				D3EE6B651B763CDD00332EEC /* PCH_CoreStep.swift */,
+				D3EE6B691B76678400332EEC /* PCH_CoreDuct.swift */,
+				D3EE6B671B76665100332EEC /* PCH_CoreCircle.swift */,
 				D3EE6B611B75039000332EEC /* CoreData.plist */,
 				D37FFC091B472DEF008DBDDA /* PCH_Conductor.swift */,
 				D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */,
@@ -327,6 +333,8 @@
 				D35654501B6514E900A1259E /* PCH_WdgTappedLayer.swift in Sources */,
 				D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */,
 				D3C27ADF1B5C492E00FC553E /* PCH_WdgTurn.swift in Sources */,
+				D3EE6B681B76665100332EEC /* PCH_CoreCircle.swift in Sources */,
+				D3EE6B6A1B76678400332EEC /* PCH_CoreDuct.swift in Sources */,
 				D37FFC0A1B472DEF008DBDDA /* PCH_Conductor.swift in Sources */,
 				D3EE6B601B74FC6F00332EEC /* PCH_CoreSteel.swift in Sources */,
 				D3EE6B641B7638EC00332EEC /* PCH_Lamination.swift in Sources */,

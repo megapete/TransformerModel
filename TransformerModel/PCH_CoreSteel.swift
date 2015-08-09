@@ -27,7 +27,7 @@ class PCH_CoreSteel: PCH_RawMaterial
     /// The coefficients to calculate the specific loss for a given induction (in Gauss). The index of each corresponds to the power that the induction must be raised to. Cool eh?
     let lossCoeffs:[Double]
     
-    /// Thickness of the material
+    /// Thickness of the material (****NOTE***** This value is in mm)
     let thickness:Double
     
     /**
