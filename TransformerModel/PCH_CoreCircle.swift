@@ -17,29 +17,37 @@ import Cocoa
     - parameter lowTolerance: The lower tolerance on the area, in p.u. Defaults to 0.995
     - parameter highTolerance: The upper tolerance on the final area, in p.u. Defaults to 1.01
 
-    - returns: A tuple where the first element is the diameter, in meters; and the second element is an array of core-steps
+    - returns: A tuple where the first element is the diameter, in meters; and the second element is an array of core-step tuples (width, stack) with both elements in mm, that represent half the core.
 */
-private func OptimizedCoreDiameter(requiredArea:Double, ducts:[Double]?, sheetThickness:Double, lowTolerance:Double = 0.995, highTolerance:Double = 1.01) -> (Double, [PCH_CoreStep])
+private func OptimizedCoreDiameter(requiredArea:Double, ducts:[Double]?, sheetThickness:Double, lowTolerance:Double = 0.995, highTolerance:Double = 1.01) -> (Double, [(width:Double, stack:Double)])
 {
     // Define a few constants that we use in the algorithm but are kept here for easy editing during testing
     let minStepHt = 10.0 // mm
     let widthIncrement = 10.0 // mm
     let ductThickness = 5.0 // mm
     let tieRodSpace = 25.0 // mm
+    let radiusChangeStep = 1.0 // mm
+    
+    let lowArea = requiredArea * lowTolerance
+    let hiArea = requiredArea * highTolerance
     
     // Make an initial guess at the diameter in meters
-    var diameter = sqrt(0.66 * requiredArea)
+    let diameter = sqrt(0.66 * requiredArea)
     
     // get the initial radius of the core and convert to mm
     var R = diameter / 2.0 * 1000.0
-    var area = 0.0
-    var W = [Double]()
+    
     
     // Create an array to hold the final results
-    var ws = [(width:Double, stack:Double)]()
+    var ws:[(width:Double, stack:Double)]
+    
+    // Loop variables 
     
     // Index into the ducts array
     var nextDuctIndex = 0
+    
+    // We need to check for thrashing, so we'll create a variable to keep track of direction changes
+    var direction:Int = 0
     
     repeat
     {
@@ -73,21 +81,88 @@ private func OptimizedCoreDiameter(requiredArea:Double, ducts:[Double]?, sheetTh
         chkWS.append((w,s))
         
         // set up some loop variables
-        var sTotal = s
+        var sTotal = s + ductThk
         
         // now we'll enter a loop to calculate the rest of the steps
         while (R - sTotal < tieRodSpace)
         {
+            ductThk = 0.0
+            
+            if let ductArray = ducts
+            {
+                // check if there are any more ducts to add
+                if (nextDuctIndex < ductArray.count)
+                {
+                    let ductWidth = ductArray[nextDuctIndex] * 1000.0
+                    
+                    if (ductWidth <= w) && (ductWidth > w - widthIncrement)
+                    {
+                        ductThk = ductThickness
+                        nextDuctIndex++
+                    }
+                }
+            }
+            
             s = 0.0
             while (s < minStepHt)
             {
                 w -= widthIncrement
-                s = floor((sqrt(R * R - w * w / 4.0) - middleDuct) / sheetThickness) * sheetThickness
+                s = floor((sqrt(R * R - w * w / 4.0) - ductThickness) / sheetThickness) * sheetThickness - sTotal
+            }
+            
+            sTotal += s + ductThk
+            chkWS.append((w,s))
+        }
+        
+        // Since the loop is set up to run until we go PAST the R-sTotal limit, we need to remove the last step that was added to chkWS
+        
+        chkWS.removeAtIndex(chkWS.count - 1)
+        
+        var Anet = 0.0
+        for i in 0..<chkWS.count
+        {
+            let wi = chkWS[i].0
+            let si = chkWS[i].1
+            
+            Anet += 2.0 * wi * si * 0.96E-6
+        }
+        
+        if (Anet > hiArea)
+        {
+            if (direction >= 0)
+            {
+                direction -= 1
+            }
+            
+            if (direction != 0)
+            {
+                R -= radiusChangeStep
             }
         }
+        else if (Anet < lowArea)
+        {
+            if (direction <= 0)
+            {
+                direction += 1
+            }
+            
+            if (direction != 0)
+            {
+                R += radiusChangeStep
+            }
+        }
+        else
+        {
+            direction = 0
+        }
+        
+        ws = chkWS
     
+    } while direction != 0
     
-    } while true
+    // At this point, we'll have the routine's best guess at a core, so we just return the final values of R and ws
+    
+    return (2.0 * R / 1000.0, ws)
 }
 
 /// The circle in which the core leg's cross-section is defined. The core steps are defined here along with any ducts that are in the core.
@@ -119,21 +194,8 @@ class PCH_CoreCircle
         var tSurface = tDApprox * π
         
         var numDucts = 0
-        while (tLoss / tSurface > 950.0) // constant that needs to be tested
-        {
-            if (numDucts == 0)
-            {
-                tSurface += 2.0 * tDApprox
-                numDucts++
-            }
-            else
-            {
-                tSurface += 4.0 * tDApprox * 0.7 // another constant that needs to be tested
-                numDucts += 2
-            }
-        }
         
-        (self.diameter, self.steps) = OptimizedCoreDiameter(targetArea, numDucts: numDucts, sheetThickness: steelType.thickness)
+        
     }
     
     
