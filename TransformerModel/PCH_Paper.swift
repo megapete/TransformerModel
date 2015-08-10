@@ -70,4 +70,5 @@ class PCH_Paper: PCH_Insulation {
         
         self.name = self.description
     }
+    
 }

@@ -57,12 +57,12 @@ class PCH_CoreStep
     }
     
     /**
-        The specific loss (without correction factros for joints or stacking) of this step. This function should be used to calculate the total core loss to allow for the (unlikely) possibility that different steps of the core use different core steel types.
+        The loss (without correction factros for joints or stacking) of this step. This function should be used to calculate the total core loss to allow for the (unlikely) possibility that different steps of the core use different core steel types.
     
         - parameter length: The length of the step
         - parameter Bmax: The induction level at which the loss should be calculated
     */
-    func SpecificLossForLength(length:Double, atBmax:Double) -> Double
+    func LossForLength(length:Double, atBmax:Double) -> Double
     {
         return self.lamination!.steelType.SpecificLossAtBmax(atBmax) * self.WeightForLength(length)
     }

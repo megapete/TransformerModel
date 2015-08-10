@@ -30,4 +30,35 @@ class PCH_CoreDuct: PCH_CoreStep
         
         super.init(lamination: nil, stackHeight: 0.005)
     }
+    
+    // Required overrides
+    
+    /**
+        The NetArea function returns the "magnetic" part of the core circle. Obviously, a cooling duct does not have any magentic material in it, so we return 0.0
+    */
+    override func NetArea() -> Double
+    {
+        return 0.0
+    }
+    
+    /**
+        Function to calculate the Weight of the duct in the core
+        
+        - parameter length: The length of core for which we want to calculate the weight
+    */
+    override func WeightForLength(length: Double) -> Double
+    {
+        // This is a bit nuts, but the way that the PCH_DuctStrip calculates weight (ie: it's definitions of weight and length) are opposite those of a core duct
+        return self.ductstrip.WeightOfWidth(length, length: self.width)
+    }
+    
+    /**
+        The LossForLength function only returns a meaningful result for magnetic material, which this is not - so we return 0.0
+    */
+    override func LossForLength(length: Double, atBmax: Double) -> Double
+    {
+        return 0.0
+    }
+    
+    
 }

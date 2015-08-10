@@ -197,7 +197,7 @@ class PCH_CoreCircle
         
         // Before trying to optimize the diameter, we'll do a quick and dirty calculation of W/sq.m. to see if we need ducts and if so, how many. We'll consider a 1m long section of the core to make calculations fast and easy. This section is currently quite ugly will definitely evolve during testing.
        
-        // THIS NUMBER TO EVOLVE!!!
+        // THIS NUMBER TO BE EVOLVED!!!
         let targetWperSqM = 900.0
         
         let tWt = targetArea * 1 * steelType.density
@@ -283,6 +283,41 @@ class PCH_CoreCircle
         }
         
         self.steps = coreStack
+    }
+    
+    /**
+        Function to return the weight (in kg) of a given length (in meters) of the core circle. Note that this function includes the weight of insulating material used for ducts, so DO NOT use this function to calculate the loss of the core (use the Loss function instead).
+    
+        - parameter length: The length of core for which we want to calculate the weight.
+    */
+    func Weight(length:Double) -> Double
+    {
+        var result = 0.0
+        
+        for nextStep in self.steps
+        {
+            result += nextStep.WeightForLength(length)
+        }
+        
+        return result
+    }
+    
+    /**
+        Function to return the loss (in watts) of a given length (in meters) of the core circle.
+    
+        - parameter length: The length of core for which we want to calculate the loss.
+        - parameter atBMax: The induction level for which we want to calculate the loss.
+    */
+    func Loss(length:Double, atBmax:Double) -> Double
+    {
+        var result = 0.0
+        
+        for nextStep in self.steps
+        {
+            result += nextStep.LossForLength(length, atBmax: atBmax)
+        }
+        
+        return result
     }
     
     

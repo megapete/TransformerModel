@@ -57,5 +57,31 @@ class PCH_DuctStrip:PCH_Insulation {
         super.init(material: .Oil)
     }
     
+    /**
+        Function to calculate the weight of a given length and width of duct strip. Width is defined as the width of the paper (and the length of the strips).
+    
+        - parameter width: The width of the duct strip
+        - parameter length: The length of duct strip
+    
+        - returns: The weight in kg
+    */
+    func WeightOfWidth(width:Double, length:Double) -> Double
+    {
+        // first, we'll calculate the weight of the paper (if any)
+        var result:Double = 0.0
+        
+        if let paper = self.backingPaper
+        {
+            result += paper.Weight(length, width: width, height: paper.dimensions.thickness)
+        }
+        
+        // calculate the number of strips in th egiven length
+        let numStrips = floor(length / self.ccDist)
+        
+        result += numStrips * self.strip.Weight(width, width: self.strip.width, height: self.strip.thickness)
+        
+        return result
+    }
+    
     
 }
