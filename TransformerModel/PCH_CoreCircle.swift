@@ -9,7 +9,7 @@
 import Cocoa
 
 /**
-    Private (for now) function to minimize the core diameter for a given area. The algorithm used here is my own, see DesignCoreSteps.docx of the TME Design Manual
+    Private (for now) function to minimize the core diameter for a given area. The algorithm used here is my own, see DesignCoreSteps.docx of the TME Design Manual. Note that eventually, this will probably be changed for the method described in “Transformer Design Principles, 2nd Edition (Del Vecchio, Poulin, et al)”, Section 2.7.
 
     - parameter requiredArea: The area required in the final core, in sq.m.
     - parameter ducts: Array of doubles indicating where (in terms of width) ducts go
@@ -28,11 +28,12 @@ private func OptimizedCoreDiameter(requiredArea:Double, ducts:[Double]?, sheetTh
     let tieRodSpace = 25.0 // mm
     let radiusChangeStep = 1.0 // mm
     
+    // set up the limits we want to end up within
     let lowArea = requiredArea * lowTolerance
     let hiArea = requiredArea * highTolerance
     
     // Make an initial guess at the diameter in meters
-    let diameter = sqrt(0.66 * requiredArea)
+    let diameter = sqrt(requiredArea / 0.66)
     
     // get the initial radius of the core and convert to mm
     var R = diameter / 2.0 * 1000.0
@@ -55,6 +56,7 @@ private func OptimizedCoreDiameter(requiredArea:Double, ducts:[Double]?, sheetTh
     {
         var ductThk = 0.0
         ductLocs = [Int]()
+        nextDuctIndex = 0
         
         if let ductArray = ducts
         {
@@ -69,7 +71,7 @@ private func OptimizedCoreDiameter(requiredArea:Double, ducts:[Double]?, sheetTh
         }
         
         // calculate the width of the first stack and the maximum theoretical stack we can get out of it. Note that we actually calculate the number of sheetThicness laminations we can fit in, then multiply by sheetThickness to get the step height. We use this for all subsequent stack height calculations
-        var w = floor(2.0 * R / 10.0) * 10.0
+        var w = floor((2.0 * R) / 10.0) * 10.0
         var s = floor((sqrt(R * R - w * w / 4.0) - ductThk) / sheetThickness) * sheetThickness
         
         // check to make sure the step is greater than the minimum allowed
@@ -89,7 +91,7 @@ private func OptimizedCoreDiameter(requiredArea:Double, ducts:[Double]?, sheetTh
         var sTotal = s + ductThk
         
         // now we'll enter a loop to calculate the rest of the steps
-        while (R - sTotal < tieRodSpace)
+        while (R - sTotal > tieRodSpace)
         {
             ductThk = 0.0
             
@@ -194,10 +196,13 @@ class PCH_CoreCircle
         let targetArea = voltsPerTurn / (4.44 * targetBmax * frequency)
         
         // Before trying to optimize the diameter, we'll do a quick and dirty calculation of W/sq.m. to see if we need ducts and if so, how many. We'll consider a 1m long section of the core to make calculations fast and easy. This section is currently quite ugly will definitely evolve during testing.
-        let targetWperSqM = 930.0
+       
+        // THIS NUMBER TO EVOLVE!!!
+        let targetWperSqM = 900.0
+        
         let tWt = targetArea * 1 * steelType.density
         let tLoss = tWt * steelType.SpecificLossAtBmax(targetBmax)
-        let tDApprox = sqrt(0.66 * targetArea)
+        let tDApprox = sqrt(targetArea / 0.66)
         let tSurface = tDApprox * π
         
         var ductWidths:[Double]? = nil
