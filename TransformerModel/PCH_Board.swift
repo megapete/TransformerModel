@@ -17,6 +17,18 @@ class PCH_Board: PCH_Insulation {
     var thickness:Double
     var length:Double
     
+    /// The description override
+    override var description:String
+    {
+        get
+        {
+            return "TIV Board: \(self.thickness) x \(self.width) x \(self.length) (TxWxL)"
+        }
+    }
+    
+    /**
+        Designated initiliazer
+    */
     init(width:Double, thickness:Double, length:Double)
     {
         self.width = width

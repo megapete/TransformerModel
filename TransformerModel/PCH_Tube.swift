@@ -28,6 +28,15 @@ class PCH_Tube: PCH_Board {
         }
     }
     
+    /// The description override
+    override var description:String
+    {
+        get
+        {
+            return "TIV Tube: \(self.innerDiameter) x \(self.thickness) x \(self.width) (ID x THK x HT)"
+        }
+    }
+    
     /**
         Designated initializer
     

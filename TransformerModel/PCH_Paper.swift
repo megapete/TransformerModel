@@ -30,19 +30,23 @@ class PCH_Paper: PCH_Insulation {
     /**
         The description of the insulating paper
     */
-    var description: String
+    override var description: String
     {
         get
         {
+            var result:String
+            
             switch (self.type)
             {
                 case .Plain:
-                    return "Insuldur"
+                    result = "Insuldur"
                 case .SingleSideDot:
-                    return "One sided epoxy diamond-dot, insuldur"
+                    result = "One sided epoxy diamond-dot, insuldur"
                 case .DoubleSideDot:
-                    return "Double-sided epoxy diamond dot, insuldur"
+                    result = "Double-sided epoxy diamond dot, insuldur"
             }
+            
+            return result + " \(self.dimensions.thickness) x \(self.dimensions.width) x \(self.dimensions.length) (TxWxL)"
         }
     }
     

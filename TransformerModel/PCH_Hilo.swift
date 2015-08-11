@@ -54,7 +54,7 @@ enum BIL_Level:String {
 
 /// A class for Hilos, which are (usually) made up of alternating duct strips and tubes.
 
-class PCH_Hilo {
+class PCH_Hilo: CustomStringConvertible {
     
     /**
         An array of alternating duct strips and tubes that make up the hilo
@@ -107,9 +107,65 @@ class PCH_Hilo {
     }
     
     /**
-        An optional height for the hilo
+        An optional maxheight for the hilo
     */
-    var height:Double?
+    private var hiloheight:Double?
+    
+    /// A computed property that is used to get/set the private hiloheight property (and, as a side effect, setting the property also adjusts the axial dimensions of all tubes and ductstrips (and their components))
+    var height:Double
+    {
+        get {
+            
+            if (self.hiloheight == nil)
+            {
+                return 0.0
+            }
+            else
+            {
+                return self.hiloheight!
+            }
+        }
+        
+        set (newHeight) {
+            
+            for nextInsulation in self.hilo
+            {
+                if nextInsulation is PCH_Tube
+                {
+                    (nextInsulation as! PCH_Tube).width = newHeight
+                }
+                else if nextInsulation is PCH_DuctStrip
+                {
+                    let theDuctStrip = nextInsulation as! PCH_DuctStrip
+                    
+                    if let paper = theDuctStrip.backingPaper
+                    {
+                        paper.dimensions.width = newHeight
+                    }
+                    
+                    theDuctStrip.strip.length = newHeight
+                }
+            }
+            
+            self.hiloheight = newHeight
+        }
+    }
+    
+    /// Implementation of description
+    var description:String
+    {
+        get
+        {
+            var result:String = "HILO:\n"
+            
+            for nextInsulation in self.hilo
+            {
+                result += " * \(nextInsulation)\n"
+            }
+            
+            return result
+        }
+    }
     
     /**
         Designated initializer
@@ -175,7 +231,7 @@ class PCH_Hilo {
             tubeThk = maxTubeThk
         }
         
-        // if the tube thickness is now too big (> 3.5), we alter the first tube thickness and reduce the ID
+        // if the tube thickness is now too big (> 3.5), we alter the first tube thickness and change the ID
         if (tubeThk > 3.5)
         {
             DLog("Can't make a suitable tube thickness. Adjusting first tube and ID")
@@ -188,7 +244,7 @@ class PCH_Hilo {
         let firstTube = PCH_Tube(innerDiameter: useInnerDiameter / 1000.0, tubeHt: 1.0, thickness: firstTubeThk / 1000.0)
         var hilo:[PCH_Insulation] = [firstTube]
         
-        var currentOuterDiameter = firstTube.outerDiameter / 2.0
+        var currentOuterDiameter = firstTube.outerDiameter
         
         for _ in 0..<Int(numTubes)
         {
@@ -202,7 +258,7 @@ class PCH_Hilo {
             
             let tube = PCH_Tube(innerDiameter: currentOuterDiameter, tubeHt: 1.0, thickness: tubeThk / 1000.0)
             
-            hilo.append(duct)
+            hilo.append(tube)
             
             currentOuterDiameter = tube.outerDiameter
         }
@@ -264,7 +320,7 @@ class PCH_Hilo {
             tubeThk = maxTubeThk
         }
         
-        // if the tube thickness is now too big (> 3.5), we alter the first tube thickness and reduce the ID
+        // if the tube thickness is now too big (> 3.5), we alter the first tube thickness and change the ID
         if (tubeThk > 3.5)
         {
             DLog("Can't make a suitable tube thickness. Adjusting first tube and ID")

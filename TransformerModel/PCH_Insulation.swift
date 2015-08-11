@@ -10,7 +10,7 @@
 
 import Cocoa
 
-class PCH_Insulation: PCH_RawMaterial {
+class PCH_Insulation: PCH_RawMaterial, CustomStringConvertible {
     
     /**
         The different insulating materials we use (note that Formel is more widely known as "Formvar", but I decided not to use it because of the Weidmann material of teh same name)
@@ -21,6 +21,24 @@ class PCH_Insulation: PCH_RawMaterial {
     }
     
     let material: Insulation
+    
+    /// static library to convert insulation types into their strings
+    static let typeString = [Insulation.Nomex:"Nomex", Insulation.Glastic:"Glastic", Insulation.Paper:"Paper", Insulation.TIV:"TIV", Insulation.TX:"TX", Insulation.Air:"Air", Insulation.Oil:"Oil", Insulation.Vacuum:"Vacuum", Insulation.Formel:"Formel", Insulation.Varnish:"Varnish"]
+    
+    /// Property required when adopting CustomStringConvertible
+    var description: String
+    {
+        get
+        {
+            var result = ""
+            if let tString = PCH_Insulation.typeString[self.material]
+            {
+                result = tString
+            }
+            
+            return result
+        }
+    }
     
     /** 
         The relative permittivity of the material. Note that for materials used in oil, it is assumed that they are oil-soaked for this property. Also note that for some materials (eg: Nomex) teh dielectric constant depends on the thickness of the material. For those materials, the minimum value is returned by this property. If you need more accurate number, use the εRel(thickness:Double) function instead.

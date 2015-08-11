@@ -40,6 +40,27 @@ class PCH_DuctStrip:PCH_Insulation {
         }
     }
     
+    /// The description override
+    override var description:String
+    {
+        get
+        {
+            var result = ""
+            
+            if let tPaper = self.backingPaper
+            {
+                
+                result += "DUCT-STRIP w/BACKING PAPER: \(tPaper) & "
+            }
+            else
+            {
+                result += "DUCT: "
+            }
+            
+            return result + "STRIPS: \(self.strip)"
+        }
+    }
+    
     /**
         Designated initializer
     

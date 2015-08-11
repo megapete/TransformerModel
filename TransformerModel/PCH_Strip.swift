@@ -23,12 +23,31 @@ class PCH_Strip: PCH_Insulation {
     */
     let type:StripShape
     
+    /// static dictionary for use with the description property
+    static let typeName = [PCH_Strip.StripShape.rectangular:"RECT", PCH_Strip.StripShape.dovetail:"DOVETAIL", PCH_Strip.StripShape.tstrip:"T-STRIP"]
+    
     /**
         Dimensions of the strip
     */
     var width:Double
     var thickness:Double
     var length:Double
+    
+    /// The description override
+    override var description:String
+    {
+        get
+        {
+            var result = "Strip: \(self.material), "
+            
+            if let tString = PCH_Strip.typeName[self.type]
+            {
+                result += tString + ": "
+            }
+            
+            return result + "\(self.thickness) x \(self.width) x \(self.length) (TxWxL)"
+        }
+    }
     
     init(materialType:PCH_Insulation.Insulation, stripType:StripShape, width:Double, thickness:Double, length:Double)
     {

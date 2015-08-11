@@ -27,6 +27,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
         }
         
+        let tstHilo = PCH_Hilo(innerDiameter: 0.25, totalRadialBuild: 0.020, totalSolid: 0.008, numColumns: 18)
+        
+        tstHilo.height = 1.75
+        
+        print(tstHilo)
+        
         PCH_Costs.sharedInstance.FlushCostsFile()
         
     }
