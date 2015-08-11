@@ -26,9 +26,9 @@ class PCH_Strip: PCH_Insulation {
     /**
         Dimensions of the strip
     */
-    let width:Double
-    let thickness:Double
-    let length:Double
+    var width:Double
+    var thickness:Double
+    var length:Double
     
     init(materialType:PCH_Insulation.Insulation, stripType:StripShape, width:Double, thickness:Double, length:Double)
     {

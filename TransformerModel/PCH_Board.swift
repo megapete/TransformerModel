@@ -13,9 +13,9 @@ class PCH_Board: PCH_Insulation {
     /**
         The dimensions of the board (note that for coils, thickness=radial, width=axial
     */
-    let width:Double
-    let thickness:Double
-    let length:Double
+    var width:Double
+    var thickness:Double
+    var length:Double
     
     init(width:Double, thickness:Double, length:Double)
     {
