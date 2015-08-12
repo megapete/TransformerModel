@@ -320,5 +320,24 @@ class PCH_CoreCircle
         return result
     }
     
+    /**
+        Function to get the Bmax of this core at the given Volts per Turn and frequency. Call this after creating/optimizing the core to see what the actual Bmax is.
+    
+        - parameter vPerN: The induced volts per turn of the transformer
+        - parameter frequency: The frequency of the induced voltage
+    
+        - returns: Bmax in Teslas
+    */
+    func BmaxAtVperN(vPerN:Double, frequency:Double) -> Double
+    {
+        var netArea = 0.0
+        for nextStep in self.steps
+        {
+            netArea += nextStep.NetArea()
+        }
+        
+        return vPerN / (4.44 * netArea * frequency)
+    }
+    
     
 }

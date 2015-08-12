@@ -25,3 +25,7 @@ func e(arg:Double) -> Double
 {
     return exp(arg)
 }
+
+/// Handy constant for 3-phase applications
+let SQRT3 = sqrt(3.0)
+

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		D33DCCAE1B7AB6F400DCBF74 /* PCH_ClearanceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D33DCCAD1B7AB6F400DCBF74 /* PCH_ClearanceData.swift */; };
 		D33DCCB01B7AB8EF00DCBF74 /* ClearanceData.plist in Resources */ = {isa = PBXBuildFile; fileRef = D33DCCAF1B7AB8EF00DCBF74 /* ClearanceData.plist */; };
+		D33DCCB21B7BBF0500DCBF74 /* PCH_TxfoTerminal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D33DCCB11B7BBF0500DCBF74 /* PCH_TxfoTerminal.swift */; };
 		D341931F1B62B29000C4A7F8 /* PCH_CoilSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D341931E1B62B29000C4A7F8 /* PCH_CoilSection.swift */; };
 		D34193211B62E5BA00C4A7F8 /* PCH_WdgTappedDisk.swift in Sources */ = {isa = PBXBuildFile; fileRef = D34193201B62E5BA00C4A7F8 /* PCH_WdgTappedDisk.swift */; };
 		D342BF111B56BC1E00BCD3E7 /* PCH_Costs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D342BF101B56BC1E00BCD3E7 /* PCH_Costs.swift */; };
@@ -63,6 +64,7 @@
 /* Begin PBXFileReference section */
 		D33DCCAD1B7AB6F400DCBF74 /* PCH_ClearanceData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_ClearanceData.swift; sourceTree = "<group>"; };
 		D33DCCAF1B7AB8EF00DCBF74 /* ClearanceData.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ClearanceData.plist; sourceTree = "<group>"; };
+		D33DCCB11B7BBF0500DCBF74 /* PCH_TxfoTerminal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_TxfoTerminal.swift; sourceTree = "<group>"; };
 		D341931E1B62B29000C4A7F8 /* PCH_CoilSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoilSection.swift; sourceTree = "<group>"; };
 		D34193201B62E5BA00C4A7F8 /* PCH_WdgTappedDisk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_WdgTappedDisk.swift; sourceTree = "<group>"; };
 		D342BF101B56BC1E00BCD3E7 /* PCH_Costs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Costs.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */,
 				D3956A881B5728D900676FF5 /* PCH_Defs.swift */,
 				D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */,
+				D33DCCB11B7BBF0500DCBF74 /* PCH_TxfoTerminal.swift */,
 				D33DCCAD1B7AB6F400DCBF74 /* PCH_ClearanceData.swift */,
 				D33DCCAF1B7AB8EF00DCBF74 /* ClearanceData.plist */,
 				D342BF101B56BC1E00BCD3E7 /* PCH_Costs.swift */,
@@ -341,6 +344,7 @@
 				D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */,
 				D3C27ADF1B5C492E00FC553E /* PCH_WdgTurn.swift in Sources */,
 				D3EE6B681B76665100332EEC /* PCH_CoreCircle.swift in Sources */,
+				D33DCCB21B7BBF0500DCBF74 /* PCH_TxfoTerminal.swift in Sources */,
 				D3EE6B6A1B76678400332EEC /* PCH_CoreDuct.swift in Sources */,
 				D37FFC0A1B472DEF008DBDDA /* PCH_Conductor.swift in Sources */,
 				D3EE6B601B74FC6F00332EEC /* PCH_CoreSteel.swift in Sources */,
