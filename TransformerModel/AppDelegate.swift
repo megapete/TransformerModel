@@ -33,6 +33,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         print(tstHilo)
         
+        let hiloClearance = PCH_ClearanceData.sharedInstance.HiloDataForBIL(BIL_Level.KV125)
+        
+        print("Overall: \(hiloClearance.0); Solid: \(hiloClearance.1)")
+        
+        
         PCH_Costs.sharedInstance.FlushCostsFile()
         
     }

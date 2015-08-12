@@ -8,50 +8,6 @@
 
 import Cocoa
 
-/// An enum that can be used anywhere in the program as standard BIL levels
-enum BIL_Level:String {
-    
-    case KV10
-    case KV20
-    case KV30
-    case KV45
-    case KV50
-    case KV60
-    case KV75
-    case KV95
-    case KV110
-    case KV125
-    case KV150
-    case KV170
-    case KV200
-    case KV250
-    case KV350
-    case KV450
-    case KV550
-    case KV650
-    case KV750
-    case KV850
-    case KV950
-    case KV1050
-    
-    /// Create a static dictionary that maps each defined BIL level to it's string (for use as a key in other dictionaries)
-    static let bilNames = [KV10:"10", KV20:"20", KV30:"30", KV45:"45", KV50:"50", KV60:"60", KV75:"75", KV95:"95", KV110:"110", KV125:"125", KV150:"150", KV170:"170", KV200:"200", KV250:"250", KV350:"350", KV450:"450", KV550:"550", KV650:"650", KV750:"750", KV850:"850", KV950:"950", KV1050:"1050"]
-    
-    
-    /// Since we have the BIL levels available as numerical strings, we'll just convert them to UInts for use wherever needed
-    func Value() -> UInt
-    {
-        var result:UInt = 0
-        
-        if let bilName:String = BIL_Level.bilNames[self]
-        {
-            result = UInt(bilName)!
-        }
-        
-        return result
-    }
-}
-
 /// A class for Hilos, which are (usually) made up of alternating duct strips and tubes.
 
 class PCH_Hilo: CustomStringConvertible {
