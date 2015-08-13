@@ -180,6 +180,28 @@ class PCH_CoreCircle
     /// The steps that make up the core
     let steps:[PCH_CoreStep]
     
+    /// Main step width
+    var mainStepWidth:Double {
+        
+        get {
+            
+            var result = 0.0
+            
+            for nextStep in self.steps
+            {
+                if !(nextStep is PCH_CoreDuct)
+                {
+                    if let lam = nextStep.lamination
+                    {
+                        result = max(result, lam.width)
+                    }
+                }
+            }
+            
+            return result
+        }
+    }
+    
     /// The diameter of the core circle
     let diameter:Double
     

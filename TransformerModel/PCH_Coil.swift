@@ -169,13 +169,17 @@ class PCH_Coil
     var startNode:PCH_ConnectionNode?
     var finishNode:PCH_ConnectionNode?
     
+    /// The optional parent terminal of the coil. 
+    weak var parentTerminal:PCH_TxfoTerminal?
+    
     /**
         Designated initializer, which sets the number of axial and radial coil sections in the coil. It also "primes" the coilSections private member so that it already holds the right number of coil sctions elements (they all hold 'nil' after initialization). The caller may also set the top and bottom edge insulation if desired
     */
-    init(numAxialSections:Int, numRadialSections:Int, topEdgeInsulation:EdgeInsulation? = nil, bottomEdgeInsulation:EdgeInsulation? = nil)
+    init(numAxialSections:Int, numRadialSections:Int, parentTerminal:PCH_TxfoTerminal? = nil, topEdgeInsulation:EdgeInsulation? = nil, bottomEdgeInsulation:EdgeInsulation? = nil)
     {
         self.numAxialSections = numAxialSections
         self.numRadialSections = numRadialSections
+        self.parentTerminal = parentTerminal
         
         let nilRadialArray = [PCH_CoilSection?](count: numRadialSections, repeatedValue: nil)
         

@@ -8,7 +8,7 @@
 
 import Cocoa
 
-/// A very complex class that defines a transformer "terminal". A terminal defines voltage, MVA, current/voltage phasors, connections
+/// A somewhat complicated class that defines a transformer "terminal". A terminal defines voltage, MVA, current/voltage phasors, connections, taps, etc.
 
 class PCH_TxfoTerminal {
 
@@ -149,8 +149,11 @@ class PCH_TxfoTerminal {
     /// Optional array of onload tap percentages
     var onloadTaps:[Double]?
     
+    /// An array of PCH_Coils that belong to this terminal. This is made an optional so that we don't have to have the coils defined before we actually create the terminal.
+    var coils:[PCH_Coil]?
+    
     /**
-        Designated initializer, that allows the caller to enter EVERYTHING.
+        Designated initializer, that allows the caller to enter **everything**.
     
         - parameter name: The required ID of the terminal
         - parameter terminalVA: The full (all phases) VA of the terminal
