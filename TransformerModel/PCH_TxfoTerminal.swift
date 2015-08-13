@@ -12,13 +12,13 @@ import Cocoa
 
 class PCH_TxfoTerminal {
 
-    /// Optional identifier for the terminal
-    var name:String?
+    /// Required identifier for the terminal
+    var name:String
     
     /// The private "behind the scenes" value that we hold for numPhases
     private var _numPhases:Int
     
-    /// The number of phases. Must be equal to 1 or 3
+    /// The number of phases. Must be equal to 1 or 3. We restrict access to the underlying property by creating a computed property
     var numPhases:Int {
         
         get {
@@ -45,8 +45,10 @@ class PCH_TxfoTerminal {
         case OnePhaseOneLeg, OnePhaseTwoLegParallel, OnePhaseTwoLegSeries, Star, Delta, Zigzag
     }
     
+    /// The connection of the terminal
     let connection:Connections
     
+    /// The VA of the terminal
     let terminalVA:Double
     
     /// Line to line voltage of the terminal
@@ -57,11 +59,11 @@ class PCH_TxfoTerminal {
         
         get {
             
-            if (numPhases == 1)
+            if (self.numPhases == 1)
             {
                 if (self.connection == Connections.OnePhaseOneLeg || self.connection == Connections.OnePhaseTwoLegParallel)
                 {
-                    return lineVolts
+                    return self.lineVolts
                 }
                 else
                 {
@@ -72,15 +74,15 @@ class PCH_TxfoTerminal {
             {
                 if self.connection == Connections.Delta
                 {
-                    return lineVolts
+                    return self.lineVolts
                 }
                 else if (self.connection == Connections.Star)
                 {
-                    return lineVolts / SQRT3
+                    return self.lineVolts / SQRT3
                 }
                 else // must be zigzag
                 {
-                    return lineVolts / 3.0
+                    return self.lineVolts / 3.0
                 }
             }
         }
@@ -91,7 +93,7 @@ class PCH_TxfoTerminal {
         
         get {
             
-            return legVolts
+            return self.legVolts
         }
     }
     
@@ -106,7 +108,87 @@ class PCH_TxfoTerminal {
         }
     }
     
-    var phaseAngleI:Double
+    /// The amps going through the leg (ie: the same for all series-connected windings)
+    var legAmps:Double {
+        
+        get {
+            
+            if (self.numPhases == 1)
+            {
+                if (self.connection == Connections.OnePhaseOneLeg || self.connection == Connections.OnePhaseTwoLegSeries)
+                {
+                    return self.lineAmps
+                }
+                else
+                {
+                    return self.lineAmps / 2.0
+                }
+            }
+            else
+            {
+                return self.terminalVA / 3.0 / self.legVolts
+            }
+        }
+    }
     
+    /// The phase angle of the current entering line terminal T2 (for 3-phase connectiions) or T1 (for single-phase)
+    var lineAmpsPhaseAngle:Double
     
+    /// The BIL level of the line, dual-voltage point, and neutral end of the winding
+    let bil:(line:BIL_Level, dv:BIL_Level, neutral:BIL_Level)
+    
+    /// Boolean for dual-voltage indication
+    let hasDualVoltage:Bool
+    
+    /// The line voltage of the "dual voltage". This number can be used to calculate DV leg volts, amps, etc., if needed.
+    let dvLineVolts:Double
+    
+    /// Optional array of offload tap percentages
+    var offloadTaps:[Double]?
+    
+    /// Optional array of onload tap percentages
+    var onloadTaps:[Double]?
+    
+    /**
+        Designated initializer, that allows the caller to enter EVERYTHING.
+    
+        - parameter name: The required ID of the terminal
+        - parameter terminalVA: The full (all phases) VA of the terminal
+        - parameter lineVoltage: The line-to-line voltage of the terminal
+        - parameter numPhases: Either 1 or 3 (anything else is an error)
+        - parameter connection: The connection of the terminal
+        - parameter phaseAngle: The phase angle of the T2 terminal (or T1 for single-phase), in radians
+        - parameter lineBIL: The BIL level of the line end of the terminal
+        - parameter neutralBIL: The BIL level of the neutral (non-line) end of the terminal
+        - parameter offloadTaps: An array of percentages of the specified line voltage (can include 100%)
+        - parameter onloadTaps: An array of percentages of the specified line voltage (cna include 100%)
+        - parameter hasDualVoltages: Set if there is a second voltage possibility for the terminal
+        - parameter dvLineVolts: The line voltage of the dual voltage, if any (ignored unless hasDualVoltages is true)
+        - parameter dvBIL: The BIL level of the DV, if any (ignored inless hasDualVoltages is true)
+    */
+    init(name:String, terminalVA:Double, lineVoltage:Double, numPhases:UInt, connection:Connections, phaseAngle:Double, lineBIL:BIL_Level, neutralBIL:BIL_Level, offloadTaps:[Double]? = nil, onloadTaps:[Double]? = nil, hasDualVoltage:Bool = false, dvLineVolts:Double = 0.0, dvBIL:BIL_Level = BIL_Level.KV10)
+    {
+        self.name = name
+        self.terminalVA = terminalVA
+        self.lineVolts = lineVoltage
+        if (numPhases == 1 || numPhases == 3)
+        {
+            self._numPhases = Int(numPhases)
+        }
+        else
+        {
+            ALog("Number of phases must be 1 or 3!")
+            self._numPhases = 3
+        }
+        
+        self.connection = connection
+        self.lineAmpsPhaseAngle = phaseAngle
+        self.bil.line = lineBIL
+        self.bil.neutral = neutralBIL
+        self.offloadTaps = offloadTaps
+        self.onloadTaps = onloadTaps
+        self.hasDualVoltage = hasDualVoltage
+        self.dvLineVolts = dvLineVolts
+        self.bil.dv = dvBIL
+    }
 }
