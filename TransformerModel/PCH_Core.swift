@@ -77,6 +77,7 @@ class PCH_Core {
     {
         ZAssert(numWoundLegs <= numLegs, message: "You must have at least as many legs as wound legs!")
         ZAssert(numWoundLegs > 0 && numWoundLegs < 4, message: "This program can only handle transformers with 1, 2, or 3 wound legs.")
+        ZAssert(numLegs <= 5, message: "Cannot handle a core with more than a total of 5 legs.")
         
         self.numLegs = numLegs
         self.numWoundLegs = numWoundLegs
@@ -84,8 +85,79 @@ class PCH_Core {
         self.windowHeight = windowHt
         self.yokeCoreCircle = yokeCoreCircle
         self.mainLegCoreCircle = mainLegCoreCircle
-        self.outsideLegCenters = outsideLegCenters
+        
+        // self.outsideLegCenters = outsideLegCenters
         self.outsideLegCoreCircle = outsideLegCoreCircle
+        if outsideLegCoreCircle == nil
+        {
+            self.outsideLegCenters = 0.0
+        }
+        else
+        {
+            self.outsideLegCenters = outsideLegCenters
+        }
+    }
+    
+    /// A function to get the total weight in kg of the core
+    func Weight() -> Double
+    {
+        var yokeLength = 2.0 * self.mainLegCenters
+        
+        if (outsideLegCoreCircle != nil)
+        {
+            if numLegs == 4
+            {
+                yokeLength += self.outsideLegCenters
+            }
+            else if numLegs == 5
+            {
+                yokeLength += 2.0 * self.outsideLegCenters
+            }
+        }
+        
+        var result:Double = 2.0 * self.yokeCoreCircle.Weight(yokeLength)
+        
+        let legHeight = self.windowHeight + yokeCoreCircle.mainStepWidth
+        
+        result += Double(self.numWoundLegs) * mainLegCoreCircle.Weight(legHeight)
+        
+        if let outsideLeg = self.outsideLegCoreCircle
+        {
+            result += Double(self.numLegs - self.numWoundLegs) * outsideLeg.Weight(legHeight)
+        }
+        
+        return result
+    }
+    
+    /// A fuction to get the total loss of the core in watts at a given Bmax (in Teslas)
+    func LossAtBmax(bMax:Double) -> Double
+    {
+        var yokeLength = 2.0 * self.mainLegCenters
+        
+        if (outsideLegCoreCircle != nil)
+        {
+            if numLegs == 4
+            {
+                yokeLength += self.outsideLegCenters
+            }
+            else if numLegs == 5
+            {
+                yokeLength += 2.0 * self.outsideLegCenters
+            }
+        }
+        
+        var result:Double = 2.0 * self.yokeCoreCircle.Loss(yokeLength, atBmax: bMax)
+        
+        let legHeight = self.windowHeight + yokeCoreCircle.mainStepWidth
+        
+        result += Double(self.numWoundLegs) * mainLegCoreCircle.Loss(legHeight, atBmax: bMax)
+        
+        if let outsideLeg = self.outsideLegCoreCircle
+        {
+            result += Double(self.numLegs - self.numWoundLegs) * outsideLeg.Loss(legHeight, atBmax: bMax)
+        }
+        
+        return result
     }
     
 }
