@@ -19,6 +19,11 @@
 		D35CAC151B6EA9E90086EC0F /* PCH_Hilo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35CAC141B6EA9E90086EC0F /* PCH_Hilo.swift */; };
 		D35CAC171B6EAABF0086EC0F /* PCH_Tube.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35CAC161B6EAABF0086EC0F /* PCH_Tube.swift */; };
 		D35CAC191B6EACC10086EC0F /* PCH_Phase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35CAC181B6EACC10086EC0F /* PCH_Phase.swift */; };
+		D37698911B7D5D2E00220924 /* PCH_Transformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37698901B7D5D2E00220924 /* PCH_Transformer.swift */; };
+		D37698931B7D5EC500220924 /* PCH_Tank.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37698921B7D5EC500220924 /* PCH_Tank.swift */; };
+		D37698951B7D5FAB00220924 /* PCH_Radiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37698941B7D5FAB00220924 /* PCH_Radiator.swift */; };
+		D37698971B7D638400220924 /* PCH_RadBank.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37698961B7D638400220924 /* PCH_RadBank.swift */; };
+		D37698991B7D63FC00220924 /* PCH_Fan.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37698981B7D63FC00220924 /* PCH_Fan.swift */; };
 		D37D84E81B612D5300549E5C /* PCH_WdgLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37D84E71B612D5300549E5C /* PCH_WdgLayer.swift */; };
 		D37D84EA1B612E7D00549E5C /* PCH_Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37D84E91B612E7D00549E5C /* PCH_Board.swift */; };
 		D37FFBED1B471B86008DBDDA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */; };
@@ -75,6 +80,11 @@
 		D35CAC141B6EA9E90086EC0F /* PCH_Hilo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Hilo.swift; sourceTree = "<group>"; };
 		D35CAC161B6EAABF0086EC0F /* PCH_Tube.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Tube.swift; sourceTree = "<group>"; };
 		D35CAC181B6EACC10086EC0F /* PCH_Phase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Phase.swift; sourceTree = "<group>"; };
+		D37698901B7D5D2E00220924 /* PCH_Transformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Transformer.swift; sourceTree = "<group>"; };
+		D37698921B7D5EC500220924 /* PCH_Tank.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Tank.swift; sourceTree = "<group>"; };
+		D37698941B7D5FAB00220924 /* PCH_Radiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Radiator.swift; sourceTree = "<group>"; };
+		D37698961B7D638400220924 /* PCH_RadBank.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_RadBank.swift; sourceTree = "<group>"; };
+		D37698981B7D63FC00220924 /* PCH_Fan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Fan.swift; sourceTree = "<group>"; };
 		D37D84E71B612D5300549E5C /* PCH_WdgLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_WdgLayer.swift; sourceTree = "<group>"; };
 		D37D84E91B612E7D00549E5C /* PCH_Board.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Board.swift; sourceTree = "<group>"; };
 		D37FFBE71B471B86008DBDDA /* TransformerModel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TransformerModel.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -154,6 +164,11 @@
 				D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */,
 				D3956A881B5728D900676FF5 /* PCH_Defs.swift */,
 				D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */,
+				D37698901B7D5D2E00220924 /* PCH_Transformer.swift */,
+				D37698921B7D5EC500220924 /* PCH_Tank.swift */,
+				D37698961B7D638400220924 /* PCH_RadBank.swift */,
+				D37698941B7D5FAB00220924 /* PCH_Radiator.swift */,
+				D37698981B7D63FC00220924 /* PCH_Fan.swift */,
 				D33DCCB11B7BBF0500DCBF74 /* PCH_TxfoTerminal.swift */,
 				D33DCCAD1B7AB6F400DCBF74 /* PCH_ClearanceData.swift */,
 				D33DCCAF1B7AB8EF00DCBF74 /* ClearanceData.plist */,
@@ -327,16 +342,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				D34193211B62E5BA00C4A7F8 /* PCH_WdgTappedDisk.swift in Sources */,
+				D37698931B7D5EC500220924 /* PCH_Tank.swift in Sources */,
 				D37D84EA1B612E7D00549E5C /* PCH_Board.swift in Sources */,
 				D342BF111B56BC1E00BCD3E7 /* PCH_Costs.swift in Sources */,
 				D39E46D61B66F7EF00A5EBAD /* PCH_Plate.swift in Sources */,
 				D37FFBED1B471B86008DBDDA /* AppDelegate.swift in Sources */,
+				D37698991B7D63FC00220924 /* PCH_Fan.swift in Sources */,
 				D3CE0CF71B5F19FC0060B71C /* PCH_DuctStrip.swift in Sources */,
 				D3EE6B661B763CDD00332EEC /* PCH_CoreStep.swift in Sources */,
 				D3CC87D31B5AA8FC00EBD121 /* PCH_WdgCable.swift in Sources */,
 				D39E46D01B66A9F100A5EBAD /* PCH_CoilSectionLayer.swift in Sources */,
 				D37FFC0C1B494EDD008DBDDA /* PCH_Strand.swift in Sources */,
 				D3CE0CF51B5F16DE0060B71C /* PCH_WdgDisk.swift in Sources */,
+				D37698911B7D5D2E00220924 /* PCH_Transformer.swift in Sources */,
 				D37D84E81B612D5300549E5C /* PCH_WdgLayer.swift in Sources */,
 				D35CAC151B6EA9E90086EC0F /* PCH_Hilo.swift in Sources */,
 				D35CAC171B6EAABF0086EC0F /* PCH_Tube.swift in Sources */,
@@ -349,6 +367,7 @@
 				D3EE6B681B76665100332EEC /* PCH_CoreCircle.swift in Sources */,
 				D33DCCB21B7BBF0500DCBF74 /* PCH_TxfoTerminal.swift in Sources */,
 				D33DCCB41B7CD15300DCBF74 /* PCH_Core.swift in Sources */,
+				D37698951B7D5FAB00220924 /* PCH_Radiator.swift in Sources */,
 				D3EE6B6A1B76678400332EEC /* PCH_CoreDuct.swift in Sources */,
 				D37FFC0A1B472DEF008DBDDA /* PCH_Conductor.swift in Sources */,
 				D3EE6B601B74FC6F00332EEC /* PCH_CoreSteel.swift in Sources */,
@@ -360,6 +379,7 @@
 				D3956A891B5728D900676FF5 /* PCH_Defs.swift in Sources */,
 				D37FFC101B495CCA008DBDDA /* GlobalDefs.swift in Sources */,
 				D37FFC081B471BE3008DBDDA /* PCH_RawMaterial.swift in Sources */,
+				D37698971B7D638400220924 /* PCH_RadBank.swift in Sources */,
 				D39E46DA1B67FA3E00A5EBAD /* PCH_CoilSectionHelix.swift in Sources */,
 				D39E46D21B66EF8C00A5EBAD /* PCH_Coil.swift in Sources */,
 				D39E46D41B66F4F600A5EBAD /* PCH_CommonBlock.swift in Sources */,
