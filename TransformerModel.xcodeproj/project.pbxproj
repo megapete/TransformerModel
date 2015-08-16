@@ -23,7 +23,7 @@
 		D37698931B7D5EC500220924 /* PCH_Tank.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37698921B7D5EC500220924 /* PCH_Tank.swift */; };
 		D37698951B7D5FAB00220924 /* PCH_Radiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37698941B7D5FAB00220924 /* PCH_Radiator.swift */; };
 		D37698971B7D638400220924 /* PCH_RadBank.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37698961B7D638400220924 /* PCH_RadBank.swift */; };
-		D37698991B7D63FC00220924 /* PCH_Fan.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37698981B7D63FC00220924 /* PCH_Fan.swift */; };
+		D37698991B7D63FC00220924 /* PCH_FanBank.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37698981B7D63FC00220924 /* PCH_FanBank.swift */; };
 		D37D84E81B612D5300549E5C /* PCH_WdgLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37D84E71B612D5300549E5C /* PCH_WdgLayer.swift */; };
 		D37D84EA1B612E7D00549E5C /* PCH_Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37D84E91B612E7D00549E5C /* PCH_Board.swift */; };
 		D37FFBED1B471B86008DBDDA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */; };
@@ -35,6 +35,7 @@
 		D37FFC0C1B494EDD008DBDDA /* PCH_Strand.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */; };
 		D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */; };
 		D37FFC101B495CCA008DBDDA /* GlobalDefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */; };
+		D388F38E1B80A61E007C880C /* FanData.plist in Resources */ = {isa = PBXBuildFile; fileRef = D388F38D1B80A61E007C880C /* FanData.plist */; };
 		D3956A891B5728D900676FF5 /* PCH_Defs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3956A881B5728D900676FF5 /* PCH_Defs.swift */; };
 		D39E46D01B66A9F100A5EBAD /* PCH_CoilSectionLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39E46CF1B66A9F100A5EBAD /* PCH_CoilSectionLayer.swift */; };
 		D39E46D21B66EF8C00A5EBAD /* PCH_Coil.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39E46D11B66EF8C00A5EBAD /* PCH_Coil.swift */; };
@@ -84,7 +85,7 @@
 		D37698921B7D5EC500220924 /* PCH_Tank.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Tank.swift; sourceTree = "<group>"; };
 		D37698941B7D5FAB00220924 /* PCH_Radiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Radiator.swift; sourceTree = "<group>"; };
 		D37698961B7D638400220924 /* PCH_RadBank.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_RadBank.swift; sourceTree = "<group>"; };
-		D37698981B7D63FC00220924 /* PCH_Fan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Fan.swift; sourceTree = "<group>"; };
+		D37698981B7D63FC00220924 /* PCH_FanBank.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_FanBank.swift; sourceTree = "<group>"; };
 		D37D84E71B612D5300549E5C /* PCH_WdgLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_WdgLayer.swift; sourceTree = "<group>"; };
 		D37D84E91B612E7D00549E5C /* PCH_Board.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Board.swift; sourceTree = "<group>"; };
 		D37FFBE71B471B86008DBDDA /* TransformerModel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TransformerModel.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -100,6 +101,7 @@
 		D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Strand.swift; sourceTree = "<group>"; };
 		D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Insulation.swift; sourceTree = "<group>"; };
 		D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalDefs.swift; sourceTree = "<group>"; };
+		D388F38D1B80A61E007C880C /* FanData.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = FanData.plist; sourceTree = "<group>"; };
 		D3956A881B5728D900676FF5 /* PCH_Defs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Defs.swift; sourceTree = "<group>"; };
 		D39E46CF1B66A9F100A5EBAD /* PCH_CoilSectionLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoilSectionLayer.swift; sourceTree = "<group>"; };
 		D39E46D11B66EF8C00A5EBAD /* PCH_Coil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Coil.swift; sourceTree = "<group>"; };
@@ -168,7 +170,8 @@
 				D37698921B7D5EC500220924 /* PCH_Tank.swift */,
 				D37698961B7D638400220924 /* PCH_RadBank.swift */,
 				D37698941B7D5FAB00220924 /* PCH_Radiator.swift */,
-				D37698981B7D63FC00220924 /* PCH_Fan.swift */,
+				D37698981B7D63FC00220924 /* PCH_FanBank.swift */,
+				D388F38D1B80A61E007C880C /* FanData.plist */,
 				D33DCCB11B7BBF0500DCBF74 /* PCH_TxfoTerminal.swift */,
 				D33DCCAD1B7AB6F400DCBF74 /* PCH_ClearanceData.swift */,
 				D33DCCAF1B7AB8EF00DCBF74 /* ClearanceData.plist */,
@@ -320,6 +323,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D388F38E1B80A61E007C880C /* FanData.plist in Resources */,
 				D3EE6B621B75039000332EEC /* CoreData.plist in Resources */,
 				D33DCCB01B7AB8EF00DCBF74 /* ClearanceData.plist in Resources */,
 				D37FFBEF1B471B86008DBDDA /* Images.xcassets in Resources */,
@@ -347,7 +351,7 @@
 				D342BF111B56BC1E00BCD3E7 /* PCH_Costs.swift in Sources */,
 				D39E46D61B66F7EF00A5EBAD /* PCH_Plate.swift in Sources */,
 				D37FFBED1B471B86008DBDDA /* AppDelegate.swift in Sources */,
-				D37698991B7D63FC00220924 /* PCH_Fan.swift in Sources */,
+				D37698991B7D63FC00220924 /* PCH_FanBank.swift in Sources */,
 				D3CE0CF71B5F19FC0060B71C /* PCH_DuctStrip.swift in Sources */,
 				D3EE6B661B763CDD00332EEC /* PCH_CoreStep.swift in Sources */,
 				D3CC87D31B5AA8FC00EBD121 /* PCH_WdgCable.swift in Sources */,
