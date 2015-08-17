@@ -50,7 +50,7 @@ class PCH_RadBank {
     let numFans:Int?
     
     /// The definition of the fans attached to the bank (optional)
-    let fanDefinition:PCH_Fan?
+    let fanDefinition:PCH_FanBank?
     
     /**
         The designated initializer. This simply sets the properties of the class. This can be used to manually set the bank instead of using the more convenient initializer below (which actually calls this one).
@@ -60,7 +60,7 @@ class PCH_RadBank {
         - parameter numFans: The number of fans attached to the bank (optional)
         - parameter fanDefinition: The definition of the fans attached to the bank (optional)
     */
-    init(numRads:Int, radiatorDefinition:PCH_Radiator, numFans:Int? = nil, fanDefinition:PCH_Fan? = nil)
+    init(numRads:Int, radiatorDefinition:PCH_Radiator, numFans:Int? = nil, fanDefinition:PCH_FanBank? = nil)
     {
         ZAssert(numRads > 0, message: "Attempt to create a radiator bank with less than one rad")
         
@@ -124,7 +124,7 @@ class PCH_RadBank {
         let basicRad = PCH_Radiator(numPanels:Int(panelsPerRad), panelDimensions:(PCH_Radiator.standardWidth, maxHeight))
         
         var numFans:Int? = nil
-        var fanDef:PCH_Fan? = nil
+        var fanDef:PCH_FanBank? = nil
         
         if let onafLoss = lossToDissipateONAF
         {

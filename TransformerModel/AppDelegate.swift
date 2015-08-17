@@ -17,6 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
         
+        /*
         let tstCoreCircle = PCH_CoreCircle(targetBmax: 1.564, voltsPerTurn: 42.576, steelType: PCH_CoreSteel(type: PCH_CoreSteel.SteelType.M3T23))
         
         print(tstCoreCircle.diameter)
@@ -36,7 +37,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let hiloClearance = PCH_ClearanceData.sharedInstance.HiloDataForBIL(BIL_Level.KV125)
         
         print("Overall: \(hiloClearance.0); Solid: \(hiloClearance.1)")
+
+        */
         
+        let basicRad = PCH_Radiator(numPanels:28, panelDimensions:(PCH_Radiator.standardWidth, 2.2))
+        
+        let testFans = PCH_FanBank.GetOptimumNumberOfFansForRad(basicRad)
+        
+        print("Number of fans: \(testFans!.1)")
+
         
         PCH_Costs.sharedInstance.FlushCostsFile()
         
