@@ -38,7 +38,7 @@ class PCH_FanBank {
         static let fanMotorKeys = [RPM850:"850", RPM1140:"1140", RPM1750:"1750"]
     }
     
-    /// The dictionary that holds the fan data. Note that no routine (including local ones) should directly access this member - call teh static FanDictionary function instead.
+    /// The dictionary that holds the fan data. Note that no routine (including local ones) should directly access this member - call the static FanDictionary function instead.
     private static var fanDataDict:NSDictionary? = nil
     
     let model:FanModels
@@ -54,9 +54,74 @@ class PCH_FanBank {
     }
     
     /**
-        Function to return the optimum number of fans (ie: the least number) that can fit on a given radiator. This routine prefers lower-noise fans in the result of a tie.
+        Function to return the area that a given fan will blow (based on its diameter)
+        
+        - parameter model: The fan model
+        
+        - returns: The circular area (in square meters) that the fan can blow.
     */
-    static func GetOptimumNumberOfFansForRad(radiator:PCH_Radiator) -> (PCH_FanBank.FanModels, Int)?
+    static func BlowableAreaForFan(model:FanModels) -> Double
+    {
+        guard let fanDict = PCH_FanBank.FanDictionary() else
+        {
+            ALog("Bad fan dicitonary!")
+            return 0.0
+        }
+        
+        guard let modelDict:NSDictionary = fanDict[FanModels.fanModelKeys[model]!] as? NSDictionary else
+        {
+            ALog("Bad fan model!")
+            return 0.0
+        }
+        
+        let radius = ((modelDict["BladeDiameter"] as! NSNumber) as Double) * 0.0254 / 2.0
+        
+        return π * radius * radius
+    }
+    
+    
+    /**
+        Function to return the CMM (cubic meters per minute) of air from a single unit of a given fan model at a given speed
+    
+        - parameter model: The fan model
+        - parameter speed: The motor rpm
+    
+        - returns: Cubic meters per minute of air (note that this will return 0 if the requested rpm does not exist for the given model or if any other error occurs)
+    */
+    static func CubicMetersPerMinuteForFan(model:FanModels, speed:FanSpeeds) -> Double
+    {
+        guard let fanDict = PCH_FanBank.FanDictionary() else
+        {
+            ALog("Bad fan dicitonary!")
+            return 0.0
+        }
+        
+        guard let modelDict:NSDictionary = fanDict[FanModels.fanModelKeys[model]!] as? NSDictionary else
+        {
+            ALog("Bad fan model!")
+            return 0.0
+        }
+        
+        guard let speedDict = modelDict[FanSpeeds.fanMotorKeys[speed]!] else
+        {
+            DLog("This model does not supprt the requested RPM")
+            return 0.0
+        }
+        
+        let CFM = (speedDict["CFM"] as! NSNumber) as Double
+        
+        // Convert the CFM to CMM
+        return CFM * 0.0254 * 0.0254 * 0.0254 * 12.0 * 12.0 * 12.0
+        
+    }
+    
+    /**
+        Function to return the optimum number of fans (ie: the least number) that can fit on a given radiator. This routine prefers lower-noise fans in the result of a tie.
+    
+        - parameter radiator: The radiator for which we will calculate the number of fans we can fit
+        - returns: The tuple (fanModel, numFans)
+    */
+    static func GetOptimumNumberOfFansForRad(radiator:PCH_Radiator) -> (fanModel:PCH_FanBank.FanModels, numFans:Int)?
     {
         guard let fanDict = PCH_FanBank.FanDictionary() else
         {
@@ -69,7 +134,7 @@ class PCH_FanBank {
         let allowedOverlap = 0.0508
         
         // Set the result to a ridiculously high value
-        var result = (FanModels.FAC262, Int.max)
+        var result = (fanModel:FanModels.FAC262, numFans:Int.max)
         
         for (nextKey, nextValue) in fanDict
         {
@@ -87,13 +152,13 @@ class PCH_FanBank {
                     
                 numFans += (availableWidth / 2.0 > (cageDiameter - allowedOverlap) ? 2.0 : 1.0)
             
-            if (Int(numFans) < result.1)
+            if (Int(numFans) < result.numFans)
             {
                 result = (FanModels.fanModelStrings[nextKey as! String]!, Int(numFans))
             }
         }
         
-        if result.1 == Int.max
+        if result.numFans == Int.max
         {
             DLog("Could not come up with a suitable fan!")
             return nil

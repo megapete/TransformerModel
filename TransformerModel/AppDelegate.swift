@@ -44,8 +44,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         let testFans = PCH_FanBank.GetOptimumNumberOfFansForRad(basicRad)
         
-        print("Number of fans: \(testFans!.1)")
+        print("Number of fans: \(testFans!.numFans)")
 
+        let CMM = PCH_FanBank.CubicMetersPerMinuteForFan(testFans!.fanModel, speed: PCH_FanBank.FanSpeeds.RPM1140)
+        
+        print("CMM at 1140 RPM: \(CMM)")
+        
+        let area = PCH_FanBank.BlowableAreaForFan(testFans!.fanModel)
+        
+        print("Area: \(area)")
+        
+        
         
         PCH_Costs.sharedInstance.FlushCostsFile()
         
