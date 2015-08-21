@@ -45,12 +45,46 @@ class PCH_FanBank {
     let numFans:Int
 
     /**
-        Designated initializer. Note that this initializer can fail if the available "blowable" surface is not within a certain range.
+        Designated initializer. Note that this initializer can fail if the available "blowable" surface is not within a certain range. If the initializer fails, it is recommended that the calling routine call SuitabilityFactorOfRadBank() with some fraction (< 1.0) of the rad bank's total surface to try and get a better chance that the initializer
     */
-    init?(radBank:PCH_RadBank, lossToDissipate:Double, mor:Double, preferLowNoise:Bool)
+    init?(radBank:PCH_RadBank, lossToDissipate:Double, inout mor:Double, preferLowNoise:Bool)
     {
-        self.model = FanModels.FAC264
+        // Write some filler code so the program compiles
+        
+        // TODO: Fix this so it works
+        
+        self.model = PCH_FanBank.FanModels.FAC262
         self.numFans = 1
+        
+    }
+    
+    /**
+        Function used to test the suitability of a given rad bank and MOR.
+    
+        - parameter radBank: The radiator bank that we want to test
+        - parameter loss: The loss we want to dissipate with the fans
+        - parameter mor: The mean-oil-rise we want to meet
+    
+        - returns: A number that indicates the suitability of the parameters. If the number is 1.0, then the parameters are okay. Otherwise, the returned value indicates what the ratio Ablown/MOR must be multiplied by to bring the parameters into an acceptable range.
+    */
+    static func SuitabilityFactorOfRadBank(radBank:PCH_RadBank, loss:Double, mor:Double) -> Double
+    {
+        let totalRadBankSurface = Double(radBank.numRads) * radBank.radiatorDefinition.radSurface
+        
+        let aOverMor = totalRadBankSurface / mor
+        
+        let testValue = loss / aOverMor
+        
+        if testValue < 10.85
+        {
+            return testValue / 10.85
+        }
+        else if testValue > 20.15
+        {
+            return testValue / 20.15
+        }
+        
+        return 1.0
     }
     
     /**

@@ -115,16 +115,20 @@ class PCH_RadBank {
         
         let requiredPanels = ceil(requiredRadSurface / singlePanelSurface)
         var numRads = ceil(requiredPanels / Double(PCH_Radiator.maxPanels))
+        
         if (numRads < 2.0)
         {
             numRads = 2.0
         }
+        
         let panelsPerRad = ceil(requiredPanels / numRads)
         
         let basicRad = PCH_Radiator(numPanels:Int(panelsPerRad), panelDimensions:(PCH_Radiator.standardWidth, maxHeight))
         
         var numFans:Int? = nil
         var fanDef:PCH_FanBank? = nil
+        
+        let tstRadBank = PCH_RadBank(numRads: Int(numRads), radiatorDefinition: basicRad)
         
         if let onafLoss = lossToDissipateONAF
         {
