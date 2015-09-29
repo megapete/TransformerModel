@@ -12,9 +12,20 @@ import Foundation
 
 struct PCH_Transformer {
     
+    /// The core of the transformer
     let core:PCH_Core
     
+    /// The definition of one wound leg of the transformer
     let phase:PCH_Phase
+    
+    /// The definition of the tank that the transformer is in
+    let tank:PCH_Tank
+    
+    /// An array of radiator banks on the transformer. This is an optional since it is possible that a transformer does not need any radiators for sufficient cooling (the tank is enough).
+    let radBanks:[PCH_RadBank]?
+    
+    /// The number of phases of the transformer. Note that for now, this is essentially limited to the values 1 or 3.
+    let numPhases:Int = 1
     
     
     
