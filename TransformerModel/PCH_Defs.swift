@@ -49,7 +49,7 @@ func ALog(message:String, file:String = __FILE__, function:String = __FUNCTION__
         
     #else
     
-        print("\(file) : \(function) : \(line) : \(message)\n", appendNewline: false)
+        print("\(file) : \(function) : \(line) : \(message)\n", terminator: "")
         
     #endif
 }
