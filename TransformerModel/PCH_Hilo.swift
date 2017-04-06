@@ -65,7 +65,7 @@ class PCH_Hilo: CustomStringConvertible {
     /**
         An optional maxheight for the hilo
     */
-    private var hiloheight:Double?
+    fileprivate var hiloheight:Double?
     
     /// A computed property that is used to get/set the private hiloheight property (and, as a side effect, setting the property also adjusts the axial dimensions of all tubes and ductstrips (and their components))
     var height:Double
@@ -206,7 +206,7 @@ class PCH_Hilo: CustomStringConvertible {
         {
             let ductThk = ductsToFill / numTubes
             
-            let duct = PCH_DuctStrip(paper: nil, strip: PCH_Strip(materialType: PCH_Insulation.Insulation.TIV, stripType: PCH_Strip.StripShape.rectangular, width: 0.018, thickness: ductThk / 1000.0, length: 1.0), ccDistance: currentOuterDiameter * π / Double(numColumns))
+            let duct = PCH_DuctStrip(paper: nil, strip: PCH_Strip(materialType: PCH_Insulation.Insulation.tiv, stripType: PCH_Strip.StripShape.rectangular, width: 0.018, thickness: ductThk / 1000.0, length: 1.0), ccDistance: currentOuterDiameter * π / Double(numColumns))
             
             hilo.append(duct)
             
@@ -220,7 +220,7 @@ class PCH_Hilo: CustomStringConvertible {
         }
         
         // and now we add the final duct
-        hilo.append(PCH_DuctStrip(paper: nil, strip: PCH_Strip(materialType: PCH_Insulation.Insulation.TIV, stripType: PCH_Strip.StripShape.dovetail, width: 0.018, thickness: 0.006, length: 1.0), ccDistance: currentOuterDiameter * π / Double(numColumns)))
+        hilo.append(PCH_DuctStrip(paper: nil, strip: PCH_Strip(materialType: PCH_Insulation.Insulation.tiv, stripType: PCH_Strip.StripShape.dovetail, width: 0.018, thickness: 0.006, length: 1.0), ccDistance: currentOuterDiameter * π / Double(numColumns)))
         
         self.init(innerDiameter:useInnerDiameter / 1000.0, hilo:hilo)
         
@@ -295,7 +295,7 @@ class PCH_Hilo: CustomStringConvertible {
         {
             let ductThk = ductsToFill / numTubes
             
-            let duct = PCH_DuctStrip(paper: nil, strip: PCH_Strip(materialType: PCH_Insulation.Insulation.TIV, stripType: PCH_Strip.StripShape.rectangular, width: 0.018, thickness: ductThk / 1000.0, length: 1.0), ccDistance: currentOuterDiameter * π / Double(numColumns))
+            let duct = PCH_DuctStrip(paper: nil, strip: PCH_Strip(materialType: PCH_Insulation.Insulation.tiv, stripType: PCH_Strip.StripShape.rectangular, width: 0.018, thickness: ductThk / 1000.0, length: 1.0), ccDistance: currentOuterDiameter * π / Double(numColumns))
             
             hilo.append(duct)
             
@@ -309,7 +309,7 @@ class PCH_Hilo: CustomStringConvertible {
         }
         
         // and now we add the final duct
-        hilo.append(PCH_DuctStrip(paper: nil, strip: PCH_Strip(materialType: PCH_Insulation.Insulation.TIV, stripType: PCH_Strip.StripShape.dovetail, width: 0.018, thickness: 0.006, length: 1.0), ccDistance: currentOuterDiameter * π / Double(numColumns)))
+        hilo.append(PCH_DuctStrip(paper: nil, strip: PCH_Strip(materialType: PCH_Insulation.Insulation.tiv, stripType: PCH_Strip.StripShape.dovetail, width: 0.018, thickness: 0.006, length: 1.0), ccDistance: currentOuterDiameter * π / Double(numColumns)))
         
         self.init(innerDiameter:useInnerDiameter / 1000.0, hilo:hilo)
     }

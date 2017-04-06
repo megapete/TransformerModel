@@ -17,7 +17,7 @@ class PCH_Costs {
     */
     static let sharedInstance = PCH_Costs()
     
-    private var costDictionary: NSDictionary?
+    fileprivate var costDictionary: NSDictionary?
     
     var fileIsValid = false
     
@@ -90,15 +90,15 @@ class PCH_Costs {
     /**
         Private (and the only) initializer for the class
     */
-    private init()
+    fileprivate init()
     {
-        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true) as NSArray
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true) as NSArray
         let documentsDir = paths.firstObject as! NSString
         let fileName = costFileName + "." + costFileType
-        let filePath = documentsDir.stringByAppendingPathComponent(fileName)
+        let filePath = documentsDir.appendingPathComponent(fileName)
         
-        let fileManager = NSFileManager.defaultManager()
-        if (fileManager.fileExistsAtPath(filePath))
+        let fileManager = FileManager.default
+        if (fileManager.fileExists(atPath: filePath))
         {
             if let dict = NSDictionary(contentsOfFile: filePath)
             {
@@ -124,7 +124,7 @@ class PCH_Costs {
     
         - returns: Cost dictionary filled with default values
     */
-    private func CreateDefaultCostDictionary() -> NSDictionary
+    fileprivate func CreateDefaultCostDictionary() -> NSDictionary
     {
         let result:NSDictionary = [
             
@@ -163,9 +163,9 @@ class PCH_Costs {
     
         - returns: The cost as a double
     */
-    func CostForKey(theKey: CostKey) -> Double
+    func CostForKey(_ theKey: CostKey) -> Double
     {
-        let theNum:NSNumber = costDictionary!.valueForKey(theKey.rawValue) as! NSNumber
+        let theNum:NSNumber = costDictionary!.value(forKey: theKey.rawValue) as! NSNumber
         
         return theNum.doubleValue
     }
@@ -177,7 +177,7 @@ class PCH_Costs {
         - parameter CostCode: for the material or labour unit desired
     
     */
-    func SetCost(cost:Double, forKey:CostKey)
+    func SetCost(_ cost:Double, forKey:CostKey)
     {
         costDictionary!.setValue(cost, forKey:forKey.rawValue)
     }
@@ -187,12 +187,12 @@ class PCH_Costs {
     */
     func FlushCostsFile()
     {
-        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true) as NSArray
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true) as NSArray
         let documentsDir = paths.firstObject as! NSString
         let fileName = costFileName + "." + costFileType
-        let filePath = documentsDir.stringByAppendingPathComponent(fileName)
+        let filePath = documentsDir.appendingPathComponent(fileName)
         
-        if costDictionary!.writeToFile(filePath, atomically: true)
+        if costDictionary!.write(toFile: filePath, atomically: true)
         {
             fileIsValid = true
         }

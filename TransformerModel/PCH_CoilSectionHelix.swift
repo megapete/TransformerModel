@@ -124,7 +124,7 @@ class PCH_CoilSectionHelix: PCH_CoilSection
     
         - parameter turns: A list of turn numbers
     */
-    override func AddTapsAtTurns(turns: Double...)
+    override func AddTapsAtTurns(_ turns: Double...)
     {
         for nextTurn in turns
         {

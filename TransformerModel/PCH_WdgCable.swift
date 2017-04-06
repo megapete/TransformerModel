@@ -22,10 +22,10 @@ class PCH_WdgCable {
     */
     enum CableType {
         
-        case Single
-        case MultipleRadial
-        case MultipleAxial
-        case CTC
+        case single
+        case multipleRadial
+        case multipleAxial
+        case ctc
     }
     
     /**
@@ -50,7 +50,7 @@ class PCH_WdgCable {
     {
         get
         {
-            if (self.type == .CTC)
+            if (self.type == .ctc)
             {
                 return numAxial * (numRadial - 1) + 1
             }
@@ -117,7 +117,7 @@ class PCH_WdgCable {
         self.type = type
         self.strand = strand
         
-        if (type == .CTC) && (numRadial % 2 != 0)
+        if (type == .ctc) && (numRadial % 2 != 0)
         {
             DLog("NOTE: For CTC cables, the numRadial parameter must be even! Adding '1' to passed value.")
             self.numRadial = numRadial + 1
@@ -139,7 +139,7 @@ class PCH_WdgCable {
     */
     convenience init(strand:PCH_Strand)
     {
-        self.init(type:.Single, strand:strand)
+        self.init(type:.single, strand:strand)
     }
     
     /**
@@ -149,7 +149,7 @@ class PCH_WdgCable {
     */
     convenience init(doubledRadialStrand:PCH_Strand, coverInsulation:PCH_Insulation, coverThickness:Double)
     {
-        self.init(type:.MultipleRadial, strand:doubledRadialStrand, numRadial:2, numAxial:1, coverInsulation:coverInsulation, coverThickness:coverThickness)
+        self.init(type:.multipleRadial, strand:doubledRadialStrand, numRadial:2, numAxial:1, coverInsulation:coverInsulation, coverThickness:coverThickness)
     }
     
     /**
@@ -159,7 +159,7 @@ class PCH_WdgCable {
     */
     convenience init(doubledAxialStrand:PCH_Strand, coverInsulation:PCH_Insulation, coverThickness:Double)
     {
-        self.init(type:.MultipleAxial, strand:doubledAxialStrand, numRadial:1, numAxial:2, coverInsulation:coverInsulation, coverThickness:coverThickness)
+        self.init(type:.multipleAxial, strand:doubledAxialStrand, numRadial:1, numAxial:2, coverInsulation:coverInsulation, coverThickness:coverThickness)
     }
     
     /**
@@ -177,7 +177,7 @@ class PCH_WdgCable {
         
         let numRadial = (totalCTCStrands + 1) / 2
         
-        self.init(type:.CTC, strand:strand, numRadial:numRadial, numAxial:2, coverInsulation:coverInsulation, coverThickness:coverThickness)
+        self.init(type:.ctc, strand:strand, numRadial:numRadial, numAxial:2, coverInsulation:coverInsulation, coverThickness:coverThickness)
     }
     
     /**
@@ -213,7 +213,7 @@ class PCH_WdgCable {
     
         ;returns: The resistance (in ohms) of the cable
     */
-    func Resistance(length:Double, temperature:Double) -> Double
+    func Resistance(_ length:Double, temperature:Double) -> Double
     {
         return self.strand.Resistance(length, temperature: temperature) / Double(self.totalStrands)
     }
@@ -225,7 +225,7 @@ class PCH_WdgCable {
         
         - returns: The total weight of the cable, including its insulating cover
     */
-    func Weight(length:Double) -> Double
+    func Weight(_ length:Double) -> Double
     {
         var cableWeight:Double = Double(self.totalStrands) * self.strand.Weight(length)
         

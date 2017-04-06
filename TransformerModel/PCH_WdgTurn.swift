@@ -125,7 +125,7 @@ class PCH_WdgTurn {
         
         for i in 0..<numAxial
         {
-            cableArray.insert(radArrgs, atIndex: i)
+            cableArray.insert(radArrgs, at: i)
         }
     }
     
@@ -162,7 +162,7 @@ class PCH_WdgTurn {
         
         - returns: The resistance (in ohms) of the cable
     */
-    func Resistance(length:Double, temperature:Double) -> Double
+    func Resistance(_ length:Double, temperature:Double) -> Double
     {
         var inverseResistances:Double = 0.0
         
@@ -185,7 +185,7 @@ class PCH_WdgTurn {
         
         - returns: The total weight of the turn, including radial inter-cable insulation, but NOT inter-cable axial insulation, which must be calculated elsewhere
     */
-    func Weight(length:Double) -> Double
+    func Weight(_ length:Double) -> Double
     {
         var radialWt:Double = 0.0
         

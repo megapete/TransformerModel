@@ -15,7 +15,7 @@ class PCH_Coil
     /**
         The array of coil sections that make up the coil. This member is private to ensure that the caller uses instance methods to acces it.
     */
-    private var coilSections:[[PCH_CoilSection?]]
+    fileprivate var coilSections:[[PCH_CoilSection?]]
     
     /**
         A struct that defines one "chunk" of intersection insulation
@@ -49,7 +49,7 @@ class PCH_Coil
         */
         init(axialGapWithRadialSpacer:PCH_RadialSpacer, numSpacers:Int)
         {
-            let insArray = [PCH_RadialSpacer](count: numSpacers, repeatedValue: axialGapWithRadialSpacer)
+            let insArray = [PCH_RadialSpacer](repeating: axialGapWithRadialSpacer, count: numSpacers)
             
             self.init(isAxial:true, insulation:insArray)
         }
@@ -106,18 +106,18 @@ class PCH_Coil
     /**
         A private array to hold the axial intersecion insulation chunks. The index (i,j) points at the insulation chunk between axial sections i and i+1 in radial section j
     */
-    private var axialInterSectionInsulation:[[InterSectionInsulation?]]?
+    fileprivate var axialInterSectionInsulation:[[InterSectionInsulation?]]?
     
     /**
         A private array to hold the radial intersecion insulation chunks. The index (i,j) points at the insulation chunk between radial sections j and j+1 in axial section i
     */
-    private var radialInterSectionInsulation:[[InterSectionInsulation?]]?
+    fileprivate var radialInterSectionInsulation:[[InterSectionInsulation?]]?
     
     /**
         The number of axial and radial coil sections
     */
-    private var  numAxialSections:Int
-    private var numRadialSections:Int
+    fileprivate var  numAxialSections:Int
+    fileprivate var numRadialSections:Int
     
     /**
         The edge insulation for a coil is always comprised of a common block, followed by either radial spacers (disk & helical coils) or a board (layer).
@@ -181,9 +181,9 @@ class PCH_Coil
         self.numRadialSections = numRadialSections
         self.parentTerminal = parentTerminal
         
-        let nilRadialArray = [PCH_CoilSection?](count: numRadialSections, repeatedValue: nil)
+        let nilRadialArray = [PCH_CoilSection?](repeating: nil, count: numRadialSections)
         
-        self.coilSections = [[PCH_CoilSection?]](count: numAxialSections, repeatedValue: nilRadialArray)
+        self.coilSections = [[PCH_CoilSection?]](repeating: nilRadialArray, count: numAxialSections)
         
         self.topEdgeInsulation = topEdgeInsulation
         self.bottomEdgeInsulation = bottomEdgeInsulation
@@ -197,7 +197,7 @@ class PCH_Coil
         - parameter radialPos: The radial position of the element we want to set
         - parameter coilSection: The coil section to set (cannot be nil)
     */
-    func SetCoilSectionAtAxialPos(axialPos:Int, radialPos:Int, coilSection:PCH_CoilSection)
+    func SetCoilSectionAtAxialPos(_ axialPos:Int, radialPos:Int, coilSection:PCH_CoilSection)
     {
         ZAssert(axialPos >= 0 && radialPos >= 0, message: "Indices must be greater or equal to zero!")
         
@@ -206,7 +206,7 @@ class PCH_Coil
         {
             DLog("The axial position specified is greater than what is currently in the array - adding elements as necessary")
             
-            let newRadialArray = [PCH_CoilSection?](count: self.numRadialSections, repeatedValue: nil)
+            let newRadialArray = [PCH_CoilSection?](repeating: nil, count: self.numRadialSections)
             
             for _ in self.numAxialSections...axialPos
             {
@@ -250,7 +250,7 @@ class PCH_Coil
     
         - returns: The PCH_CoilSection at the given axial and radial positions (may be nil)
     */
-    func CoilSectionAtAxialPos(axialPos:Int, radialPos:Int) -> PCH_CoilSection?
+    func CoilSectionAtAxialPos(_ axialPos:Int, radialPos:Int) -> PCH_CoilSection?
     {
         ZAssert(axialPos >= 0 && radialPos >= 0, message: "Indices must be greater or equal to zero!")
         
@@ -294,7 +294,7 @@ class PCH_Coil
         - parameter onRadialPos: The radial coil section position index where the insulation should be placed
         - paramater axialIns: The InterSectionInsulation (must have the isAxial property set!)
     */
-    func SetAxialInsulationAfterAxialPos(afterAxialPos:Int, onRadialPos:Int, axialIns:PCH_Coil.InterSectionInsulation)
+    func SetAxialInsulationAfterAxialPos(_ afterAxialPos:Int, onRadialPos:Int, axialIns:PCH_Coil.InterSectionInsulation)
     {
         ZAssert(axialIns.isAxial, message: "Illegal inter-section insulation type - must be axial")
         ZAssert(afterAxialPos >= 0 && onRadialPos >= 0, message: "Indices must be greater or equal to zero!")
@@ -304,9 +304,9 @@ class PCH_Coil
         // first check if the axial interinsulation array has been initialized, and if not, do it
         if self.axialInterSectionInsulation == nil
         {
-            let radialArray = [InterSectionInsulation?](count: numRadialSections, repeatedValue: nil)
+            let radialArray = [InterSectionInsulation?](repeating: nil, count: numRadialSections)
             
-            self.axialInterSectionInsulation = [[InterSectionInsulation?]](count: numAxialSections - 1, repeatedValue: radialArray)
+            self.axialInterSectionInsulation = [[InterSectionInsulation?]](repeating: radialArray, count: numAxialSections - 1)
         }
         
         self.axialInterSectionInsulation![afterAxialPos][onRadialPos] = axialIns
@@ -324,7 +324,7 @@ class PCH_Coil
         - paramater axialIns: The InterSectionInsulation (must have the isRadial property set!)
     */
 
-    func SetRadialInsulationAfterRadialPos(afterRadialPos:Int, onAxialPos:Int, radialIns:PCH_Coil.InterSectionInsulation)
+    func SetRadialInsulationAfterRadialPos(_ afterRadialPos:Int, onAxialPos:Int, radialIns:PCH_Coil.InterSectionInsulation)
     {
         ZAssert(!radialIns.isAxial, message: "Illegal inter-section insulation type - must be radial")
         ZAssert(afterRadialPos >= 0 && onAxialPos >= 0, message: "Indices must be greater or equal to zero!")
@@ -334,9 +334,9 @@ class PCH_Coil
         // first check if the radial interinsulation array has been initialized, and if not, do it
         if self.radialInterSectionInsulation == nil
         {
-            let radialArray = [InterSectionInsulation?](count: numRadialSections - 1, repeatedValue: nil)
+            let radialArray = [InterSectionInsulation?](repeating: nil, count: numRadialSections - 1)
             
-            self.radialInterSectionInsulation = [[InterSectionInsulation?]](count: numAxialSections, repeatedValue: radialArray)
+            self.radialInterSectionInsulation = [[InterSectionInsulation?]](repeating: radialArray, count: numAxialSections)
         }
         
         self.axialInterSectionInsulation![onAxialPos][afterRadialPos] = radialIns

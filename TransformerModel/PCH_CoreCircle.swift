@@ -19,7 +19,7 @@ import Cocoa
 
     - returns: A tuple where the first element is the diameter, in meters; the second element is an array of core-step tuples (width, stack) with both elements in mm, that represent half the core; the third tuple is an array of ints that represent the locations (steps) that have ducts
 */
-private func OptimizedCoreDiameter(requiredArea:Double, ducts:[Double]?, sheetThickness:Double, lowTolerance:Double = 0.995, highTolerance:Double = 1.01) -> (Double, [(width:Double, stack:Double)], [Int])
+private func OptimizedCoreDiameter(_ requiredArea:Double, ducts:[Double]?, sheetThickness:Double, lowTolerance:Double = 0.995, highTolerance:Double = 1.01) -> (Double, [(width:Double, stack:Double)], [Int])
 {
     // Define a few constants that we use in the algorithm but are kept here for easy editing during testing
     let minStepHt = 10.0 // mm
@@ -65,7 +65,7 @@ private func OptimizedCoreDiameter(requiredArea:Double, ducts:[Double]?, sheetTh
             if (ductWidth >= floor(2.0 * R / 10.0) * 10.0)
             {
                 ductThk = ductThickness / 2.0 // middle duct is effectively split in two
-                nextDuctIndex++
+                nextDuctIndex += 1
                 ductLocs.append(0)
             }
         }
@@ -105,7 +105,7 @@ private func OptimizedCoreDiameter(requiredArea:Double, ducts:[Double]?, sheetTh
                     if (ductWidth <= w) && (ductWidth > w - widthIncrement)
                     {
                         ductThk = ductThickness
-                        nextDuctIndex++
+                        nextDuctIndex += 1
                         ductLocs.append(chkWS.count)
                     }
                 }
@@ -124,7 +124,7 @@ private func OptimizedCoreDiameter(requiredArea:Double, ducts:[Double]?, sheetTh
         
         // Since the loop is set up to run until we go PAST the R-sTotal limit, we need to remove the last step that was added to chkWS
         
-        chkWS.removeAtIndex(chkWS.count - 1)
+        chkWS.remove(at: chkWS.count - 1)
         
         var Anet = 0.0
         for i in 0..<chkWS.count
@@ -301,7 +301,7 @@ class PCH_CoreCircle
         
         for i in 0..<baseArray.count
         {
-            coreStack.insert(baseArray[i], atIndex: 0)
+            coreStack.insert(baseArray[i], at: 0)
         }
         
         self.steps = coreStack
@@ -312,7 +312,7 @@ class PCH_CoreCircle
     
         - parameter length: The length of core for which we want to calculate the weight.
     */
-    func Weight(length:Double) -> Double
+    func Weight(_ length:Double) -> Double
     {
         var result = 0.0
         
@@ -330,7 +330,7 @@ class PCH_CoreCircle
         - parameter length: The length of core for which we want to calculate the loss.
         - parameter atBMax: The induction level for which we want to calculate the loss.
     */
-    func Loss(length:Double, atBmax:Double) -> Double
+    func Loss(_ length:Double, atBmax:Double) -> Double
     {
         var result = 0.0
         
@@ -350,7 +350,7 @@ class PCH_CoreCircle
     
         - returns: Bmax in Teslas
     */
-    func BmaxAtVperN(vPerN:Double, frequency:Double) -> Double
+    func BmaxAtVperN(_ vPerN:Double, frequency:Double) -> Double
     {
         var netArea = 0.0
         for nextStep in self.steps

@@ -13,7 +13,7 @@ import Foundation
     - parameter mor: The mean oil temperature rise (in C or K) at ONAN
     - returns: The watts/sq.m. that the radiators will dissipate
 */
-func WattsPerSqMeterONANWithMOR(mor:Double) -> Double
+func WattsPerSqMeterONANWithMOR(_ mor:Double) -> Double
 {
     // from the old Megatran ONAN curve
     return 8.3948E-3 * mor - 1.0044E-1
@@ -26,7 +26,7 @@ func WattsPerSqMeterONANWithMOR(mor:Double) -> Double
     - returns: The factor that the calculated dissipation (w/sq.m.) should be multiplied by to take into account the height difference
 
 */
-func CenterCoolingToCenterHeatingDifferenceFactor(diff:Double) -> Double
+func CenterCoolingToCenterHeatingDifferenceFactor(_ diff:Double) -> Double
 {
     if (diff < 0.0)
     {

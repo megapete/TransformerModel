@@ -51,7 +51,7 @@ class PCH_CoreStep
     /**
         Given the length of this step, this function returns the weight of the step.
     */
-    func WeightForLength(length:Double) -> Double
+    func WeightForLength(_ length:Double) -> Double
     {
         return self.lamination!.steelType.Weight(length, width: self.lamination!.width, height: self.stackHeight)
     }
@@ -62,7 +62,7 @@ class PCH_CoreStep
         - parameter length: The length of the step
         - parameter Bmax: The induction level at which the loss should be calculated
     */
-    func LossForLength(length:Double, atBmax:Double) -> Double
+    func LossForLength(_ length:Double, atBmax:Double) -> Double
     {
         return self.lamination!.steelType.SpecificLossAtBmax(atBmax) * self.WeightForLength(length)
     }

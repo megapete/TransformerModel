@@ -23,7 +23,7 @@ struct PCH_Tank {
         - parameter mor: The mean oil rise for which we want to know the dissipation
         - returns: The dissipation, in watts/sq.m.
     */
-    static func DissipationAtMOR(mor:Double) -> Double
+    static func DissipationAtMOR(_ mor:Double) -> Double
     {
         return 0.0051 * pow(mor, 1.2115)
     }
@@ -34,7 +34,7 @@ struct PCH_Tank {
         - parameter mor: Mean oil rise for which we want to know the tank loss
         - returns: The tank loss in watts
     */
-    func TankLossAtMOR(mor:Double) -> Double
+    func TankLossAtMOR(_ mor:Double) -> Double
     {
         // We'll assume that the two short sides, one long side, and the cover radiate heat (the other long side has rads and obviously the base doesn't radiate)
         

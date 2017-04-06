@@ -28,7 +28,7 @@ struct PCH_Transformer {
     let terminals:[PCH_TxfoTerminal]
     
     /// The private "behind the scenes" value that we hold for numPhases
-    private var _numPhases:Int
+    fileprivate var _numPhases:Int
     
     /// The number of phases. Must be equal to 1 or 3. We restrict access to the underlying property by creating a computed property
     var numPhases:Int {

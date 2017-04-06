@@ -37,31 +37,31 @@ import Foundation
 */
 enum BIL_Level {
     
-    case KV10
-    case KV20
-    case KV30
-    case KV45
-    case KV50
-    case KV60
-    case KV75
-    case KV95
-    case KV110
-    case KV125
-    case KV150
-    case KV170
-    case KV200
-    case KV250
-    case KV350
-    case KV450
-    case KV550
-    case KV650
-    case KV750
-    case KV850
-    case KV950
-    case KV1050
+    case kv10
+    case kv20
+    case kv30
+    case kv45
+    case kv50
+    case kv60
+    case kv75
+    case kv95
+    case kv110
+    case kv125
+    case kv150
+    case kv170
+    case kv200
+    case kv250
+    case kv350
+    case kv450
+    case kv550
+    case kv650
+    case kv750
+    case kv850
+    case kv950
+    case kv1050
     
     /// Create a static dictionary that maps each defined BIL level to it's string (for use as a key in other dictionaries)
-    static let bilNames = [KV10:"10", KV20:"20", KV30:"30", KV45:"45", KV50:"50", KV60:"60", KV75:"75", KV95:"95", KV110:"110", KV125:"125", KV150:"150", KV170:"170", KV200:"200", KV250:"250", KV350:"350", KV450:"450", KV550:"550", KV650:"650", KV750:"750", KV850:"850", KV950:"950", KV1050:"1050"]
+    static let bilNames = [kv10:"10", kv20:"20", kv30:"30", kv45:"45", kv50:"50", kv60:"60", kv75:"75", kv95:"95", kv110:"110", kv125:"125", kv150:"150", kv170:"170", kv200:"200", kv250:"250", kv350:"350", kv450:"450", kv550:"550", kv650:"650", kv750:"750", kv850:"850", kv950:"950", kv1050:"1050"]
     
     /// Since we have the BIL levels available as numerical strings, we'll just convert them to UInts for use wherever they are needed as a numerical type
     func Value() -> UInt
@@ -87,12 +87,12 @@ class PCH_ClearanceData {
     static let sharedInstance = PCH_ClearanceData()
     
     /// A private dictionary that holds the actual clearance data
-    private let clearanceDictionary:NSDictionary?
+    fileprivate let clearanceDictionary:NSDictionary?
     
     /// The one and only (private) initializer for the class, which tries to load up the plist file into the clearanceDictionary (and asserts in Debug mode if the dictionary can't be loaded for some reason).
-    private init()
+    fileprivate init()
     {
-        if let path = NSBundle.mainBundle().pathForResource("ClearanceData", ofType: "plist")
+        if let path = Bundle.main.path(forResource: "ClearanceData", ofType: "plist")
         {
             self.clearanceDictionary = NSDictionary(contentsOfFile: path)
         }
@@ -112,15 +112,15 @@ class PCH_ClearanceData {
     
         - returns: (total, solid) tuple of Doubles (meters) where total is the total hilo distance, while solid is the amount of total that must be filled with solid insulation
     */
-    func HiloDataForBIL(bil:BIL_Level) -> (total:Double, solid:Double)
+    func HiloDataForBIL(_ bil:BIL_Level) -> (total:Double, solid:Double)
     {
         var result = (0.0, 0.0)
         
         let keyName = BIL_Level.bilNames[bil]
         
-        if let levelDict = clearanceDictionary?[keyName!]
+        if let levelDict = clearanceDictionary?[keyName!] as? [String:Double]
         {
-            result = (levelDict["HiloTotal"] as! Double, levelDict["HiloSolid"] as! Double)
+            result = (levelDict["HiloTotal"]!, levelDict["HiloSolid"]!)
         }
         else
         {
@@ -137,15 +137,15 @@ class PCH_ClearanceData {
     
         - returns: The required edge distance (in meters)
     */
-    func EdgeDistanceForBIL(bil:BIL_Level) -> Double
+    func EdgeDistanceForBIL(_ bil:BIL_Level) -> Double
     {
         var result = 0.0
         
         let keyName = BIL_Level.bilNames[bil]
         
-        if let levelDict = clearanceDictionary?[keyName!]
+        if let levelDict = clearanceDictionary?[keyName!] as? [String:Double]
         {
-            result = levelDict["EdgeDistance"] as! Double
+            result = levelDict["EdgeDistance"]!
         }
         else
         {
@@ -162,7 +162,7 @@ class PCH_ClearanceData {
     
         - returns: The required ground clearance (in meters)
     */
-    func GroundClearanceForBIL(bil:BIL_Level) -> Double
+    func GroundClearanceForBIL(_ bil:BIL_Level) -> Double
     {
         return self.EdgeDistanceForBIL(bil)
     }
@@ -177,15 +177,15 @@ class PCH_ClearanceData {
     
         - returns: The required interphase distance (in meters)
     */
-    func InterphaseForBIL(bil:BIL_Level) -> Double
+    func InterphaseForBIL(_ bil:BIL_Level) -> Double
     {
         var result = 0.0
         
         let keyName = BIL_Level.bilNames[bil]
         
-        if let levelDict = clearanceDictionary?[keyName!]
+        if let levelDict = clearanceDictionary?[keyName!] as? [String:Double]
         {
-            result = levelDict["Interphase"] as! Double
+            result = levelDict["Interphase"]!
         }
         else
         {
@@ -202,15 +202,15 @@ class PCH_ClearanceData {
     
         - returns: The required conductor cover (in meters)
     */
-    func ConductorCoverForBIL(bil:BIL_Level) -> Double
+    func ConductorCoverForBIL(_ bil:BIL_Level) -> Double
     {
         var result = 0.0
         
         let keyName = BIL_Level.bilNames[bil]
         
-        if let levelDict = clearanceDictionary?[keyName!]
+        if let levelDict = clearanceDictionary?[keyName!] as? [String:Double]
         {
-            result = levelDict["ConductorCover"] as! Double
+            result = levelDict["ConductorCover"]!
         }
         else
         {
@@ -227,15 +227,15 @@ class PCH_ClearanceData {
     
         - returns: The required interdisk distance (in meters)
     */
-    func InterDiskForBIL(bil:BIL_Level) -> Double
+    func InterDiskForBIL(_ bil:BIL_Level) -> Double
     {
         var result = 0.0
         
         let keyName = BIL_Level.bilNames[bil]
         
-        if let levelDict = clearanceDictionary?[keyName!]
+        if let levelDict = clearanceDictionary?[keyName!] as? [String:Double]
         {
-            result = levelDict["BetweenDisks"] as! Double
+            result = levelDict["BetweenDisks"]!
         }
         else
         {

@@ -52,7 +52,7 @@ class PCH_RawMaterial {
         - returns: The weight of the piece in kilograms (Double)
     */
     
-    func Weight(length:Double, width:Double, height:Double) -> Double
+    func Weight(_ length:Double, width:Double, height:Double) -> Double
     {
         return length * width * height * self.density
     }
@@ -65,7 +65,7 @@ class PCH_RawMaterial {
         
         - returns: The weight of the piece in kilograms (Double)
     */
-    func Weight(diameter diameter:Double, length:Double) -> Double
+    func Weight(diameter:Double, length:Double) -> Double
     {
         let radius = diameter / 2.0
         
@@ -80,7 +80,7 @@ class PCH_RawMaterial {
         
         - returns: The weight of the piece in kilograms (Double)
     */
-    func Weight(area area:Double, length:Double) -> Double
+    func Weight(area:Double, length:Double) -> Double
     {
         return area * length * self.density
     }
@@ -95,7 +95,7 @@ class PCH_RawMaterial {
         - returns: The cost of the piece in Canadian dollars (Double)
     */
     
-    func CanadianDollarValue(length:Double, width:Double, height:Double) -> Double
+    func CanadianDollarValue(_ length:Double, width:Double, height:Double) -> Double
     {
         return length * width * height * self.cost
     }

@@ -75,7 +75,7 @@ class PCH_DuctStrip:PCH_Insulation {
         self.ccDist = ccDistance
         
         // A duct strip is mostly oil, so we'll define it as such. However, the permittivity should be overriden to take into account the solids in the duct strip.
-        super.init(material: .Oil)
+        super.init(material: .oil)
     }
     
     /**
@@ -86,7 +86,7 @@ class PCH_DuctStrip:PCH_Insulation {
     
         - returns: The weight in kg
     */
-    func WeightOfWidth(width:Double, length:Double) -> Double
+    func WeightOfWidth(_ width:Double, length:Double) -> Double
     {
         // first, we'll calculate the weight of the paper (if any)
         var result:Double = 0.0

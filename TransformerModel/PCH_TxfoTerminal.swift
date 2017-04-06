@@ -16,7 +16,7 @@ class PCH_TxfoTerminal {
     var name:String
     
     /// The private "behind the scenes" value that we hold for numPhases
-    private var _numPhases:Int
+    fileprivate var _numPhases:Int
     
     /// The number of phases. Must be equal to 1 or 3. We restrict access to the underlying property by creating a computed property
     var numPhases:Int {
@@ -42,7 +42,7 @@ class PCH_TxfoTerminal {
     /// Possible transformer terminal connections
     enum Connections {
         
-        case OnePhaseOneLeg, OnePhaseTwoLegParallel, OnePhaseTwoLegSeries, Star, Delta, Zigzag
+        case onePhaseOneLeg, onePhaseTwoLegParallel, onePhaseTwoLegSeries, star, delta, zigzag
     }
     
     /// The connection of the terminal
@@ -61,7 +61,7 @@ class PCH_TxfoTerminal {
             
             if (self.numPhases == 1)
             {
-                if (self.connection == Connections.OnePhaseOneLeg || self.connection == Connections.OnePhaseTwoLegParallel)
+                if (self.connection == Connections.onePhaseOneLeg || self.connection == Connections.onePhaseTwoLegParallel)
                 {
                     return self.lineVolts
                 }
@@ -72,11 +72,11 @@ class PCH_TxfoTerminal {
             }
             else // must be 3
             {
-                if self.connection == Connections.Delta
+                if self.connection == Connections.delta
                 {
                     return self.lineVolts
                 }
-                else if (self.connection == Connections.Star)
+                else if (self.connection == Connections.star)
                 {
                     return self.lineVolts / SQRT3
                 }
@@ -102,7 +102,7 @@ class PCH_TxfoTerminal {
         
         get {
             
-            let phaseFactor = (self.connection == .Delta || self.connection == .Star ? SQRT3 : 1.0)
+            let phaseFactor = (self.connection == .delta || self.connection == .star ? SQRT3 : 1.0)
             
             return self.terminalVA / phaseFactor / self.lineVolts
         }
@@ -115,7 +115,7 @@ class PCH_TxfoTerminal {
             
             if (self.numPhases == 1)
             {
-                if (self.connection == Connections.OnePhaseOneLeg || self.connection == Connections.OnePhaseTwoLegSeries)
+                if (self.connection == Connections.onePhaseOneLeg || self.connection == Connections.onePhaseTwoLegSeries)
                 {
                     return self.lineAmps
                 }
@@ -169,7 +169,7 @@ class PCH_TxfoTerminal {
         - parameter dvLineVolts: The line voltage of the dual voltage, if any (ignored unless hasDualVoltages is true)
         - parameter dvBIL: The BIL level of the DV, if any (ignored inless hasDualVoltages is true)
     */
-    init(name:String, terminalVA:Double, lineVoltage:Double, numPhases:UInt, connection:Connections, phaseAngle:Double, lineBIL:BIL_Level, neutralBIL:BIL_Level, offloadTaps:[Double]? = nil, onloadTaps:[Double]? = nil, hasDualVoltage:Bool = false, dvLineVolts:Double = 0.0, dvBIL:BIL_Level = BIL_Level.KV10)
+    init(name:String, terminalVA:Double, lineVoltage:Double, numPhases:UInt, connection:Connections, phaseAngle:Double, lineBIL:BIL_Level, neutralBIL:BIL_Level, offloadTaps:[Double]? = nil, onloadTaps:[Double]? = nil, hasDualVoltage:Bool = false, dvLineVolts:Double = 0.0, dvBIL:BIL_Level = BIL_Level.kv10)
     {
         self.name = name
         self.terminalVA = terminalVA

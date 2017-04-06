@@ -14,7 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var window: NSWindow!
 
 
-    func applicationDidFinishLaunching(aNotification: NSNotification) {
+    func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
         
         /*
@@ -46,7 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         print("Number of fans: \(testFans!.numFans)")
 
-        let CMM = PCH_FanBank.CubicMetersPerMinuteForFan(testFans!.fanModel, speed: PCH_FanBank.FanSpeeds.RPM1140)
+        let CMM = PCH_FanBank.CubicMetersPerMinuteForFan(testFans!.fanModel, speed: PCH_FanBank.FanSpeeds.rpm1140)
         
         print("CMM at 1140 RPM: \(CMM)")
         
@@ -60,8 +60,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
     }
 
-    func applicationWillTerminate(aNotification: NSNotification) {
+    func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
+    }
+    
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool
+    {
+        return true
     }
 
 

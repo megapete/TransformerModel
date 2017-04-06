@@ -15,7 +15,7 @@ class PCH_ConnectionNode
     /**
         A static (class) property holding the next (unique) node id number
     */
-    private static var idNumber:Int32 = 0
+    fileprivate static var idNumber:Int32 = 0
     
     /**
         Bool to indicate whether the node is a terminal (external connection point)
@@ -33,7 +33,7 @@ class PCH_ConnectionNode
         - parameter identification: The string identifier for the node
         - parameter isTerminal: Set to 'true' if the node is an external terminal
     */
-    private init(identification:String, isTerminal:Bool = false)
+    fileprivate init(identification:String, isTerminal:Bool = false)
     {
         self.identification = identification
         self.isTerminal = isTerminal
@@ -52,7 +52,7 @@ class PCH_ConnectionNode
     /**
         A private function to get and increment (atomically) the next serial number
     */
-    private static func GetNextSerialNumber() -> String
+    fileprivate static func GetNextSerialNumber() -> String
     {
         // I think that this might actually be thread-safe, but I'm not 100% sure
         let result = "\(OSAtomicIncrement32(&PCH_ConnectionNode.idNumber))"

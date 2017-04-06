@@ -19,7 +19,7 @@ class PCH_Conductor: PCH_RawMaterial {
     */
     enum Conductor
     {
-        case Copper, Aluminum, Steel
+        case copper, aluminum, steel
     }
 
     /**
@@ -64,11 +64,11 @@ class PCH_Conductor: PCH_RawMaterial {
         {
             switch (self.material)
             {
-                case .Copper:
+                case .copper:
                     return "Copper"
-                case .Aluminum:
+                case .aluminum:
                     return "Aluminum"
-                case .Steel:
+                case .steel:
                     return "Steel"
             }
         }
@@ -128,17 +128,17 @@ class PCH_Conductor: PCH_RawMaterial {
     {
         switch conductor
         {
-            case .Copper:
+            case .copper:
             
-                self.init(type: .Copper, density:8940.0, cost:PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Copper), resistivity:1.72E-8, tempCoeff:0.003862)
+                self.init(type: .copper, density:8940.0, cost:PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Copper), resistivity:1.72E-8, tempCoeff:0.003862)
             
-            case .Aluminum:
+            case .aluminum:
             
-                self.init(type: .Aluminum, density:2700.0, cost:PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Aluminum), resistivity:2.82E-8, tempCoeff:0.0039)
+                self.init(type: .aluminum, density:2700.0, cost:PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Aluminum), resistivity:2.82E-8, tempCoeff:0.0039)
             
-            case .Steel:
+            case .steel:
             
-                self.init(type: .Steel, density:7850.0, cost:0.50, resistivity:1.43E-7, tempCoeff:0.0)
+                self.init(type: .steel, density:7850.0, cost:0.50, resistivity:1.43E-7, tempCoeff:0.0)
             
         }
     }
@@ -152,7 +152,7 @@ class PCH_Conductor: PCH_RawMaterial {
     
         - returns: Resistance In ohms
     */
-    func Resistance(condArea:Double, length:Double, temperature:Double) -> Double
+    func Resistance(_ condArea:Double, length:Double, temperature:Double) -> Double
     {
         let resistivityAtNewTemp = self.ρ * (1.0 + self.temperatureCoefficient * (temperature - 20.0))
         
@@ -169,7 +169,7 @@ class PCH_Conductor: PCH_RawMaterial {
     
     - returns: Resistance In ohms
     */
-    func Resistance(condX:Double, condY:Double, length:Double, temperature:Double) -> Double
+    func Resistance(_ condX:Double, condY:Double, length:Double, temperature:Double) -> Double
     {
         return Resistance(condX * condY, length: length, temperature: temperature)
     }

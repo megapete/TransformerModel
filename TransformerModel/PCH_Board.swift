@@ -35,6 +35,6 @@ class PCH_Board: PCH_Insulation {
         self.thickness = thickness
         self.length = length
         
-        super.init(material: PCH_Insulation.Insulation.TIV)
+        super.init(material: PCH_Insulation.Insulation.tiv)
     }
 }

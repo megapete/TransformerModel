@@ -20,7 +20,7 @@ class PCH_Strand: PCH_Conductor {
     */
     enum Shape
     {
-        case Rectangular, Round
+        case rectangular, round
     }
     
     /**
@@ -129,15 +129,15 @@ class PCH_Strand: PCH_Conductor {
         
         switch condType
         {
-            case .Copper:
+            case .copper:
                 
                 super.init(type:condType, density:8940.0, cost:3.00, resistivity:1.72E-8, tempCoeff:0.003862)
                 
-            case .Aluminum:
+            case .aluminum:
                 
                 super.init(type:condType, density:2700.0, cost:2.00, resistivity:2.82E-8, tempCoeff:0.0039)
                 
-            case .Steel:
+            case .steel:
                 
                 super.init(type:condType, density:7850.0, cost:0.50, resistivity:1.43E-7, tempCoeff:0.0)
             
@@ -158,7 +158,7 @@ class PCH_Strand: PCH_Conductor {
     */
     convenience init(condType:Conductor, width:Double, thickness:Double, edgeRadius:Double, coverInsulation:PCH_Insulation, coverThickness:Double)
     {
-        self.init(condType:condType, shape:Shape.Rectangular, xRadius:width / 2.0, yRadius:thickness / 2.0, edgeRadius:edgeRadius, coverInsulation:coverInsulation, coverThickness:coverThickness)
+        self.init(condType:condType, shape:Shape.rectangular, xRadius:width / 2.0, yRadius:thickness / 2.0, edgeRadius:edgeRadius, coverInsulation:coverInsulation, coverThickness:coverThickness)
     }
     
     /**
@@ -173,7 +173,7 @@ class PCH_Strand: PCH_Conductor {
     */
     convenience init(condType:Conductor, diameter:Double,  coverInsulation:PCH_Insulation, coverThickness:Double)
     {
-        self.init(condType:condType, shape:Shape.Round, xRadius:diameter / 2.0, yRadius:diameter / 2.0, edgeRadius:0.0, coverInsulation:coverInsulation, coverThickness:coverThickness)
+        self.init(condType:condType, shape:Shape.round, xRadius:diameter / 2.0, yRadius:diameter / 2.0, edgeRadius:0.0, coverInsulation:coverInsulation, coverThickness:coverThickness)
     }
 
     /**
@@ -185,11 +185,11 @@ class PCH_Strand: PCH_Conductor {
     {
         switch self.shape
         {
-            case .Round:
+            case .round:
                 
                 return π * xRadius * xRadius
             
-            case .Rectangular:
+            case .rectangular:
                 
                 // This is a formula that I developed myself. It calculates the rectagular area and subtracts the part outside the radii of the corners.
                 let x = self.edgeRadius * 2.0
@@ -207,11 +207,11 @@ class PCH_Strand: PCH_Conductor {
     {
         switch self.shape
         {
-        case .Round:
+        case .round:
             
             return 2.0 * π * (xRadius + coverThickness)
             
-        case .Rectangular:
+        case .rectangular:
             
             let r = self.edgeRadius + coverThickness / 2.0
             let x = 2.0 * (self.xRadius - self.edgeRadius)
@@ -229,7 +229,7 @@ class PCH_Strand: PCH_Conductor {
     
         - returns: The resistance in ohms
     */
-    func Resistance(length:Double, temperature:Double) -> Double
+    func Resistance(_ length:Double, temperature:Double) -> Double
     {
         return super.Resistance(self.Area(), length: length, temperature: temperature)
     }
@@ -241,7 +241,7 @@ class PCH_Strand: PCH_Conductor {
         
         - returns: The total weight of the strand, including its insulating cover
     */
-    func Weight(length:Double) -> Double
+    func Weight(_ length:Double) -> Double
     {
         let metalWeight = super.Weight(area:self.Area(), length: length)
         

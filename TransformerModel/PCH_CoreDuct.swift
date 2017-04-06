@@ -25,7 +25,7 @@ class PCH_CoreDuct: PCH_CoreStep
     {
         self.width = width
         
-        self.ductstrip = PCH_DuctStrip(paper: nil, strip: PCH_Strip(materialType: PCH_Insulation.Insulation.TX
+        self.ductstrip = PCH_DuctStrip(paper: nil, strip: PCH_Strip(materialType: PCH_Insulation.Insulation.tx
             , stripType: PCH_Strip.StripShape.rectangular, width: 0.0065, thickness: 0.005, length: 1.0), ccDistance: 0.030)
         
         super.init(lamination: nil, stackHeight: 0.005)
@@ -46,7 +46,7 @@ class PCH_CoreDuct: PCH_CoreStep
         
         - parameter length: The length of core for which we want to calculate the weight
     */
-    override func WeightForLength(length: Double) -> Double
+    override func WeightForLength(_ length: Double) -> Double
     {
         // This is a bit nuts, but the way that the PCH_DuctStrip calculates weight (ie: it's definitions of weight and length) are opposite those of a core duct
         return self.ductstrip.WeightOfWidth(length, length: self.width)
@@ -55,7 +55,7 @@ class PCH_CoreDuct: PCH_CoreStep
     /**
         The LossForLength function only returns a meaningful result for magnetic material, which this is not - so we return 0.0
     */
-    override func LossForLength(length: Double, atBmax: Double) -> Double
+    override func LossForLength(_ length: Double, atBmax: Double) -> Double
     {
         return 0.0
     }

@@ -130,7 +130,7 @@ class PCH_Core {
     }
     
     /// A fuction to get the total loss of the core in watts at a given Bmax (in Teslas)
-    func LossAtBmax(bMax:Double) -> Double
+    func LossAtBmax(_ bMax:Double) -> Double
     {
         var yokeLength = 2.0 * self.mainLegCenters
         

@@ -171,7 +171,7 @@ class PCH_CoilSection
         
         - parameter turns: A list of turn numbers
     */
-    func AddTapsAtTurns(turns:Double...)
+    func AddTapsAtTurns(_ turns:Double...)
     {
         ZAssert(false, message: "Base class function called - this must be overridden by subclasses!")
     }

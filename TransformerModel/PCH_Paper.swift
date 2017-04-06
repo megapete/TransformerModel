@@ -19,7 +19,7 @@ class PCH_Paper: PCH_Insulation {
     */
     enum PaperType
     {
-        case Plain, SingleSideDot, DoubleSideDot
+        case plain, singleSideDot, doubleSideDot
     }
     
     /**
@@ -38,11 +38,11 @@ class PCH_Paper: PCH_Insulation {
             
             switch (self.type)
             {
-                case .Plain:
+                case .plain:
                     result = "Insuldur"
-                case .SingleSideDot:
+                case .singleSideDot:
                     result = "One sided epoxy diamond-dot, insuldur"
-                case .DoubleSideDot:
+                case .doubleSideDot:
                     result = "Double-sided epoxy diamond dot, insuldur"
             }
             
@@ -70,7 +70,7 @@ class PCH_Paper: PCH_Insulation {
         self.dimensions.width = width
         self.dimensions.length = length
         
-        super.init(material: .Paper)
+        super.init(material: .paper)
         
         self.name = self.description
     }

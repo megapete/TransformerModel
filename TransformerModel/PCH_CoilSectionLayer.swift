@@ -93,7 +93,7 @@ class PCH_CoilSectionLayer: PCH_CoilSection {
     
         - parameter turns: A list of turn numbers
     */
-    override func AddTapsAtTurns(turns: Double...)
+    override func AddTapsAtTurns(_ turns: Double...)
     {
         // Store the number of turns per disk for convenience
         let turnsPerLayer = layers[0].effectiveTurns

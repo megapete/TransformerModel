@@ -15,31 +15,31 @@ class PCH_FanBank {
     /// The possible fan models
     enum FanModels {
         
-        case FAC262
-        case FAC264
-        case FAC244
-        case FAC164
+        case fac262
+        case fac264
+        case fac244
+        case fac164
         
         /// A static dictionary to hold the keys into the fan data dictionary for each fan type
-        static let fanModelKeys = [FAC262:"FAC262", FAC264:"FAC264", FAC244:"FAC244", FAC164:"FAC164"]
+        static let fanModelKeys = [fac262:"FAC262", fac264:"FAC264", fac244:"FAC244", fac164:"FAC164"]
         
         /// Another dictionary to ocnvert the Strings back to the FanModels (sigh)
-        static let fanModelStrings = ["FAC262":FAC262, "FAC264":FAC264, "FAC244":FAC244, "FAC164":FAC164]
+        static let fanModelStrings = ["FAC262":fac262, "FAC264":fac264, "FAC244":fac244, "FAC164":fac164]
     }
     
     /// The possible fan motor speeds (RPM)
     enum FanSpeeds {
         
-        case RPM850
-        case RPM1140
-        case RPM1750
+        case rpm850
+        case rpm1140
+        case rpm1750
         
         /// A static dictionary to get at the different motor-sizes for the fans
-        static let fanMotorKeys = [RPM850:"850", RPM1140:"1140", RPM1750:"1750"]
+        static let fanMotorKeys = [rpm850:"850", rpm1140:"1140", rpm1750:"1750"]
     }
     
     /// The dictionary that holds the fan data. Note that no routine (including local ones) should directly access this member - call the static FanDictionary function instead.
-    private static var fanDataDict:NSDictionary? = nil
+    fileprivate static var fanDataDict:NSDictionary? = nil
     
     let model:FanModels
     let numFans:Int
@@ -47,13 +47,13 @@ class PCH_FanBank {
     /**
         Designated initializer. Note that this initializer can fail if the available "blowable" surface is not within a certain range. If the initializer fails, it is recommended that the calling routine call SuitabilityFactorOfRadBank() with some fraction (< 1.0) of the rad bank's total surface to try and get a better chance that the initializer
     */
-    init?(radBank:PCH_RadBank, lossToDissipate:Double, inout mor:Double, preferLowNoise:Bool)
+    init?(radBank:PCH_RadBank, lossToDissipate:Double, mor:inout Double, preferLowNoise:Bool)
     {
         // Write some filler code so the program compiles
         
         // TODO: Fix this so it works
         
-        self.model = PCH_FanBank.FanModels.FAC262
+        self.model = PCH_FanBank.FanModels.fac262
         self.numFans = 1
         
     }
@@ -67,7 +67,7 @@ class PCH_FanBank {
     
         - returns: A number that indicates the suitability of the parameters. If the number is 1.0, then the parameters are okay. Otherwise, the returned value indicates what the ratio Ablown/MOR must be multiplied by to bring the parameters into an acceptable range.
     */
-    static func SuitabilityFactorOfRadBank(radBank:PCH_RadBank, loss:Double, mor:Double) -> Double
+    static func SuitabilityFactorOfRadBank(_ radBank:PCH_RadBank, loss:Double, mor:Double) -> Double
     {
         let totalRadBankSurface = Double(radBank.numRads) * radBank.radiatorDefinition.radSurface
         
@@ -94,7 +94,7 @@ class PCH_FanBank {
         
         - returns: The circular area (in square meters) that the fan can blow.
     */
-    static func BlowableAreaForFan(model:FanModels) -> Double
+    static func BlowableAreaForFan(_ model:FanModels) -> Double
     {
         guard let fanDict = PCH_FanBank.FanDictionary() else
         {
@@ -108,7 +108,7 @@ class PCH_FanBank {
             return 0.0
         }
         
-        let radius = ((modelDict["BladeDiameter"] as! NSNumber) as Double) * 0.0254 / 2.0
+        let radius = ((modelDict["BladeDiameter"] as! NSNumber) as! Double) * 0.0254 / 2.0
         
         return π * radius * radius
     }
@@ -122,7 +122,7 @@ class PCH_FanBank {
     
         - returns: Cubic meters per minute of air (note that this will return 0 if the requested rpm does not exist for the given model or if any other error occurs)
     */
-    static func CubicMetersPerMinuteForFan(model:FanModels, speed:FanSpeeds) -> Double
+    static func CubicMetersPerMinuteForFan(_ model:FanModels, speed:FanSpeeds) -> Double
     {
         guard let fanDict = PCH_FanBank.FanDictionary() else
         {
@@ -136,13 +136,13 @@ class PCH_FanBank {
             return 0.0
         }
         
-        guard let speedDict = modelDict[FanSpeeds.fanMotorKeys[speed]!] else
+        guard let speedDict = modelDict[FanSpeeds.fanMotorKeys[speed]!] as? [String:NSNumber] else
         {
             DLog("This model does not supprt the requested RPM")
             return 0.0
         }
         
-        let CFM = (speedDict["CFM"] as! NSNumber) as Double
+        let CFM = (speedDict["CFM"]!) as! Double
         
         // Convert the CFM to CMM
         return CFM * 0.0254 * 0.0254 * 0.0254 * 12.0 * 12.0 * 12.0
@@ -155,7 +155,7 @@ class PCH_FanBank {
         - parameter radiator: The radiator for which we will calculate the number of fans we can fit
         - returns: The tuple (fanModel, numFans)
     */
-    static func GetOptimumNumberOfFansForRad(radiator:PCH_Radiator) -> (fanModel:PCH_FanBank.FanModels, numFans:Int)?
+    static func GetOptimumNumberOfFansForRad(_ radiator:PCH_Radiator) -> (fanModel:PCH_FanBank.FanModels, numFans:Int)?
     {
         guard let fanDict = PCH_FanBank.FanDictionary() else
         {
@@ -168,14 +168,14 @@ class PCH_FanBank {
         let allowedOverlap = 0.0508
         
         // Set the result to a ridiculously high value
-        var result = (fanModel:FanModels.FAC262, numFans:Int.max)
+        var result = (fanModel:FanModels.fac262, numFans:Int.max)
         
         for (nextKey, nextValue) in fanDict
         {
             let nextFanDict = nextValue as! NSDictionary
             
             // The fan data is all in Imperial units, convert to metric
-            let cageDiameter = ((nextFanDict["CageDiameter"] as! NSNumber) as Double) * 0.0254
+            let cageDiameter = ((nextFanDict["CageDiameter"] as! NSNumber) as! Double) * 0.0254
             
             // B34 is availableWidth
             // B35 is availableHt
@@ -204,11 +204,11 @@ class PCH_FanBank {
     /**
         Function that returns the fan data dictionary. loading it into memory if it is not already done. This function should be used to access the dictionary. Direct access implies checking whether it has been loaded and if not, loading it. **Just use this function!**
     */
-    private static func FanDictionary() -> NSDictionary?
+    fileprivate static func FanDictionary() -> NSDictionary?
     {
         if (PCH_FanBank.fanDataDict == nil)
         {
-            if let path = NSBundle.mainBundle().pathForResource("FanData", ofType: "plist")
+            if let path = Bundle.main.path(forResource: "FanData", ofType: "plist")
             {
                 PCH_FanBank.fanDataDict = NSDictionary(contentsOfFile: path)
                 

@@ -17,13 +17,13 @@ class PCH_Insulation: PCH_RawMaterial, CustomStringConvertible {
     */
     enum Insulation
     {
-        case Nomex, Glastic, Paper, TIV, TX, Air, Oil, Vacuum, Formel, Varnish
+        case nomex, glastic, paper, tiv, tx, air, oil, vacuum, formel, varnish
     }
     
     let material: Insulation
     
     /// static library to convert insulation types into their strings
-    static let typeString = [Insulation.Nomex:"Nomex", Insulation.Glastic:"Glastic", Insulation.Paper:"Paper", Insulation.TIV:"TIV", Insulation.TX:"TX", Insulation.Air:"Air", Insulation.Oil:"Oil", Insulation.Vacuum:"Vacuum", Insulation.Formel:"Formel", Insulation.Varnish:"Varnish"]
+    static let typeString = [Insulation.nomex:"Nomex", Insulation.glastic:"Glastic", Insulation.paper:"Paper", Insulation.tiv:"TIV", Insulation.tx:"TX", Insulation.air:"Air", Insulation.oil:"Oil", Insulation.vacuum:"Vacuum", Insulation.formel:"Formel", Insulation.varnish:"Varnish"]
     
     /// Property required when adopting CustomStringConvertible
     var description: String
@@ -49,25 +49,25 @@ class PCH_Insulation: PCH_RawMaterial, CustomStringConvertible {
         {
             switch(self.material)
             {
-                case .Nomex:
+                case .nomex:
                     DLog("This is for Nomex <= 3mil thick - use εRel(thickness:Double) for thicker")
                     return 1.6
-                case .Glastic:
+                case .glastic:
                     return 4.2
-                case .Paper:
+                case .paper:
                     return 3.5
-                case .TIV:
+                case .tiv:
                     return 4.5
-                case .TX:
+                case .tx:
                     return 4.5
-                case .Oil:
+                case .oil:
                     return 2.2
-                case .Formel:
+                case .formel:
                     return 2.8
-                case .Varnish:
+                case .varnish:
                     DLog("This is actually the permittivity of PTFE, which I vaguely recall. TO BE CONFIRMED!")
                     return 2.10
-                case .Air:
+                case .air:
                     return 1.0006
                 default:
                     return 1.0
@@ -86,11 +86,11 @@ class PCH_Insulation: PCH_RawMaterial, CustomStringConvertible {
         {
             switch(self.material)
             {
-                case .Paper:
+                case .paper:
                     return 0.85
-                case .TIV:
+                case .tiv:
                     return 0.95
-                case .TX:
+                case .tx:
                     return 0.98
                 default:
                     return 1.0
@@ -109,34 +109,34 @@ class PCH_Insulation: PCH_RawMaterial, CustomStringConvertible {
         
         switch material {
             
-        case .Air:
+        case .air:
             super.init(name: "", density: 1.225, cost: 0.0)
             
-        case .Nomex:
+        case .nomex:
             super.init(name: "", density: 880.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Nomex))
             
-        case .Glastic:
+        case .glastic:
             super.init(name: "", density: 2000.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Glastic))
             
-        case .Paper:
+        case .paper:
             super.init(name: "", density: 635.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Paper))
             
-        case .TIV:
+        case .tiv:
             super.init(name: "", density: 1180.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.TIV))
             
-        case .TX:
+        case .tx:
             super.init(name: "", density: 1280.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.TX))
             
-        case .Oil:
+        case .oil:
             super.init(name: "", density: 835.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Oil))
             
-        case .Formel:
+        case .formel:
             super.init(name: "", density: 1230.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Formel))
             
-        case .Varnish:
+        case .varnish:
             super.init(name: "", density: 1230.0, cost: PCH_Costs.sharedInstance.CostForKey(PCH_Costs.CostKey.Varnish))
             
-        case .Vacuum:
+        case .vacuum:
             super.init(name: "", density: 0.0, cost: 0.0)
             
         }
@@ -147,9 +147,9 @@ class PCH_Insulation: PCH_RawMaterial, CustomStringConvertible {
     
         - parameter thickness: The thickness of the material in meters to use to get the permittivity
     */
-    func εRel(thickness:Double) -> Double
+    func εRel(_ thickness:Double) -> Double
     {
-        if (self.material == .Nomex)
+        if (self.material == .nomex)
         {
             if (thickness <= 0.08E-3)
             {

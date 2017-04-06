@@ -49,7 +49,7 @@ class PCH_WdgTappedLayer: PCH_WdgLayer {
     /**
         Function to activate only some turns of the layer. The tap index is the index into the tapLocations property. If index is less than 0 all the turns are deactivated. If index is greater than the highest index, all turns are activated.
     */
-    func activateToTapIndex(index:Int)
+    func activateToTapIndex(_ index:Int)
     {
         if (index < 0)
         {
