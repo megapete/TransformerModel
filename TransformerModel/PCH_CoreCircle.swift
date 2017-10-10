@@ -219,7 +219,7 @@ class PCH_CoreCircle
         
         // Before trying to optimize the diameter, we'll do a quick and dirty calculation of W/sq.m. to see if we need ducts and if so, how many. We'll consider a 1m long section of the core to make calculations fast and easy. This section is currently quite ugly will definitely evolve during testing.
        
-        // THIS NUMBER TO BE EVOLVED!!!
+        // TODO: THIS NUMBER TO BE EVOLVED!!!
         let targetWperSqM = 900.0
         
         let tWt = targetArea * 1 * steelType.density

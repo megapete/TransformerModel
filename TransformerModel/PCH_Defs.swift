@@ -60,10 +60,10 @@ func ALog(_ message:String, file:String = #file, function:String = #function, li
     - parameter condition: The condition that must be true to not assert
     - parameter message: The message to show if condition is false
 */
-func ZAssert(_ condition:Bool, message:String)
+func ZAssert(_ condition:Bool, message:String, file:String = #file, function:String = #function, line:Int = #line)
 {
     if !condition
     {
-        ALog(message)
+        ALog(message, file:file, function:function, line:line)
     }
 }
