@@ -70,5 +70,9 @@ class PCH_CoreSteel: PCH_RawMaterial
         return result * 2.2
     }
     
+    func CanadianDollarValue(weight:Double) -> Double
+    {
+        return weight * Steel[self.type]!.price
+    }
 
 }

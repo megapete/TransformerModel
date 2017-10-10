@@ -69,7 +69,7 @@ class PCH_Core {
         - parameter mainLegCenters: The center-to-center distance of the main legs (ones with coils)
         - parameter windowHt: The window height of the core
         - parameter yokeCoreCircle: The PCH_CoreCircle that is used to stack the top and bottom yokes
-        - parameter mainLegCOreCircle: The PCH_CoreCircle that is used ot stack the main legs
+        - parameter mainLegCoreCircle: The PCH_CoreCircle that is used ot stack the main legs
         - parameter outsideLegCenters: The center-to-center distance between an outermost main leg and an outside leg
         - parameter outsideLegCoreCircle: An optional PCH_CoreCircle that is used to stack outside legs (if any)
     */
@@ -78,6 +78,8 @@ class PCH_Core {
         ZAssert(numWoundLegs <= numLegs, message: "You must have at least as many legs as wound legs!")
         ZAssert(numWoundLegs > 0 && numWoundLegs < 4, message: "This program can only handle transformers with 1, 2, or 3 wound legs.")
         ZAssert(numLegs <= 5, message: "Cannot handle a core with more than a total of 5 legs.")
+        
+        ZAssert(numWoundLegs == numLegs || outsideLegCoreCircle != nil, message: "Outside leg core circle not defined for unwound leg(s)!")
         
         self.numLegs = numLegs
         self.numWoundLegs = numWoundLegs
@@ -101,7 +103,7 @@ class PCH_Core {
     /// A function to get the total weight in kg of the core
     func Weight() -> Double
     {
-        var yokeLength = 2.0 * self.mainLegCenters
+        var yokeLength = Double(self.numWoundLegs - 1) * self.mainLegCenters
         
         if (outsideLegCoreCircle != nil)
         {
@@ -158,6 +160,26 @@ class PCH_Core {
         }
         
         return result
+    }
+    
+    func CanadianDollarValue() -> Double
+    {
+        guard self.yokeCoreCircle.steps.count > 0 else
+        {
+            DLog("Steps are not defined!")
+            return 0.0
+        }
+        
+        let step = self.yokeCoreCircle.steps[0]
+        
+        var result = 0.0;
+        
+        if let lamination = step.lamination
+        {
+            result = lamination.steelType.CanadianDollarValue(weight: self.Weight())
+        }
+        
+        return result;
     }
     
 }
