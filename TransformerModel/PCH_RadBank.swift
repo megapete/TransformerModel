@@ -132,7 +132,17 @@ class PCH_RadBank {
         
         if let onafLoss = lossToDissipateONAF
         {
-            
+            if let morOnaf = meanOilRiseONAF
+            {
+                if let optFansPerSide = PCH_FanBank.GetOptimumNumberOfFansForRad(basicRad)
+                {
+                    let blownSurface = Double(optFansPerSide.numFans) * PCH_FanBank.BlowableAreaForFan(optFansPerSide.fanModel)
+                    
+                    var onafY = onafLoss / blownSurface / morOnaf
+                    
+                    while onafY < 0.007
+                }
+            }
         }
         
         self.init(numRads:Int(numRads), radiatorDefinition:basicRad, numFans:numFans, fanDefinition:fanDef)

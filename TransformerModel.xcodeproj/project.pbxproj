@@ -29,7 +29,6 @@
 		D37FFBED1B471B86008DBDDA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */; };
 		D37FFBEF1B471B86008DBDDA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D37FFBEE1B471B86008DBDDA /* Images.xcassets */; };
 		D37FFBF21B471B86008DBDDA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = D37FFBF01B471B86008DBDDA /* MainMenu.xib */; };
-		D37FFBFE1B471B86008DBDDA /* TransformerModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFBFD1B471B86008DBDDA /* TransformerModelTests.swift */; };
 		D37FFC081B471BE3008DBDDA /* PCH_RawMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC071B471BE2008DBDDA /* PCH_RawMaterial.swift */; };
 		D37FFC0A1B472DEF008DBDDA /* PCH_Conductor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC091B472DEF008DBDDA /* PCH_Conductor.swift */; };
 		D37FFC0C1B494EDD008DBDDA /* PCH_Strand.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */; };
@@ -51,22 +50,11 @@
 		D3CE0CF91B5F1A860060B71C /* PCH_Strip.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3CE0CF81B5F1A860060B71C /* PCH_Strip.swift */; };
 		D3E13C6F1B4DFDCE006E75AD /* PCH_Paper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E13C6E1B4DFDCE006E75AD /* PCH_Paper.swift */; };
 		D3EE6B601B74FC6F00332EEC /* PCH_CoreSteel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B5F1B74FC6F00332EEC /* PCH_CoreSteel.swift */; };
-		D3EE6B621B75039000332EEC /* CoreData.plist in Resources */ = {isa = PBXBuildFile; fileRef = D3EE6B611B75039000332EEC /* CoreData.plist */; };
 		D3EE6B641B7638EC00332EEC /* PCH_Lamination.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B631B7638EC00332EEC /* PCH_Lamination.swift */; };
 		D3EE6B661B763CDD00332EEC /* PCH_CoreStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B651B763CDD00332EEC /* PCH_CoreStep.swift */; };
 		D3EE6B681B76665100332EEC /* PCH_CoreCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B671B76665100332EEC /* PCH_CoreCircle.swift */; };
 		D3EE6B6A1B76678400332EEC /* PCH_CoreDuct.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B691B76678400332EEC /* PCH_CoreDuct.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		D37FFBF81B471B86008DBDDA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D37FFBDF1B471B86008DBDDA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D37FFBE61B471B86008DBDDA;
-			remoteInfo = TransformerModel;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		D33DCCAD1B7AB6F400DCBF74 /* PCH_ClearanceData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_ClearanceData.swift; sourceTree = "<group>"; };
@@ -93,9 +81,6 @@
 		D37FFBEC1B471B86008DBDDA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D37FFBEE1B471B86008DBDDA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		D37FFBF11B471B86008DBDDA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		D37FFBF71B471B86008DBDDA /* TransformerModelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TransformerModelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D37FFBFC1B471B86008DBDDA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D37FFBFD1B471B86008DBDDA /* TransformerModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformerModelTests.swift; sourceTree = "<group>"; };
 		D37FFC071B471BE2008DBDDA /* PCH_RawMaterial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_RawMaterial.swift; sourceTree = "<group>"; };
 		D37FFC091B472DEF008DBDDA /* PCH_Conductor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Conductor.swift; sourceTree = "<group>"; };
 		D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Strand.swift; sourceTree = "<group>"; };
@@ -117,7 +102,6 @@
 		D3CE0CF81B5F1A860060B71C /* PCH_Strip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Strip.swift; sourceTree = "<group>"; };
 		D3E13C6E1B4DFDCE006E75AD /* PCH_Paper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Paper.swift; sourceTree = "<group>"; };
 		D3EE6B5F1B74FC6F00332EEC /* PCH_CoreSteel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoreSteel.swift; sourceTree = "<group>"; };
-		D3EE6B611B75039000332EEC /* CoreData.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = CoreData.plist; sourceTree = "<group>"; };
 		D3EE6B631B7638EC00332EEC /* PCH_Lamination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Lamination.swift; sourceTree = "<group>"; };
 		D3EE6B651B763CDD00332EEC /* PCH_CoreStep.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoreStep.swift; sourceTree = "<group>"; };
 		D3EE6B671B76665100332EEC /* PCH_CoreCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoreCircle.swift; sourceTree = "<group>"; };
@@ -132,13 +116,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D37FFBF41B471B86008DBDDA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -146,7 +123,6 @@
 			isa = PBXGroup;
 			children = (
 				D37FFBE91B471B86008DBDDA /* TransformerModel */,
-				D37FFBFA1B471B86008DBDDA /* TransformerModelTests */,
 				D37FFBE81B471B86008DBDDA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -155,7 +131,6 @@
 			isa = PBXGroup;
 			children = (
 				D37FFBE71B471B86008DBDDA /* TransformerModel.app */,
-				D37FFBF71B471B86008DBDDA /* TransformerModelTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -183,7 +158,6 @@
 				D3EE6B691B76678400332EEC /* PCH_CoreDuct.swift */,
 				D3EE6B671B76665100332EEC /* PCH_CoreCircle.swift */,
 				D33DCCB31B7CD15300DCBF74 /* PCH_Core.swift */,
-				D3EE6B611B75039000332EEC /* CoreData.plist */,
 				D37FFC091B472DEF008DBDDA /* PCH_Conductor.swift */,
 				D37FFC0B1B494EDD008DBDDA /* PCH_Strand.swift */,
 				D3CC87D21B5AA8FC00EBD121 /* PCH_WdgCable.swift */,
@@ -224,23 +198,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		D37FFBFA1B471B86008DBDDA /* TransformerModelTests */ = {
-			isa = PBXGroup;
-			children = (
-				D37FFBFD1B471B86008DBDDA /* TransformerModelTests.swift */,
-				D37FFBFB1B471B86008DBDDA /* Supporting Files */,
-			);
-			path = TransformerModelTests;
-			sourceTree = "<group>";
-		};
-		D37FFBFB1B471B86008DBDDA /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				D37FFBFC1B471B86008DBDDA /* Info.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -261,24 +218,6 @@
 			productReference = D37FFBE71B471B86008DBDDA /* TransformerModel.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D37FFBF61B471B86008DBDDA /* TransformerModelTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D37FFC041B471B87008DBDDA /* Build configuration list for PBXNativeTarget "TransformerModelTests" */;
-			buildPhases = (
-				D37FFBF31B471B86008DBDDA /* Sources */,
-				D37FFBF41B471B86008DBDDA /* Frameworks */,
-				D37FFBF51B471B86008DBDDA /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D37FFBF91B471B86008DBDDA /* PBXTargetDependency */,
-			);
-			name = TransformerModelTests;
-			productName = TransformerModelTests;
-			productReference = D37FFBF71B471B86008DBDDA /* TransformerModelTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -293,11 +232,6 @@
 					D37FFBE61B471B86008DBDDA = {
 						CreatedOnToolsVersion = 6.4;
 						LastSwiftMigration = 0900;
-					};
-					D37FFBF61B471B86008DBDDA = {
-						CreatedOnToolsVersion = 6.4;
-						LastSwiftMigration = 0900;
-						TestTargetID = D37FFBE61B471B86008DBDDA;
 					};
 				};
 			};
@@ -315,7 +249,6 @@
 			projectRoot = "";
 			targets = (
 				D37FFBE61B471B86008DBDDA /* TransformerModel */,
-				D37FFBF61B471B86008DBDDA /* TransformerModelTests */,
 			);
 		};
 /* End PBXProject section */
@@ -326,17 +259,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				D388F38E1B80A61E007C880C /* FanData.plist in Resources */,
-				D3EE6B621B75039000332EEC /* CoreData.plist in Resources */,
 				D33DCCB01B7AB8EF00DCBF74 /* ClearanceData.plist in Resources */,
 				D37FFBEF1B471B86008DBDDA /* Images.xcassets in Resources */,
 				D37FFBF21B471B86008DBDDA /* MainMenu.xib in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D37FFBF51B471B86008DBDDA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,23 +318,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D37FFBF31B471B86008DBDDA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D37FFBFE1B471B86008DBDDA /* TransformerModelTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		D37FFBF91B471B86008DBDDA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D37FFBE61B471B86008DBDDA /* TransformerModel */;
-			targetProxy = D37FFBF81B471B86008DBDDA /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		D37FFBF01B471B86008DBDDA /* MainMenu.xib */ = {
@@ -551,48 +460,6 @@
 			};
 			name = Release;
 		};
-		D37FFC051B471B87008DBDDA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = TransformerModelTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.huberis-tech.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TransformerModel.app/Contents/MacOS/TransformerModel";
-			};
-			name = Debug;
-		};
-		D37FFC061B471B87008DBDDA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = TransformerModelTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.huberis-tech.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TransformerModel.app/Contents/MacOS/TransformerModel";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -610,15 +477,6 @@
 			buildConfigurations = (
 				D37FFC021B471B87008DBDDA /* Debug */,
 				D37FFC031B471B87008DBDDA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D37FFC041B471B87008DBDDA /* Build configuration list for PBXNativeTarget "TransformerModelTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D37FFC051B471B87008DBDDA /* Debug */,
-				D37FFC061B471B87008DBDDA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -42,7 +42,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         DLog("This is a test")
         
-        let basicRad = PCH_Radiator(numPanels:28, panelDimensions:(PCH_Radiator.standardWidth, 2.2))
+        let basicRad = PCH_Radiator(numPanels:32, panelDimensions:(PCH_Radiator.standardWidth, 2.2))
         
         let testFans = PCH_FanBank.GetOptimumNumberOfFansForRad(basicRad)
         
