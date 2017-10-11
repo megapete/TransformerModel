@@ -44,7 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         let basicRad = PCH_Radiator(numPanels:32, panelDimensions:(PCH_Radiator.standardWidth, 2.2))
         
-        let testFans = PCH_FanBank.GetOptimumNumberOfFansForRad(basicRad)
+        let testFans = PCH_FanBank.GetOptimumNumberOfFansForRad(basicRad, rejectFans: [])
         
         print("Number of fans: \(testFans!.numFans)")
 

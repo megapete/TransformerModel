@@ -43,6 +43,7 @@ class PCH_FanBank {
     
     let model:FanModels
     let numFans:Int
+    let isSplit:Bool
 
     /**
         Designated initializer. Note that this initializer can fail if the available "blowable" surface is not within a certain range. If the initializer fails, it is recommended that the calling routine call SuitabilityFactorOfRadBank() with some fraction (< 1.0) of the rad bank's total surface to try and get a better chance that the initializer
@@ -53,22 +54,66 @@ class PCH_FanBank {
         
         // TODO: Fix this so it works
         
-        self.model = PCH_FanBank.FanModels.fac262
-        self.numFans = 1
+        var done = false
+        var badFans:[PCH_FanBank.FanModels] = []
+        var typicalRad = radBank.radiatorDefinition
+        var numFans = 0
+        var fanModel = FanModels.fac262
+        var isSplit = false
         
+        while !done
+        {
+            // Get the maximum number of fans we can fit onto this rad bank
+            guard let optFans = PCH_FanBank.GetOptimumNumberOfFansForRad(typicalRad, rejectFans: badFans) else
+            {
+                DLog("Could not find fans that fit this rad bank!")
+                return nil
+            }
+            
+            // Allow for a loop to split the rad bank in two (two sets of optFans) if needed
+            for i:Int in 1...2
+            {
+                let totalFanArea = Double(optFans.numFans) * PCH_FanBank.BlowableAreaForFan(optFans.fanModel)
+                let totalBlownSurface = 2.0 * Double(radBank.numRads) / Double(i) * typicalRad.panelDimensions.width * totalFanArea
+                let lossPerBank = lossToDissipate / Double(i)
+                
+                var yOnaf = lossPerBank / totalBlownSurface / mor
+                
+                if yOnaf > 20.15
+                {
+                    isSplit = true
+                    continue
+                }
+                
+                while yOnaf < 10.85
+                {
+                    
+                }
+            }
+            
+            done = true
+        }
+        
+        self.model = fanModel
+        self.numFans = numFans
+        self.isSplit = isSplit
     }
     
     /**
+         THIS FUNCTION IS NOT USED
+     
         Function used to test the suitability of a given rad bank and MOR.
     
         - parameter radBank: The radiator bank that we want to test
+        - parameter withFan: The fan that we want to test
         - parameter loss: The loss we want to dissipate with the fans
         - parameter mor: The mean-oil-rise we want to meet
     
         - returns: A number that indicates the suitability of the parameters. If the number is 1.0, then the parameters are okay. Otherwise, the returned value indicates what the ratio Ablown/MOR must be multiplied by to bring the parameters into an acceptable range.
     */
-    static func SuitabilityFactorOfRadBank(_ radBank:PCH_RadBank, loss:Double, mor:Double) -> Double
+    static func SuitabilityFactorOfRadBank(_ radBank:PCH_RadBank, withFan:PCH_FanBank.FanModels, loss:Double, mor:Double) -> Double
     {
+    
         let totalRadBankSurface = Double(radBank.numRads) * radBank.radiatorDefinition.radSurface
         
         let aOverMor = totalRadBankSurface / mor
@@ -153,9 +198,10 @@ class PCH_FanBank {
         Function to return the optimum number of fans (ie: the least number) that can fit on a given radiator. This routine prefers lower-noise fans in the result of a tie.
     
         - parameter radiator: The radiator for which we will calculate the number of fans we can fit
+        - parameter rejectFans: A list of fan models that should NOT be tested (may be empty)
         - returns: The tuple (fanModel, numFans)
     */
-    static func GetOptimumNumberOfFansForRad(_ radiator:PCH_Radiator) -> (fanModel:PCH_FanBank.FanModels, numFans:Int)?
+    static func GetOptimumNumberOfFansForRad(_ radiator:PCH_Radiator, rejectFans:[PCH_FanBank.FanModels]) -> (fanModel:PCH_FanBank.FanModels, numFans:Int)?
     {
         guard let fanDict = PCH_FanBank.FanDictionary() else
         {
@@ -172,6 +218,14 @@ class PCH_FanBank {
         
         for (nextKey, nextValue) in fanDict
         {
+            if let nextModel = PCH_FanBank.FanModels.fanModelStrings[nextKey as! String]
+            {
+                if rejectFans.contains(nextModel)
+                {
+                    continue
+                }
+            }
+    
             let nextFanDict = nextValue as! NSDictionary
             
             // The fan data is all in Imperial units, convert to metric
@@ -190,6 +244,7 @@ class PCH_FanBank {
             {
                 result = (FanModels.fanModelStrings[nextKey as! String]!, Int(numFans))
             }
+            
         }
         
         if result.numFans == Int.max
