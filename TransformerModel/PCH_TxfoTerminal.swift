@@ -49,7 +49,7 @@ class PCH_TxfoTerminal {
     let connection:Connections
     
     /// The VA of the terminal
-    let terminalVA:Double
+    let terminalVA:(onan:Double, onaf:Double)
     
     /// Line to line voltage of the terminal
     let lineVolts:Double
@@ -98,18 +98,18 @@ class PCH_TxfoTerminal {
     }
     
     /// The amps entering the terminal (computed property)
-    var lineAmps:Double {
+    var lineAmps:(onan:Double, onaf:Double) {
         
         get {
             
             let phaseFactor = (self.connection == .delta || self.connection == .star ? SQRT3 : 1.0)
             
-            return self.terminalVA / phaseFactor / self.lineVolts
+            return (self.terminalVA.onan / phaseFactor / self.lineVolts, self.terminalVA.onaf / phaseFactor / self.lineVolts)
         }
     }
     
     /// The amps going through the leg (ie: the same for all series-connected windings)
-    var legAmps:Double {
+    var legAmps:(onan:Double, onaf:Double) {
         
         get {
             
@@ -121,12 +121,12 @@ class PCH_TxfoTerminal {
                 }
                 else
                 {
-                    return self.lineAmps / 2.0
+                    return (self.lineAmps.onan / 2.0, self.lineAmps.onaf / 2.0)
                 }
             }
             else
             {
-                return self.terminalVA / 3.0 / self.legVolts
+                return (self.terminalVA.onan / 3.0 / self.legVolts, self.terminalVA.onaf / 3.0 / self.legVolts)
             }
         }
     }
@@ -149,6 +149,9 @@ class PCH_TxfoTerminal {
     /// Optional array of onload tap percentages
     var onloadTaps:[Double]?
     
+    var preferredMainWindingLocation:Int
+    var preferredTapWindingLocation:Int
+    
     /// An array of PCH_Coils that belong to this terminal. This is made an optional so that we don't have to have the coils defined before we actually create the terminal.
     var coils:[PCH_Coil]?
     
@@ -169,7 +172,7 @@ class PCH_TxfoTerminal {
         - parameter dvLineVolts: The line voltage of the dual voltage, if any (ignored unless hasDualVoltages is true)
         - parameter dvBIL: The BIL level of the DV, if any (ignored inless hasDualVoltages is true)
     */
-    init(name:String, terminalVA:Double, lineVoltage:Double, numPhases:UInt, connection:Connections, phaseAngle:Double, lineBIL:BIL_Level, neutralBIL:BIL_Level, offloadTaps:[Double]? = nil, onloadTaps:[Double]? = nil, hasDualVoltage:Bool = false, dvLineVolts:Double = 0.0, dvBIL:BIL_Level = BIL_Level.kv10)
+    init(name:String, terminalVA:(onan:Double, onaf:Double), lineVoltage:Double, preferredWindingLocation:Int = -1, numPhases:UInt, connection:Connections, phaseAngle:Double, lineBIL:BIL_Level, neutralBIL:BIL_Level, offloadTaps:[Double]? = nil, onloadTaps:[Double]? = nil, preferredTapWindingLocation:Int = -1, hasDualVoltage:Bool = false, dvLineVolts:Double = 0.0, dvBIL:BIL_Level = BIL_Level.kv10)
     {
         self.name = name
         self.terminalVA = terminalVA
@@ -184,6 +187,8 @@ class PCH_TxfoTerminal {
             self._numPhases = 3
         }
         
+        self.preferredMainWindingLocation = preferredWindingLocation
+        self.preferredTapWindingLocation = preferredTapWindingLocation
         self.connection = connection
         self.lineAmpsPhaseAngle = phaseAngle
         self.bil.line = lineBIL
