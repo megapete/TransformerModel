@@ -94,6 +94,7 @@ struct PCH_Winding
     }
     
     let volts:Double
+    let amps:Double
     var axialGaps:[Double]
     let type:WindingType
     let puMainNIperL:Double
@@ -108,6 +109,13 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal]) -> [PCH_Winding]
     for nextTerm in terms
     {
         if nextTerm.hasDualVoltage
+        {
+            if let offload = nextTerm.offloadTaps
+            {
+                
+            }
+        }
+        else if let offload = nextTerm.offloadTaps
         {
             
         }
