@@ -83,43 +83,178 @@ func CreateDesign(forTerminals:[PCH_TxfoTerminal], forImpedances:[PCH_ImpedanceP
     return result
 }
 
-// Helper struct used to create the separate windings required for a given set of terminals
-struct PCH_Winding
+// Helper class used to create the separate windings required for a given set of terminals
+class PCH_Winding
 {
     enum WindingType
     {
-        case disc
+        case sheet
         case layer
-        case multistart
+        case helix
+        case disc
+        case multistart // actually a specialized layer
     }
     
+    struct axialGap {
+        
+        let thisCoil:Double
+        let otherCoils:Double
+    }
+    
+    var position:Int
     let volts:Double
     let amps:Double
-    var axialGaps:[Double]
+    var axialGaps:[axialGap]
+    var staticRings:Int
     let type:WindingType
     let puMainNIperL:Double
+    let tapCoil:PCH_Winding?
+    
+    init(position:Int, volts:Double, amps:Double, axialGaps:[axialGap], type:WindingType, staticRings:Int, puMainNIperL:Double, tapCoil:PCH_Winding? = nil)
+    {
+        self.position = position
+        self.volts = volts
+        self.amps = amps
+        self.axialGaps = axialGaps
+        self.type = type
+        self.staticRings = staticRings
+        self.puMainNIperL = puMainNIperL
+        self.tapCoil = tapCoil
+    }
+    
+    static func WindingTypesForBIL(bil:BIL_Level) -> [PCH_Winding.WindingType]
+    {
+        var result:[PCH_Winding.WindingType] = []
+        
+        let bilValue = bil.Value()
+        
+        if (bilValue <= 30)
+        {
+            result.append(.sheet)
+        }
+        
+        if (bilValue < 170)
+        {
+            result.append(.layer)
+        }
+        
+        if (bilValue < 350)
+        {
+            result.append(.helix)
+        }
+        
+        if (bilValue >= 170)
+        {
+            result.append(.disc)
+        }
+        
+        return result
+    }
+    
+    static func NeedsStaticRing(bil:BIL_Level) -> Bool
+    {
+        return bil.Value() >= 170
+    }
 }
 
-func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal]) -> [PCH_Winding]
+func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double) -> [PCH_Winding]
 {
     var result:[PCH_Winding] = []
     
-    // We make a first pass through the terminals to see if we need axial gaps in the windings
-    var gaps = [0.0, 0.0, 0.0]
-    for nextTerm in terms
+    var currentPos = 0
+    if terms.count > 2
     {
-        if nextTerm.hasDualVoltage
+        // We assume that tertiary windings are put closest to the core. We also assume that these terminals do not have taps, nor are they ever dual-voltage.
+        var currentTerm = 2
+        while currentTerm < terms.count
         {
-            if let offload = nextTerm.offloadTaps
+            let terminal = terms[currentTerm]
+            var totalStaticRings = 0
+            let termBIL = terminal.bil
+            
+            if (PCH_Winding.NeedsStaticRing(bil: termBIL.line))
+            {
+                totalStaticRings += 1
+            }
+            if (PCH_Winding.NeedsStaticRing(bil: termBIL.neutral))
+            {
+                totalStaticRings += 1
+            }
+            if (terminal.hasDualVoltage && PCH_Winding.NeedsStaticRing(bil: termBIL.dv))
+            {
+                totalStaticRings += 2
+            }
+            
+            let nextWinding = PCH_Winding(position: currentPos, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: [], type: PCH_Winding.WindingTypesForBIL(bil: termBIL.line)[0], staticRings: totalStaticRings, puMainNIperL: NIperL)
+            
+            currentPos += 1
+        }
+        
+    }
+    
+    // By this point, we will only need to treat the terminals at indices 0 (LV) and 1 (HV)
+    for i in 0..<2
+    {
+        let terminal = terms[i]
+        
+        // Start with static rings
+        var totalStaticRings = 0
+        let termBIL = terminal.bil
+        
+        if (PCH_Winding.NeedsStaticRing(bil: termBIL.line))
+        {
+            totalStaticRings += 1
+        }
+        if (PCH_Winding.NeedsStaticRing(bil: termBIL.neutral))
+        {
+            totalStaticRings += 1
+        }
+        if (terminal.hasDualVoltage && PCH_Winding.NeedsStaticRing(bil: termBIL.dv))
+        {
+            totalStaticRings += 2
+        }
+        
+        // now taps and tapping gaps
+        var tapWindings:[PCH_Winding] = []
+        // constants for innermost or outermost tap windings
+        let innerTaps = -2
+        let outerTaps = -1
+        
+        // constants for central gaps for delta windings
+        let deltaCenterGapMain = 0.05
+        let deltaCenterGapTaps = 0.2
+        
+        if (terminal.hasDualVoltage)
+        {
+            if let offload = terminal.offloadTaps
             {
                 
             }
         }
-        else if let offload = nextTerm.offloadTaps
+        else if let offload = terminal.offloadTaps
         {
             
         }
+        
+        if let onload = terminal.onloadTaps
+        {
+            // we use pretty simple logic here, assuming that if the LV winding has onload taps, they are on an inner multistart winding, while HV taps are treated as outer double-stack disc windings
+            let tapPos = (i == 0 ? innerTaps : outerTaps)
+            let tapWdgType:PCH_Winding.WindingType = (i == 0 ? .multistart : .disc)
+            // we assume that taps are always plus/minus (reversing)
+            let numTaps = (onload.count - 1) / 2
+            let tapVolts = onload.max()! * terminal.legVolts * (i == 0 ? 1.0 : 2.0)
+            let tapAmps = (i == 0 ? 1.0 : 2.0) * terminal.legAmps.onaf
+            let centerGap = (i == 0 || terminal.connection == .star ? 0.0 : deltaCenterGapTaps)
+            var tapNIperL = NIperL * onload.max()!
+            if (tapPos == outerTaps)
+            {
+                tapNIperL = tapNIperL / 0.8 // we usually try to get around 80% of the main coil height for outer taps
+            }
+        }
+        
     }
+    
     
     return result
 }
