@@ -20,9 +20,9 @@ struct PCH_ImpedancePair
 }
 
 // This is the entry point for the transformer designing program. The idea is that this function will take care of finding the 10 most suitable (and cheapest) designs for the set of terminals passed in, then return those transformers to the calling routine as an array of PCH_Transformer. It is assumed that the forTerminals parameter has been sorted so that the lowest "main" voltage is at index 0 and the highest main voltage is at index 1.
-func CreateDesign(forTerminals:[PCH_TxfoTerminal], forImpedances:[PCH_ImpedancePair], withEvals:PCH_LossEvaluation) -> [PCH_Transformer]
+func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:[PCH_ImpedancePair], withEvals:PCH_LossEvaluation) -> [PCH_Transformer]
 {
-    ZAssert(forImpedances.count > 0, message: "There must be at least one impedance pair defined!")
+    ZAssert(forOnafImpedances.count > 0, message: "There must be at least one impedance pair defined!")
     
     var result:[PCH_Transformer] = []
     
@@ -46,7 +46,7 @@ func CreateDesign(forTerminals:[PCH_TxfoTerminal], forImpedances:[PCH_ImpedanceP
     let mainHilo = clearances.HiloDataForBIL(highestMainBIL).total
     let typicalCoilRB = 50.0 // 2"
     let impDimnFactor = mainHilo * 1000.0 + 2.0 * typicalCoilRB / 3.0 // mm
-    let mainImpedance = forImpedances[0].impedancePU
+    let mainImpedance = forOnafImpedances[0].impedancePU
     
     let NIperLrangePercentage = 0.15
     let NIperLIncrementPercentage = 0.01
@@ -122,6 +122,44 @@ class PCH_Winding
         self.tapCoil = tapCoil
     }
     
+    // Axial space factor is defined as conductor_axial_space / total_axial_space
+    func AxialSpaceFactorWithBIL(bil:BIL_Level) -> Double
+    {
+        var result = -1.0
+        
+        let clearance = PCH_ClearanceData.sharedInstance
+        
+        // we will assume that a reasonably sized conductor will be some multiple of 10mm in the axial direction
+        let typCondA = 0.010
+        
+        switch self.type {
+            
+        case .disc,
+             .helix:
+            result = typCondA / (typCondA + clearance.ConductorCoverForBIL(bil) + clearance.InterDiskForBIL(bil))
+            
+        case .layer,
+             .multistart:
+            result = typCondA / (typCondA + clearance.ConductorCoverForBIL(bil))
+            
+        default:
+            result = 1.0
+        }
+        
+        return result
+    }
+    
+    // Radial space factor is defined as conductor_radial_space / total_radial_space. Note that this function only returns the space factor of a single conductor (that is, things like inter-layer insulation and ducts need to be considered elsewhere)
+    func RadialSpaceFactorWithBIL(bil:BIL_Level) -> Double
+    {
+        let clearance = PCH_ClearanceData.sharedInstance
+        
+        // we will assume that a reasonably sized conductor will be some multiple of 2.5mm in the radial direction
+        let typCondR = 0.0025
+        
+        return typCondR / (typCondR + clearance.ConductorCoverForBIL(bil))
+    }
+    
     static func WindingTypesForBIL(bil:BIL_Level) -> [PCH_Winding.WindingType]
     {
         var result:[PCH_Winding.WindingType] = []
@@ -155,8 +193,11 @@ class PCH_Winding
     {
         return bil.Value() >= 170
     }
+    
+    
 }
 
+// Note that NIperL and baseVA should be the highest rating of the transformer (.onaf)
 func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA:Double) -> [PCH_Winding]
 {
     var result:[PCH_Winding] = []
@@ -229,17 +270,46 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
             totalStaticRings += 2
         }
         
+        var axialGaps:[PCH_Winding.axialGap] = [PCH_Winding.axialGap(thisCoil: 0.0, otherCoils:0.0), PCH_Winding.axialGap(thisCoil: 0.0, otherCoils:0.0), PCH_Winding.axialGap(thisCoil: 0.0, otherCoils:0.0)]
+        
         if (terminal.hasDualVoltage)
         {
-            if let offload = terminal.offloadTaps
+            let clearances = PCH_ClearanceData.sharedInstance
+            
+            let centerGap = clearances.EdgeDistanceForBIL(terminal.bil.dv)
+            
+            axialGaps[1] = PCH_Winding.axialGap(thisCoil: centerGap, otherCoils: centerGap)
+            
+            if terminal.offloadTaps != nil
             {
+                var tapGapThisCoil = 25.0
+                if terminal.bil.line.Value() > 350
+                {
+                    tapGapThisCoil *= 1.5
+                }
                 
+                let tapGapOtherCoils = tapGapThisCoil + 50.0
+                
+                axialGaps[0] = PCH_Winding.axialGap(thisCoil: tapGapThisCoil, otherCoils: tapGapOtherCoils)
+                axialGaps[2] = axialGaps[0]
             }
         }
-        else if let offload = terminal.offloadTaps
+        else if terminal.offloadTaps != nil
         {
+            var tapGapThisCoil = 25.0
+            if terminal.bil.line.Value() > 350
+            {
+                tapGapThisCoil *= 1.5
+            }
             
+            let tapGapOtherCoils = tapGapThisCoil + 50.0
+            
+            axialGaps[1] = PCH_Winding.axialGap(thisCoil: tapGapThisCoil, otherCoils: tapGapOtherCoils)
         }
+        
+        let newMainWinding = PCH_Winding(position: currentPos + i, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: axialGaps, type: PCH_Winding.WindingTypesForBIL(bil: terminal.bil.line)[0], staticRings: totalStaticRings, puNIperL: NIperL)
+        
+        result.append(newMainWinding)
         
         // we assume that onload taps are never "dual-voltage"
         if let onload = terminal.onloadTaps
@@ -265,13 +335,22 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
                 axialGaps[1].otherCoils = deltaCenterGapMain
             }
             
-            let newTapWinding = PCH_Winding(position: tapPos, volts: tapVolts, amps: tapAmps, axialGaps: axialGaps, type: tapWdgType, staticRings: 0, puMainNIperL: tapNIperL)
+            let newTapWinding = PCH_Winding(position: tapPos, volts: tapVolts, amps: tapAmps, axialGaps: axialGaps, type: tapWdgType, staticRings: 0, puNIperL: tapNIperL)
             
             result.append(newTapWinding)
         }
         
     }
     
+    // we sort the result array according to the position of each winding
+    result.sort { (a:PCH_Winding, b:PCH_Winding) -> Bool in
+        return a.position < b.position
+    }
+    
+    for i in 0..<result.count
+    {
+        result[i].position = i
+    }
     
     return result
 }

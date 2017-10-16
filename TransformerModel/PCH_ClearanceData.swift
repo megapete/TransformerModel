@@ -245,4 +245,22 @@ class PCH_ClearanceData {
         return result
     }
     
+    /**
+         Inter-layer insulation is calculated using the inter-layer voltage and is a multiple of 0.007". Note that the voltage passed should be equal to the leg-voltage divided by the number of layers (the routine will take care of the test factor and the "2"). The minimum inter-layer thickness that will be returned is 2 paper thicknesses.
+     
+         - parameter voltage: The voltage equal to the rated leg-voltage divided by the number of layers
+     
+         - returns: The required thickness of paper in meters
+    */
+    func InterLayerForVoltage(voltage:Double) -> Double
+    {
+        var result = 0.0
+        
+        let stdPaperThk = 0.007
+        
+        result = max(0.014, round(voltage * 2.0 * 2.0 / 140000.0 / stdPaperThk + 0.5) * stdPaperThk)
+        
+        return result
+    }
+    
 }
