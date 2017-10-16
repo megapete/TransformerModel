@@ -97,8 +97,8 @@ class PCH_Winding
     
     struct axialGap {
         
-        let thisCoil:Double
-        let otherCoils:Double
+        var thisCoil:Double
+        var otherCoils:Double
     }
     
     var position:Int
@@ -107,10 +107,10 @@ class PCH_Winding
     var axialGaps:[axialGap]
     var staticRings:Int
     let type:WindingType
-    let puMainNIperL:Double
+    let puNIperL:Double
     let tapCoil:PCH_Winding?
     
-    init(position:Int, volts:Double, amps:Double, axialGaps:[axialGap], type:WindingType, staticRings:Int, puMainNIperL:Double, tapCoil:PCH_Winding? = nil)
+    init(position:Int, volts:Double, amps:Double, axialGaps:[axialGap], type:WindingType, staticRings:Int, puNIperL:Double, tapCoil:PCH_Winding? = nil)
     {
         self.position = position
         self.volts = volts
@@ -118,7 +118,7 @@ class PCH_Winding
         self.axialGaps = axialGaps
         self.type = type
         self.staticRings = staticRings
-        self.puMainNIperL = puMainNIperL
+        self.puNIperL = puNIperL
         self.tapCoil = tapCoil
     }
     
@@ -157,7 +157,7 @@ class PCH_Winding
     }
 }
 
-func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double) -> [PCH_Winding]
+func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA:Double) -> [PCH_Winding]
 {
     var result:[PCH_Winding] = []
     
@@ -185,12 +185,27 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double) -> [PC
                 totalStaticRings += 2
             }
             
-            let nextWinding = PCH_Winding(position: currentPos, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: [], type: PCH_Winding.WindingTypesForBIL(bil: termBIL.line)[0], staticRings: totalStaticRings, puMainNIperL: NIperL)
+            let tertVA = terminal.terminalVA.onaf
+            
+            let nextWinding = PCH_Winding(position: currentPos, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: [], type: PCH_Winding.WindingTypesForBIL(bil: termBIL.line)[0], staticRings: totalStaticRings, puNIperL: NIperL * tertVA / baseVA)
+            
+            result.append(nextWinding)
             
             currentPos += 1
+            currentTerm += 1
         }
         
     }
+    
+    // now taps and tapping gaps
+    var tapWindings:[PCH_Winding] = []
+    // constants for innermost or outermost tap windings
+    let innerTaps = -1
+    let outerTaps = 10
+    
+    // constants for central gaps for delta windings
+    let deltaCenterGapMain = 0.05
+    let deltaCenterGapTaps = 0.2
     
     // By this point, we will only need to treat the terminals at indices 0 (LV) and 1 (HV)
     for i in 0..<2
@@ -214,16 +229,6 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double) -> [PC
             totalStaticRings += 2
         }
         
-        // now taps and tapping gaps
-        var tapWindings:[PCH_Winding] = []
-        // constants for innermost or outermost tap windings
-        let innerTaps = -2
-        let outerTaps = -1
-        
-        // constants for central gaps for delta windings
-        let deltaCenterGapMain = 0.05
-        let deltaCenterGapTaps = 0.2
-        
         if (terminal.hasDualVoltage)
         {
             if let offload = terminal.offloadTaps
@@ -236,6 +241,7 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double) -> [PC
             
         }
         
+        // we assume that onload taps are never "dual-voltage"
         if let onload = terminal.onloadTaps
         {
             // we use pretty simple logic here, assuming that if the LV winding has onload taps, they are on an inner multistart winding, while HV taps are treated as outer double-stack disc windings
@@ -251,6 +257,17 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double) -> [PC
             {
                 tapNIperL = tapNIperL / 0.8 // we usually try to get around 80% of the main coil height for outer taps
             }
+            
+            var axialGaps:[PCH_Winding.axialGap] = [PCH_Winding.axialGap(thisCoil: 0.0, otherCoils:0.0), PCH_Winding.axialGap(thisCoil: 0.0, otherCoils:0.0), PCH_Winding.axialGap(thisCoil: 0.0, otherCoils:0.0)]
+            if centerGap > 0.0
+            {
+                axialGaps[1].thisCoil = centerGap
+                axialGaps[1].otherCoils = deltaCenterGapMain
+            }
+            
+            let newTapWinding = PCH_Winding(position: tapPos, volts: tapVolts, amps: tapAmps, axialGaps: axialGaps, type: tapWdgType, staticRings: 0, puMainNIperL: tapNIperL)
+            
+            result.append(newTapWinding)
         }
         
     }
