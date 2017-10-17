@@ -100,4 +100,9 @@ class PCH_RawMaterial {
         return length * width * height * self.cost
     }
     
+    func CanadianDollarValue(area:Double, length:Double) -> Double
+    {
+        return area * length * self.cost
+    }
+    
 }

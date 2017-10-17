@@ -10,6 +10,8 @@ import Foundation
 
 struct PCH_LossEvaluation {
     
+    // loss evaluations in C$ per kW
+    
     let noLoad:Double
     let onanLoad:Double
     let onafLoad:Double

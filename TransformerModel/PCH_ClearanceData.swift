@@ -75,6 +75,24 @@ enum BIL_Level {
         
         return result
     }
+    
+    static func BilLevelWithValue(bilValue:UInt) -> BIL_Level?
+    {
+        let stringValue = "\(bilValue)"
+        
+        var result:BIL_Level? = nil
+        
+        for (key,value) in BIL_Level.bilNames
+        {
+            if value == stringValue
+            {
+                result = key
+                break
+            }
+        }
+        
+        return result
+    }
 }
 
 /// Singeleton class that provides access to a dictionary of clearance values based on BIL level.
