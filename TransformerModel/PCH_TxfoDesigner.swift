@@ -75,12 +75,67 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:
                 for NIperL in stride(from: targetNIperL * (1.0 - NIperLrangePercentage), through: targetNIperL * (1.0 + NIperLrangePercentage), by: targetNIperL * NIperLIncrementPercentage)
                 {
                     // create designs (easy!)
+                    let nextArrangement = CoilArrangementForTerminals(terms: forTerminals, NIperL: NIperL, baseVA: forTerminals[0].terminalVA.onaf)
+                    
+                    var currentOD = coreCircle.diameter
+                    
+                    for nextWinding in nextArrangement
+                    {
+                        var wTerminal:PCH_TxfoTerminal = forTerminals[0]
+                        for i in 0..<forTerminals.count
+                        {
+                            if nextWinding.termName == forTerminals[i].name
+                            {
+                                wTerminal = forTerminals[i]
+                                break
+                            }
+                        }
+                        
+                        let coilTurns = nextWinding.volts / vpnExact
+                        let ampTurns = nextWinding.amps * coilTurns
+                        let coilHt = ampTurns / NIperL
+                        let totalGaps = nextWinding.axialGaps[0].thisCoil + nextWinding.axialGaps[1].thisCoil + nextWinding.axialGaps[2].thisCoil
+                        let condAxial = (coilHt - totalGaps) * nextWinding.AxialSpaceFactorWithBIL(bil: wTerminal.bil.line)
+                        let condArea = ampTurns / 0.003
+                        let condRadial = condArea / condAxial
+                        
+                        let typicalCondR = 0.0025
+                        let numRadialConds = round(condRadial / typicalCondR + 0.5)
+                        var radialBuild = numRadialConds * typicalCondR / nextWinding.RadialSpaceFactorWithBIL(bil: wTerminal.bil.line)
+                        
+                        if nextWinding.type == .layer || nextWinding.type == .sheet
+                        {
+                            radialBuild += min(numRadialConds - 1.0, 2.0) * 0.25 * 25.4 / 1000.0
+                        }
+                    }
                 }
             }
         }
     }
     
     return result
+}
+
+struct PCH_ImpedanceCoilSection
+{
+    let winding:PCH_Winding
+    let ID:Double
+    let RB:Double
+    let condArea:Double
+    
+    var LMT:Double
+    {
+        get
+        {
+            return 2.0 * π * (self.ID + self.RB)
+        }
+    }
+    
+    func LoadLoss()
+    {
+        
+    }
+    
 }
 
 // Helper class used to create the separate windings required for a given set of terminals
@@ -109,9 +164,11 @@ class PCH_Winding
     let type:WindingType
     let puNIperL:Double
     let tapCoil:PCH_Winding?
+    let termName:String
     
-    init(position:Int, volts:Double, amps:Double, axialGaps:[axialGap], type:WindingType, staticRings:Int, puNIperL:Double, tapCoil:PCH_Winding? = nil)
+    init(termName:String, position:Int, volts:Double, amps:Double, axialGaps:[axialGap], type:WindingType, staticRings:Int, puNIperL:Double, tapCoil:PCH_Winding? = nil)
     {
+        self.termName = termName
         self.position = position
         self.volts = volts
         self.amps = amps
@@ -228,7 +285,7 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
             
             let tertVA = terminal.terminalVA.onaf
             
-            let nextWinding = PCH_Winding(position: currentPos, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: [], type: PCH_Winding.WindingTypesForBIL(bil: termBIL.line)[0], staticRings: totalStaticRings, puNIperL: NIperL * tertVA / baseVA)
+            let nextWinding = PCH_Winding(termName: terminal.name, position: currentPos, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: [], type: PCH_Winding.WindingTypesForBIL(bil: termBIL.line)[0], staticRings: totalStaticRings, puNIperL: NIperL * tertVA / baseVA)
             
             result.append(nextWinding)
             
@@ -307,7 +364,7 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
             axialGaps[1] = PCH_Winding.axialGap(thisCoil: tapGapThisCoil, otherCoils: tapGapOtherCoils)
         }
         
-        let newMainWinding = PCH_Winding(position: currentPos + i, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: axialGaps, type: PCH_Winding.WindingTypesForBIL(bil: terminal.bil.line)[0], staticRings: totalStaticRings, puNIperL: NIperL)
+        let newMainWinding = PCH_Winding(termName: terminal.name,, position: currentPos + i, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: axialGaps, type: PCH_Winding.WindingTypesForBIL(bil: terminal.bil.line)[0], staticRings: totalStaticRings, puNIperL: NIperL)
         
         result.append(newMainWinding)
         
@@ -335,11 +392,33 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
                 axialGaps[1].otherCoils = deltaCenterGapMain
             }
             
-            let newTapWinding = PCH_Winding(position: tapPos, volts: tapVolts, amps: tapAmps, axialGaps: axialGaps, type: tapWdgType, staticRings: 0, puNIperL: tapNIperL)
+            let tapName = terminal.name + "RV"
+            let newTapWinding = PCH_Winding(termName:tapName, position: tapPos, volts: tapVolts, amps: tapAmps, axialGaps: axialGaps, type: tapWdgType, staticRings: 0, puNIperL: tapNIperL)
             
             result.append(newTapWinding)
         }
         
+    }
+    
+    // Set the gaps in all the coils
+    for i in 0..<result.count
+    {
+        let axGaps = result[i].axialGaps
+        
+        for j in 0..<result.count
+        {
+            if j != i
+            {
+                var otherAxGaps = result[j].axialGaps
+                for k in 0..<3
+                {
+                    if axGaps[k].otherCoils > otherAxGaps[k].thisCoil
+                    {
+                        result[j].axialGaps[k].thisCoil = axGaps[k].otherCoils
+                    }
+                }
+            }
+        }
     }
     
     // we sort the result array according to the position of each winding
