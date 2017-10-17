@@ -14,9 +14,15 @@ let PCH_StdFrequency = 60.0
 
 struct PCH_ImpedancePair
 {
-    let term1:PCH_TxfoTerminal
-    let term2:PCH_TxfoTerminal
+    let term1:String
+    let term2:String
     let impedancePU:Double
+    let baseVA:Double // single-phase VA
+    
+    func Contains(termName:String) -> Bool
+    {
+        return termName == self.term1 || termName == self.term2
+    }
 }
 
 // This is the entry point for the transformer designing program. The idea is that this function will take care of finding the 10 most suitable (and cheapest) designs for the set of terminals passed in, then return those transformers to the calling routine as an array of PCH_Transformer. It is assumed that the forTerminals parameter has been sorted so that the lowest "main" voltage is at index 0 and the highest main voltage is at index 1.
@@ -161,6 +167,50 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:
                         prevOD = coils.last!.OD
                     }
                     
+                    // we only continue if we meet the impedance requirements for all terminals
+                    var impedanceOk = true
+                    for nextImpedance in forOnafImpedances
+                    {
+                        var coil1:PCH_SimplifiedCoilSection? = nil
+                        var coil2:PCH_SimplifiedCoilSection? = nil
+                        
+                        for nextCoil in coils
+                        {
+                            if nextImpedance.Contains(termName: nextCoil.winding.termName)
+                            {
+                                if coil1 == nil
+                                {
+                                    coil1 = nextCoil
+                                }
+                                else
+                                {
+                                    coil2 = nextCoil
+                                    break
+                                }
+                            }
+                        }
+                        
+                        if coil2 == nil
+                        {
+                            impedanceOk = false
+                            break
+                        }
+                        
+                        let theImp = SimplifiedImpedance(coil1: coil1!, coil2: coil2!)
+                        let impedance = theImp.pu * nextImpedance.baseVA / theImp.baseVA
+                        
+                        if impedance > nextImpedance.impedancePU * 1.075 || impedance < nextImpedance.impedancePU * 0.925
+                        {
+                            impedanceOk = false
+                            break
+                        }
+                    }
+                    
+                    guard impedanceOk else
+                    {
+                        continue
+                    }
+                    
                     let betweenPhases = prevOuterHilo * 1.5
                     let outerOD = prevOD
                     let legCenters = outerOD + betweenPhases
@@ -168,6 +218,11 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:
                     let core = PCH_Core(numWoundLegs: 3, numLegs: 3, mainLegCenters: legCenters, windowHt: windowHt, yokeCoreCircle: coreCircle, mainLegCoreCircle: coreCircle)
                     
                     let newActivePart = PCH_SimplifiedActivePart(coils: coils, core: core)
+                    
+                    
+                    
+                    // At this point, we want to check if our active part's coil-coil impedances fall in the acceptable range
+                    
                     let newEvalCost = newActivePart.EvaluatedCost(atTemp: 85.0, atBmax: bMax, withEval: withEvals)
                     
                     if cheapestResults.isEmpty
@@ -197,6 +252,35 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:
     }
     
     return result
+}
+
+func SimplifiedImpedance(coil1:PCH_SimplifiedCoilSection, coil2:PCH_SimplifiedCoilSection) -> (pu:Double, baseVA:Double)
+{
+    // For now, we just use the very simple calculation from the Blue Book (it will eventually be updated to the method used in the Excel design sheet)
+    let va1 = coil1.winding.volts * coil1.winding.amps
+    let va2 = coil2.winding.volts * coil2.winding.amps
+    
+    var ATperM = coil1.winding.NIperL
+    if (va2 > va1)
+    {
+        ATperM = coil2.winding.NIperL
+    }
+    ATperM /= 1000.0
+    
+    let vPerN = coil1.winding.volts / coil1.turns
+    let LMTave = (coil1.LMT + coil2.LMT) * 1000.0 / 2.0
+    var a = (coil2.ID - coil1.OD) / 2.0
+    if a < 0.0
+    {
+        a = (coil1.ID - coil2.OD) / 2.0
+    }
+    a *= 1000.0
+    let b1 = coil1.RB * 1000.0
+    let b2 = coil2.RB * 1000.0
+    
+    let result = 7.9E-9 * ATperM * LMTave / vPerN * (a + (b1 + b2) / 3.0)
+    
+    return (result, max(va1, va2))
 }
 
 struct PCH_SimplifiedActivePart
@@ -281,6 +365,14 @@ struct PCH_SimplifiedCoilSection
         }
     }
     
+    func CoilHeight() -> Double
+    {
+        let ampturns = winding.amps * self.turns
+        let height = ampturns / winding.NIperL
+        
+        return height
+    }
+    
     func LoadLoss(tempInC:Double) -> Double
     {
         let defaultEddyLossPU = 0.10
@@ -336,11 +428,11 @@ class PCH_Winding
     var axialGaps:[axialGap]
     var staticRings:Int
     let type:WindingType
-    let puNIperL:Double
-    let tapCoil:PCH_Winding?
+    let NIperL:Double
+    let isTaps:Bool
     let termName:String
     
-    init(termName:String, position:Int, volts:Double, amps:Double, axialGaps:[axialGap], type:WindingType, staticRings:Int, puNIperL:Double, tapCoil:PCH_Winding? = nil)
+    init(termName:String, position:Int, volts:Double, amps:Double, axialGaps:[axialGap], type:WindingType, staticRings:Int, NIperL:Double, isTaps:Bool)
     {
         self.termName = termName
         self.position = position
@@ -349,8 +441,8 @@ class PCH_Winding
         self.axialGaps = axialGaps
         self.type = type
         self.staticRings = staticRings
-        self.puNIperL = puNIperL
-        self.tapCoil = tapCoil
+        self.NIperL = NIperL
+        self.isTaps = isTaps
     }
     
     // Axial space factor is defined as conductor_axial_space / total_axial_space
@@ -459,7 +551,7 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
             
             let tertVA = terminal.terminalVA.onaf
             
-            let nextWinding = PCH_Winding(termName: terminal.name, position: currentPos, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: [], type: PCH_Winding.WindingTypesForBIL(bil: termBIL.line)[0], staticRings: totalStaticRings, puNIperL: NIperL * tertVA / baseVA)
+            let nextWinding = PCH_Winding(termName: terminal.name, position: currentPos, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: [], type: PCH_Winding.WindingTypesForBIL(bil: termBIL.line)[0], staticRings: totalStaticRings, NIperL: NIperL * tertVA / baseVA, isTaps:false)
             
             result.append(nextWinding)
             
@@ -538,7 +630,7 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
             axialGaps[1] = PCH_Winding.axialGap(thisCoil: tapGapThisCoil, otherCoils: tapGapOtherCoils)
         }
         
-        let newMainWinding = PCH_Winding(termName: terminal.name, position: currentPos + i, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: axialGaps, type: PCH_Winding.WindingTypesForBIL(bil: terminal.bil.line)[0], staticRings: totalStaticRings, puNIperL: NIperL)
+        let newMainWinding = PCH_Winding(termName: terminal.name, position: currentPos + i, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: axialGaps, type: PCH_Winding.WindingTypesForBIL(bil: terminal.bil.line)[0], staticRings: totalStaticRings, NIperL: NIperL, isTaps:false)
         
         result.append(newMainWinding)
         
@@ -567,7 +659,7 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
             }
             
             let tapName = terminal.name + "RV"
-            let newTapWinding = PCH_Winding(termName:tapName, position: tapPos, volts: tapVolts, amps: tapAmps, axialGaps: axialGaps, type: tapWdgType, staticRings: 0, puNIperL: tapNIperL)
+            let newTapWinding = PCH_Winding(termName:tapName, position: tapPos, volts: tapVolts, amps: tapAmps, axialGaps: axialGaps, type: tapWdgType, staticRings: 0, NIperL: tapNIperL, isTaps:true)
             
             result.append(newTapWinding)
         }
