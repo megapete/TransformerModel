@@ -26,11 +26,11 @@ struct PCH_ImpedancePair
 }
 
 // This is the entry point for the transformer designing program. The idea is that this function will take care of finding the 10 most suitable (and cheapest) designs for the set of terminals passed in, then return those transformers to the calling routine as an array of PCH_Transformer. It is assumed that the forTerminals parameter has been sorted so that the lowest "main" voltage is at index 0 and the highest main voltage is at index 1.
-func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:[PCH_ImpedancePair], withEvals:PCH_LossEvaluation) -> [PCH_Transformer]
+func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:[PCH_ImpedancePair], withEvals:PCH_LossEvaluation) -> [PCH_SimplifiedActivePart]
 {
-    ZAssert(forOnafImpedances.count > 0, message: "There must be at least one impedance pair defined!")
+    ZAssert(forOnanImpedances.count > 0, message: "There must be at least one impedance pair defined!")
     
-    var result:[PCH_Transformer] = []
+    // var result:[PCH_SimplifiedActivePart] = []
     
     var cheapestResults:[PCH_SimplifiedActivePart] = []
     
@@ -54,7 +54,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:
     let mainHilo = clearances.HiloDataForBIL(highestMainBIL).total
     let typicalCoilRB = 50.0 // 2"
     let impDimnFactor = mainHilo * 1000.0 + 2.0 * typicalCoilRB / 3.0 // mm
-    let mainImpedance = forOnafImpedances[0].impedancePU
+    let mainImpedance = forOnanImpedances[0].impedancePU
     
     let NIperLrangePercentage = 0.15
     let NIperLIncrementPercentage = 0.01
@@ -62,8 +62,13 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:
     // There's no easy way to iterate through an enum, so we just manually set up an array with each of the core steel types (there are only 4 of them!)
     let coreSteelTypes = [PCH_CoreSteel.SteelType.M080, PCH_CoreSteel.SteelType.M085, PCH_CoreSteel.SteelType.M090, PCH_CoreSteel.SteelType.ZDKH]
     
+    // Debugging stats
+    var totalDesigns = 0
+    var designsInImpedanceRange = 0
+    
     for vpnFactor:Double in stride(from: vpnFactorRange.min, through: vpnFactorRange.max, by: vpnFactorIncrement)
     {
+        DLog("Executing VPN factor: \(vpnFactor)")
         let vpnApprox = vpnFactor * sqrt(vpnRefKVA)
         let refTurns = round(refVoltage / vpnApprox)
         let vpnExact = refVoltage / refTurns
@@ -148,7 +153,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:
                                 radialBuild += min(numRadialConds - 1.0, 2.0) * 0.25 * 25.4 / 1000.0
                             }
                             
-                            let newCoil = PCH_SimplifiedCoilSection(winding: nextWinding, turns: coilTurns, ID: coilID, RB: radialBuild, condArea: condArea, conductor: .copper)
+                            let newCoil = PCH_SimplifiedCoilSection(winding: nextWinding, turns: coilTurns, ID: coilID, RB: radialBuild, condArea: condArea, conductor: .copper, onafCurrentDensity:currentDensity)
                             
                             if let lastCoil = bestCoil
                             {
@@ -167,9 +172,11 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:
                         prevOD = coils.last!.OD
                     }
                     
+                    totalDesigns += 1
+                    
                     // we only continue if we meet the impedance requirements for all terminals
                     var impedanceOk = true
-                    for nextImpedance in forOnafImpedances
+                    for nextImpedance in forOnanImpedances
                     {
                         var coil1:PCH_SimplifiedCoilSection? = nil
                         var coil2:PCH_SimplifiedCoilSection? = nil
@@ -211,6 +218,8 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:
                         continue
                     }
                     
+                    designsInImpedanceRange += 1
+                    
                     let betweenPhases = prevOuterHilo * 1.5
                     let outerOD = prevOD
                     let legCenters = outerOD + betweenPhases
@@ -218,10 +227,6 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:
                     let core = PCH_Core(numWoundLegs: 3, numLegs: 3, mainLegCenters: legCenters, windowHt: windowHt, yokeCoreCircle: coreCircle, mainLegCoreCircle: coreCircle)
                     
                     let newActivePart = PCH_SimplifiedActivePart(coils: coils, core: core)
-                    
-                    
-                    
-                    // At this point, we want to check if our active part's coil-coil impedances fall in the acceptable range
                     
                     let newEvalCost = newActivePart.EvaluatedCost(atTemp: 85.0, atBmax: bMax, withEval: withEvals)
                     
@@ -251,7 +256,12 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnafImpedances:
         }
     }
     
-    return result
+    DLog("Total designs created: \(totalDesigns)")
+    DLog("Designs in impedance range: \(designsInImpedanceRange)")
+    
+    
+    
+    return cheapestResults
 }
 
 func SimplifiedImpedance(coil1:PCH_SimplifiedCoilSection, coil2:PCH_SimplifiedCoilSection) -> (pu:Double, baseVA:Double)
@@ -260,12 +270,12 @@ func SimplifiedImpedance(coil1:PCH_SimplifiedCoilSection, coil2:PCH_SimplifiedCo
     let va1 = coil1.winding.volts * coil1.winding.amps
     let va2 = coil2.winding.volts * coil2.winding.amps
     
-    var ATperM = coil1.winding.NIperL
+    var ATperMM = coil1.winding.NIperL
     if (va2 > va1)
     {
-        ATperM = coil2.winding.NIperL
+        ATperMM = coil2.winding.NIperL
     }
-    ATperM /= 1000.0
+    ATperMM /= 1000.0
     
     let vPerN = coil1.winding.volts / coil1.turns
     let LMTave = (coil1.LMT + coil2.LMT) * 1000.0 / 2.0
@@ -278,7 +288,7 @@ func SimplifiedImpedance(coil1:PCH_SimplifiedCoilSection, coil2:PCH_SimplifiedCo
     let b1 = coil1.RB * 1000.0
     let b2 = coil2.RB * 1000.0
     
-    let result = 7.9E-9 * ATperM * LMTave / vPerN * (a + (b1 + b2) / 3.0)
+    let result = 7.9E-9 * ATperMM * LMTave * PCH_StdFrequency / vPerN * (a + (b1 + b2) / 3.0)
     
     return (result, max(va1, va2))
 }
@@ -287,6 +297,14 @@ struct PCH_SimplifiedActivePart
 {
     let coils:[PCH_SimplifiedCoilSection]
     let core:PCH_Core
+    
+    var VPN:Double
+    {
+        get
+        {
+            return coils[0].winding.volts / coils[0].turns
+        }
+    }
     
     func MaterialCosts() -> Double
     {
@@ -338,6 +356,20 @@ struct PCH_SimplifiedActivePart
         return self.MaterialCosts() + loadLossEval + noloadLossEval
     }
     
+    func Characteristics() -> String
+    {
+        var result = ""
+        
+        result += "Core Data\nSteel: \(self.core.mainLegCoreCircle.steps[0].lamination!.steelType); Diameter: \(self.core.mainLegCoreCircle.diameter); Volts/Turn: \(self.VPN)\n\n"
+        
+        for nextCoil in self.coils
+        {
+            result += "Coil: \(nextCoil.winding.termName), AT/m: \(nextCoil.winding.NIperL), Highest Rating Current Density: \(nextCoil.onafCurrentDensity), Inner Diameter: \(nextCoil.ID)\n"
+        }
+        
+        return result
+    }
+    
 }
 
 struct PCH_SimplifiedCoilSection
@@ -348,6 +380,7 @@ struct PCH_SimplifiedCoilSection
     let RB:Double
     let condArea:Double
     let conductor:PCH_Conductor.Conductor
+    let onafCurrentDensity:Double
     
     var OD:Double
     {
@@ -361,7 +394,7 @@ struct PCH_SimplifiedCoilSection
     {
         get
         {
-            return 2.0 * π * (self.ID + self.RB)
+            return π * (self.ID + self.RB)
         }
     }
     
