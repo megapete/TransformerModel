@@ -10,7 +10,7 @@ import Cocoa
 
 /// The class that represents an entire transformer core.
 
-class PCH_Core {
+class PCH_Core:CustomStringConvertible {
 
     /// The number of legs that have coils on them (1,2, or 3)
     let numWoundLegs:Int
@@ -60,6 +60,15 @@ class PCH_Core {
     
     /// An optional PCH_CoreCircle that is used to stack (any) outside legs
     let outsideLegCoreCircle:PCH_CoreCircle?
+    
+    var description: String
+    {
+        get
+        {
+            // For now, this only returns the info for a standard 3-legged core
+            return "Steel: \(self.mainLegCoreCircle.steps[0].lamination!.steelType.type.rawValue); Diameter: \(self.mainLegCoreCircle.diameter); Leg Centers: \(self.mainLegCenters); Window Height:\(self.windowHeight)\n"
+        }
+    }
     
     /**
         Designated initializer. Creates a new core.
@@ -119,7 +128,7 @@ class PCH_Core {
         
         var result:Double = 2.0 * self.yokeCoreCircle.Weight(yokeLength)
         
-        let legHeight = self.windowHeight + yokeCoreCircle.mainStepWidth
+        let legHeight = self.windowHeight + yokeCoreCircle.mainStepWidth / 1000.0
         
         result += Double(self.numWoundLegs) * mainLegCoreCircle.Weight(legHeight)
         

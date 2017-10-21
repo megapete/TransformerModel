@@ -128,7 +128,7 @@ class PCH_Costs {
     {
         let result:NSDictionary = [
             
-            CostKey.Copper.rawValue : 3.00,
+            CostKey.Copper.rawValue : 125440.0, // $14/kg, 8960kg/m3
             CostKey.Aluminum.rawValue : 3.00,
             CostKey.CoreSteel.rawValue : 1.90,
             CostKey.CarbonSteel.rawValue : 0.50,

@@ -53,7 +53,7 @@ class PCH_CoreStep
     */
     func WeightForLength(_ length:Double) -> Double
     {
-        return self.lamination!.steelType.Weight(length, width: self.lamination!.width, height: self.stackHeight)
+        return self.lamination!.steelType.Weight(length, width: self.lamination!.width / 1000.0, height: self.stackHeight / 1000.0)
     }
     
     /**

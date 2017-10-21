@@ -157,7 +157,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                             
                             if let lastCoil = bestCoil
                             {
-                                if newCoil.EvaluatedCost(atTemp: 85.0, costPerKW: withEvals.onafLoad) < lastCoil.EvaluatedCost(atTemp: 85.0, costPerKW: withEvals.onafLoad)
+                                if newCoil.EvaluatedCost(atTemp: 85.0, costPerKW: withEvals.onafLoad) + newCoil.CoilMaterialCost() < lastCoil.EvaluatedCost(atTemp: 85.0, costPerKW: withEvals.onafLoad) + lastCoil.CoilMaterialCost()
                                 {
                                     bestCoil = newCoil
                                 }
@@ -259,8 +259,6 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     DLog("Total designs created: \(totalDesigns)")
     DLog("Designs in impedance range: \(designsInImpedanceRange)")
     
-    
-    
     return cheapestResults
 }
 
@@ -340,7 +338,9 @@ struct PCH_SimplifiedActivePart
         let exchangeRate = 0.8 // fall 2017
         let insulPrice = 0.4   // fall 2017
         
-        return (π * (self.coils.last!.OD * self.coils.last!.OD * 1.0E6 - self.core.mainLegCoreCircle.diameter * self.core.mainLegCoreCircle.diameter * 1.0E6) / 4.0 * self.core.windowHeight * 1000.0 / 25.4 * 3.0 - self.TotalCoilVolume() * 1.0E9 / 0.323) * insulPrice / exchangeRate
+        let coilVol = self.TotalCoilVolume() * 1.0E9 / (25.4 * 25.4 * 25.4)
+        
+        return (π * (self.coils.last!.OD * self.coils.last!.OD * 1.0E6 / (25.4 * 25.4) - self.core.mainLegCoreCircle.diameter * self.core.mainLegCoreCircle.diameter * 1.0E6 / (25.4 * 25.4)) / 4.0 * self.core.windowHeight * 1000.0 / 25.4 * 3.0 - self.TotalCoilVolume() * 1.0E9 / (25.4 * 25.4 * 25.4)) * insulPrice / exchangeRate
     }
     
     func EvaluatedCost(atTemp:Double, atBmax:Double, withEval:PCH_LossEvaluation) -> Double
@@ -356,23 +356,9 @@ struct PCH_SimplifiedActivePart
         return self.MaterialCosts() + loadLossEval + noloadLossEval
     }
     
-    func Characteristics() -> String
-    {
-        var result = ""
-        
-        result += "Core Data\nSteel: \(self.core.mainLegCoreCircle.steps[0].lamination!.steelType); Diameter: \(self.core.mainLegCoreCircle.diameter); Volts/Turn: \(self.VPN)\n\n"
-        
-        for nextCoil in self.coils
-        {
-            result += "Coil: \(nextCoil.winding.termName), AT/m: \(nextCoil.winding.NIperL), Highest Rating Current Density: \(nextCoil.onafCurrentDensity), Inner Diameter: \(nextCoil.ID)\n"
-        }
-        
-        return result
-    }
-    
 }
 
-struct PCH_SimplifiedCoilSection
+struct PCH_SimplifiedCoilSection:CustomStringConvertible
 {
     let winding:PCH_Winding
     let turns:Double
@@ -381,6 +367,22 @@ struct PCH_SimplifiedCoilSection
     let condArea:Double
     let conductor:PCH_Conductor.Conductor
     let onafCurrentDensity:Double
+    
+    var description:String
+    {
+        get
+        {
+            return "Coil Name: \(self.winding.termName); AT/m: \(self.winding.NIperL) Onaf Current Density: \(self.onafCurrentDensity); Inner Diameter: \(self.ID); Radial Build: \(self.RB)\n"
+        }
+    }
+    
+    var VPN:Double
+    {
+        get
+        {
+            return self.winding.volts / self.turns
+        }
+    }
     
     var OD:Double
     {
@@ -413,7 +415,9 @@ struct PCH_SimplifiedCoilSection
         let copper = PCH_Conductor(conductor: self.conductor)
         let resistance = copper.Resistance(condArea, length: self.LMT, temperature: tempInC)
         
-        return winding.amps * self.turns * resistance * (1.0 + defaultEddyLossPU)
+        let loss = winding.amps * self.turns * resistance * (1.0 + defaultEddyLossPU)
+        
+        return loss
     }
     
     func CoilWeight() -> Double
@@ -432,8 +436,10 @@ struct PCH_SimplifiedCoilSection
     
     func EvaluatedCost(atTemp:Double, costPerKW:Double) -> Double
     {
-        return self.LoadLoss(tempInC:atTemp) / 1000.0 * costPerKW + self.CoilMaterialCost()
+        return self.LoadLoss(tempInC:atTemp) / 1000.0 * costPerKW
     }
+    
+    
     
 }
 
