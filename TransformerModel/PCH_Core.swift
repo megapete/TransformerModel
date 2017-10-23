@@ -140,6 +140,11 @@ class PCH_Core:CustomStringConvertible {
         return result
     }
     
+    func PhysicalHeight() -> Double
+    {
+        return self.windowHeight + 2.0 * self.yokeCoreCircle.mainStepWidth / 1000.0
+    }
+    
     /// A fuction to get the total loss of the core in watts at a given Bmax (in Teslas)
     func LossAtBmax(_ bMax:Double) -> Double
     {

@@ -12,6 +12,8 @@ import Foundation
 // For now, we'll create a constant for the frequency since I don't remember a single time where I needed something else. If this changes with TME, I'll create a variable to pass to the routines instead.
 let PCH_StdFrequency = 60.0
 
+
+
 struct PCH_ImpedancePair
 {
     let term1:String
@@ -30,13 +32,16 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
 {
     ZAssert(forOnanImpedances.count > 0, message: "There must be at least one impedance pair defined!")
     
-    // var result:[PCH_SimplifiedActivePart] = []
+    let numDesignsToKeep = 10
+    let maxVperN = 100.0
     
     var cheapestResults:[PCH_SimplifiedActivePart] = []
     
     let numPhases = forTerminals[0].numPhases
     let refVoltage = forTerminals[0].legVolts
     let vpnRefKVA = (numPhases == 1 ? 3.0 : 1.0) * forTerminals[0].terminalVA.onan / 1000.0
+    
+    let vaMaxMinRatio = forTerminals[0].terminalVA.onaf / forTerminals[0].terminalVA.onan
     
     // constraints on constants
     let vpnFactorRange = (min:0.4, max:0.9)
@@ -52,9 +57,13 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     }
     let clearances = PCH_ClearanceData.sharedInstance
     let mainHilo = clearances.HiloDataForBIL(highestMainBIL).total
-    let typicalCoilRB = 50.0 // 2"
+    let typicalCoilRB = 75.0 // hmmm
     let impDimnFactor = mainHilo * 1000.0 + 2.0 * typicalCoilRB / 3.0 // mm
     let mainImpedance = forOnanImpedances[0].impedancePU
+    
+    let NIperLmin = 20000.0 * vaMaxMinRatio
+    let NIperLmax = 120000.0 * vaMaxMinRatio
+    let NIperLIncrement = (NIperLmax - NIperLmin) / 50.0
     
     let NIperLrangePercentage = 0.15
     let NIperLIncrementPercentage = 0.01
@@ -73,6 +82,11 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
         let refTurns = round(refVoltage / vpnApprox)
         let vpnExact = refVoltage / refTurns
         
+        if vpnExact > maxVperN
+        {
+            break
+        }
+        
         for approxBMax:Double in stride(from: bmaxRange.min, to: bmaxRange.max, by: bmaxIncrement)
         {
             for coreSteelType in coreSteelTypes
@@ -87,7 +101,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                 let LMTave = (coreCircle.diameter * 1000.0 + 2.0 * typicalCoilRB + mainHilo * 1000.0) * π
                 let targetNIperL = mainImpedance * 1.0E12 / ((7.9 * LMTave * PCH_StdFrequency * impDimnFactor) / vpnExact) // AmpTurns per Meter
                
-                for NIperL in stride(from: targetNIperL * (1.0 - NIperLrangePercentage), through: targetNIperL * (1.0 + NIperLrangePercentage), by: targetNIperL * NIperLIncrementPercentage)
+                for NIperL in stride(from: NIperLmin, through: NIperLmax, by: NIperLIncrement)
                 {
                     // create designs (easy!)
                     let nextArrangement = CoilArrangementForTerminals(terms: forTerminals, NIperL: NIperL, baseVA: forTerminals[0].terminalVA.onaf)
@@ -135,7 +149,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                         let currentDensityIncrement = 0.1E6
                         if (withEvals.onanLoad != 0.0)
                         {
-                            startingCurrentDensity = 1.5E6
+                            startingCurrentDensity = 1.0E6
                         }
                         
                         // For now, the strategy for finding the best evaluated cost for load loss is a bit simplistic. We basically get the lowest evaluated cost for one coil, then move on to the next coil. It may be better to find the lowest evaluated cost for ALL the coils simultaneously, but that will add another bunch of loops to an already loop-happy algorithm. If the current method obviously does not work, I will fix this.
@@ -168,13 +182,14 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                             {
                                 bestCoil = newCoil
                             }
-                        }
+                        } // end for currentDensity
                         
                         coils.append(bestCoil!)
                         prevOD = coils.last!.OD
-                    }
+                        
+                    } // end for nextWinding
                     
-                    totalDesigns += 1
+                    
                     
                     // we only continue if we meet the impedance requirements for all terminals
                     var impedanceOk = true
@@ -228,37 +243,42 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                     let windowHt = maxWindowHt + 0.010
                     let core = PCH_Core(numWoundLegs: 3, numLegs: 3, mainLegCenters: legCenters, windowHt: windowHt, yokeCoreCircle: coreCircle, mainLegCoreCircle: coreCircle)
                     
+                    // we only allow a 3.5m high core
+                    if core.PhysicalHeight() > 3.5
+                    {
+                        continue
+                    }
+                    
+                    totalDesigns += 1
+                    
                     let newActivePart = PCH_SimplifiedActivePart(coils: coils, core: core)
                     
-                    let newEvalCost = newActivePart.EvaluatedCost(atTemp: 85.0, atBmax: bMax, withEval: withEvals)
+                    let newEvalCost = newActivePart.EvaluatedCost(atTemp: 85.0, atBmax: newActivePart.BMax, withEval: withEvals)
                     
                     if cheapestResults.isEmpty
                     {
+                        DLog("First: \(newEvalCost)")
                         cheapestResults.append(newActivePart)
                     }
                     else
                     {
                         // if the new active part cost is greater than all the values already in the array, index will be nil
-                        if let index = cheapestResults.index(where: {$0.EvaluatedCost(atTemp: 85.0, atBmax: bMax, withEval: withEvals) > newEvalCost})
+                        if let index = cheapestResults.index(where: {$0.EvaluatedCost(atTemp: 85.0, atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
                         {
-                            if newEvalCost > 1000000
-                            {
-                                let debug = 1
-                            }
-                            
                             if index == 0
                             {
-                                DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atTemp: 85.0, atBmax: bMax, withEval: withEvals)), New: $\(newEvalCost)")
+                                DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atTemp: 85.0, atBmax: cheapestResults[0].BMax, withEval: withEvals)), New: $\(newEvalCost)")
                             }
                             
                             cheapestResults.insert(newActivePart, at: index)
                             
-                            if cheapestResults.count > 10
+                            if cheapestResults.count > numDesignsToKeep
                             {
+                                // DLog("Current: \(cheapestResults[0].EvaluatedCost(atTemp: 85.0, atBmax: cheapestResults[0].BMax, withEval: withEvals))")
                                 cheapestResults.removeLast()
                             }
                         }
-                        else if cheapestResults.count < 10
+                        else if cheapestResults.count < numDesignsToKeep
                         {
                             cheapestResults.append(newActivePart)
                         }
@@ -307,6 +327,14 @@ struct PCH_SimplifiedActivePart
 {
     let coils:[PCH_SimplifiedCoilSection]
     let core:PCH_Core
+    
+    var BMax:Double
+    {
+        get
+        {
+            return core.mainLegCoreCircle.BmaxAtVperN(self.VPN, frequency: PCH_StdFrequency)
+        }
+    }
     
     var VPN:Double
     {

@@ -58,13 +58,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         print("Area: \(area)")
         */
         
-        let terminal1 = PCH_TxfoTerminal(name: "LV", terminalVA: (28.2E6, 47.0E6), lineVoltage: 26400.0, numPhases: 3, connection: .delta, phaseAngle: π / 5.0, lineBIL: BIL_Level.kv125, neutralBIL: BIL_Level.kv125)
+        let terminal1 = PCH_TxfoTerminal(name: "LV", terminalVA: (39.6E6, 66.0E6), lineVoltage: 26400.0, numPhases: 3, connection: .delta, phaseAngle: π / 5.0, lineBIL: BIL_Level.kv125, neutralBIL: BIL_Level.kv125)
         
-        let terminal2 = PCH_TxfoTerminal(name: "HV", terminalVA: (28.2E6, 47.0E6), lineVoltage: 120000.0, numPhases: 3, connection: .star, phaseAngle: 0.0, lineBIL: BIL_Level.kv550, neutralBIL: BIL_Level.kv95)
+        let terminal2 = PCH_TxfoTerminal(name: "HV", terminalVA: (39.6E6, 66.0E6), lineVoltage: 230000.0, numPhases: 3, connection: .star, phaseAngle: 0.0, lineBIL: BIL_Level.kv850, neutralBIL: BIL_Level.kv95)
         
-        let requiredImpedance = PCH_ImpedancePair(term1: terminal1.name, term2: terminal2.name, impedancePU: 0.185 * 3.0 / 5.0, baseVA: 28.2E6 / 3.0)
+        let requiredImpedance = PCH_ImpedancePair(term1: terminal1.name, term2: terminal2.name, impedancePU: 0.255, baseVA: 66.0E6 / 3.0)
         
-        let eval = PCH_LossEvaluation(noLoad: 6000.0, onanLoad: 2000.0, onafLoad: 2000.0 * (3.0 / 5.0) * (3.0 / 5.0))
+        let eval = PCH_LossEvaluation(noLoad: 16000.0, onanLoad: 3100.0 * 25.0/9.0, onafLoad: 3100.0)
         
         let bestDesigns = CreateActivePartDesigns(forTerminals: [terminal1, terminal2], forOnanImpedances: [requiredImpedance], withEvals: eval)
         
@@ -93,7 +93,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let refCoil = nextActivePart.coils[refCoilIndex]
             let vpn = refCoil.winding.volts / refCoil.turns
             let niPerM = refCoil.winding.NIperL
-            let Bmax = nextActivePart.core.mainLegCoreCircle.BmaxAtVperN(vpn, frequency: PCH_StdFrequency)
+            let Bmax = nextActivePart.BMax
             
             outputString += "Active part #\(bestCount)\nCORE\n====\nVolts Per Turn: \(vpn); Amp-Turns/Meter: \(niPerM); Bmax: \(Bmax)\n\(nextActivePart.core)\nCOILS\n=====\n"
             
