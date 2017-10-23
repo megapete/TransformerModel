@@ -41,7 +41,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     // constraints on constants
     let vpnFactorRange = (min:0.4, max:0.9)
     let vpnFactorIncrement = 0.01
-    let bmaxRange = (min:1.40, max:1.70)
+    let bmaxRange = (min:1.40, max:1.60)
     let bmaxIncrement = 0.01
     
     // other constants used later on
@@ -73,11 +73,13 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
         let refTurns = round(refVoltage / vpnApprox)
         let vpnExact = refVoltage / refTurns
         
-        for bMax:Double in stride(from: bmaxRange.min, to: bmaxRange.max, by: bmaxIncrement)
+        for approxBMax:Double in stride(from: bmaxRange.min, to: bmaxRange.max, by: bmaxIncrement)
         {
             for coreSteelType in coreSteelTypes
             {
-                let coreCircle = PCH_CoreCircle(targetBmax: bMax, voltsPerTurn: vpnExact, steelType: PCH_CoreSteel(type:coreSteelType), frequency: PCH_StdFrequency)
+                let coreCircle = PCH_CoreCircle(targetBmax: approxBMax, voltsPerTurn: vpnExact, steelType: PCH_CoreSteel(type:coreSteelType), frequency: PCH_StdFrequency)
+                
+                let bMax = coreCircle.BmaxAtVperN(vpnExact, frequency: PCH_StdFrequency)
                 
                 // The terminals should have been set up with "preferred" winding locations for their main windings and tap windings (if any). We will make the following assumptions when onload taps are required: if the winding location for taps is the outermost winding, we assume that it is a "double-axial" winding, while if it is an inner winding, we assume that it is a multistart winding.
                 
@@ -108,7 +110,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                             }
                         }
                         
-                        let coilTurns = nextWinding.volts / vpnExact
+                        let coilTurns = round(nextWinding.volts / vpnExact)
                         let ampTurns = nextWinding.amps * coilTurns
                         let coilHt = ampTurns / NIperL
                         let topClearance = clearances.EdgeDistanceForBIL(wTerminal.bil.line)
@@ -146,7 +148,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                             
                             let typicalCondR = 0.0025
                             let numRadialConds = round(condRadial / typicalCondR + 0.5)
-                            var radialBuild = numRadialConds * typicalCondR / nextWinding.RadialSpaceFactorWithBIL(bil: wTerminal.bil.line)
+                            var radialBuild = condRadial / nextWinding.RadialSpaceFactorWithBIL(bil: wTerminal.bil.line, amps:nextWinding.amps)
                             
                             if nextWinding.type == .layer || nextWinding.type == .sheet
                             {
@@ -239,6 +241,16 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                         // if the new active part cost is greater than all the values already in the array, index will be nil
                         if let index = cheapestResults.index(where: {$0.EvaluatedCost(atTemp: 85.0, atBmax: bMax, withEval: withEvals) > newEvalCost})
                         {
+                            if newEvalCost > 1000000
+                            {
+                                let debug = 1
+                            }
+                            
+                            if index == 0
+                            {
+                                DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atTemp: 85.0, atBmax: bMax, withEval: withEvals)), New: $\(newEvalCost)")
+                            }
+                            
                             cheapestResults.insert(newActivePart, at: index)
                             
                             if cheapestResults.count > 10
@@ -340,7 +352,7 @@ struct PCH_SimplifiedActivePart
         
         let coilVol = self.TotalCoilVolume() * 1.0E9 / (25.4 * 25.4 * 25.4)
         
-        return (π * (self.coils.last!.OD * self.coils.last!.OD * 1.0E6 / (25.4 * 25.4) - self.core.mainLegCoreCircle.diameter * self.core.mainLegCoreCircle.diameter * 1.0E6 / (25.4 * 25.4)) / 4.0 * self.core.windowHeight * 1000.0 / 25.4 * 3.0 - self.TotalCoilVolume() * 1.0E9 / (25.4 * 25.4 * 25.4)) * insulPrice / exchangeRate
+        return (π * (self.coils.last!.OD * self.coils.last!.OD * 1.0E6 / (25.4 * 25.4) - self.core.mainLegCoreCircle.diameter * self.core.mainLegCoreCircle.diameter * 1.0E6 / (25.4 * 25.4)) / 4.0 * self.core.windowHeight * 1000.0 / 25.4 * 3.0 - coilVol) * insulPrice / exchangeRate
     }
     
     func EvaluatedCost(atTemp:Double, atBmax:Double, withEval:PCH_LossEvaluation) -> Double
@@ -350,6 +362,8 @@ struct PCH_SimplifiedActivePart
         {
             loadLossEval += nextCoil.EvaluatedCost(atTemp: atTemp, costPerKW: withEval.onafLoad)
         }
+        
+        // loadLossEval *= 3.0
         
         let noloadLossEval = self.core.LossAtBmax(atBmax) / 1000.0 * withEval.noLoad
         
@@ -415,7 +429,10 @@ struct PCH_SimplifiedCoilSection:CustomStringConvertible
         let copper = PCH_Conductor(conductor: self.conductor)
         let resistance = copper.Resistance(condArea, length: self.LMT, temperature: tempInC)
         
-        let loss = winding.amps * self.turns * resistance * (1.0 + defaultEddyLossPU)
+        let totalAmps = winding.amps * self.turns
+        var loss = totalAmps * totalAmps * resistance * (1.0 + defaultEddyLossPU)
+        
+        loss *= 3.0
         
         return loss
     }
@@ -429,14 +446,17 @@ struct PCH_SimplifiedCoilSection:CustomStringConvertible
     {
         let copper = PCH_Conductor(conductor: self.conductor)
         
-        let cost = copper.CanadianDollarValue(area: self.condArea, length: self.LMT)
+        var cost = copper.CanadianDollarValue(area: self.condArea, length: self.LMT)
+        
+        cost *= 3.0
         
         return cost
     }
     
     func EvaluatedCost(atTemp:Double, costPerKW:Double) -> Double
     {
-        return self.LoadLoss(tempInC:atTemp) / 1000.0 * costPerKW
+        let cost = self.LoadLoss(tempInC:atTemp) / 1000.0 * costPerKW
+        return cost
     }
     
     
@@ -512,14 +532,33 @@ class PCH_Winding
     }
     
     // Radial space factor is defined as conductor_radial_space / total_radial_space. Note that this function only returns the space factor of a single conductor (that is, things like inter-layer insulation and ducts need to be considered elsewhere)
-    func RadialSpaceFactorWithBIL(bil:BIL_Level) -> Double
+    func RadialSpaceFactorWithBIL(bil:BIL_Level, amps:Double) -> Double
     {
         let clearance = PCH_ClearanceData.sharedInstance
         
         // we will assume that a reasonably sized conductor will be some multiple of 2.5mm in the radial direction
-        let typCondR = 0.0025
+        var typCondR = 0.0025
+        var result = 0.0
+        // If the amps are high and it's a disc winding (the BIL is high enough), we'll probably use twin or CTC instead of a single strand, both of which have a much better space factor.
+        // Our algorithm uses 10mm wide conductor and the maximum current density is 3A/mm2, so
+        if bil.Value() >= 350 && amps > 150.0
+        {
+            // ignore the varnish on the CTC
+            typCondR = (amps / 3.0E6) / 0.010
+            result = typCondR / (typCondR + clearance.ConductorCoverForBIL(bil))
+        }
+        else if bil.Value() >= 350 && amps > 75.0
+        {
+            // twin
+            let totalRadialPaperPerTurn = clearance.ConductorCoverForBIL(bil) + 0.012 * 25.4 / 1000.0
+            result = 2.0 * typCondR / (2.0 * typCondR + totalRadialPaperPerTurn)
+        }
+        else
+        {
+            result = typCondR / (typCondR + clearance.ConductorCoverForBIL(bil))
+        }
         
-        return typCondR / (typCondR + clearance.ConductorCoverForBIL(bil))
+        return result
     }
     
     static func WindingTypesForBIL(bil:BIL_Level) -> [PCH_Winding.WindingType]

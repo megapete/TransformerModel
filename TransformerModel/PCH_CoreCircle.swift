@@ -358,6 +358,8 @@ class PCH_CoreCircle
             netArea += nextStep.NetArea()
         }
         
+        netArea *= 1.0E-6
+        
         return vPerN / (4.44 * netArea * frequency)
     }
     

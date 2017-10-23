@@ -159,7 +159,7 @@ class PCH_Core:CustomStringConvertible {
         
         var result:Double = 2.0 * self.yokeCoreCircle.Loss(yokeLength, atBmax: bMax)
         
-        let legHeight = self.windowHeight + yokeCoreCircle.mainStepWidth
+        let legHeight = self.windowHeight + yokeCoreCircle.mainStepWidth / 1000.0
         
         result += Double(self.numWoundLegs) * mainLegCoreCircle.Loss(legHeight, atBmax: bMax)
         
