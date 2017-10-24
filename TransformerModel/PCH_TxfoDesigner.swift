@@ -12,7 +12,12 @@ import Foundation
 // For now, we'll create a constant for the frequency since I don't remember a single time where I needed something else. If this changes with TME, I'll create a variable to pass to the routines instead.
 let PCH_StdFrequency = 60.0
 
-
+struct PCH_WindingBIL
+{
+    let bottom:BIL_Level
+    let middle:BIL_Level
+    let top:BIL_Level
+}
 
 struct PCH_ImpedancePair
 {
@@ -114,27 +119,17 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                     
                     for nextWinding in nextArrangement
                     {
-                        var wTerminal:PCH_TxfoTerminal = forTerminals[0]
-                        for i in 0..<forTerminals.count
-                        {
-                            if nextWinding.termName == forTerminals[i].name
-                            {
-                                wTerminal = forTerminals[i]
-                                break
-                            }
-                        }
-                        
                         let coilTurns = round(nextWinding.volts / vpnExact)
                         let ampTurns = nextWinding.amps * coilTurns
                         let coilHt = ampTurns / NIperL
-                        let topClearance = clearances.EdgeDistanceForBIL(wTerminal.bil.line)
-                        let bottomClearance = clearances.EdgeDistanceForBIL(wTerminal.bil.neutral)
+                        let topClearance = clearances.EdgeDistanceForBIL(nextWinding.bil.top)
+                        let bottomClearance = clearances.EdgeDistanceForBIL(nextWinding.bil.bottom)
                         maxWindowHt = max(maxWindowHt, coilHt + topClearance + bottomClearance)
                         
                         let totalGaps = nextWinding.axialGaps[0].thisCoil + nextWinding.axialGaps[1].thisCoil + nextWinding.axialGaps[2].thisCoil
-                        let condAxial = (coilHt - totalGaps) * nextWinding.AxialSpaceFactorWithBIL(bil: wTerminal.bil.line)
+                        let condAxial = (coilHt - totalGaps) * nextWinding.AxialSpaceFactorWithBIL(bil: nextWinding.bil.top)
                         
-                        var innerHilo = clearances.HiloDataForBIL(wTerminal.bil.line).total
+                        var innerHilo = clearances.HiloDataForBIL(nextWinding.bil.top).total
                         let requiredHilo = innerHilo
                         if (innerHilo < prevOuterHilo)
                         {
@@ -162,7 +157,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                             
                             let typicalCondR = 0.0025
                             let numRadialConds = round(condRadial / typicalCondR + 0.5)
-                            var radialBuild = condRadial / nextWinding.RadialSpaceFactorWithBIL(bil: wTerminal.bil.line, amps:nextWinding.amps)
+                            var radialBuild = condRadial / nextWinding.RadialSpaceFactorWithBIL(bil: nextWinding.bil.top, amps:nextWinding.amps)
                             
                             if nextWinding.type == .layer || nextWinding.type == .sheet
                             {
@@ -293,6 +288,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     
     return cheapestResults
 }
+
 
 func SimplifiedImpedance(coil1:PCH_SimplifiedCoilSection, coil2:PCH_SimplifiedCoilSection) -> (pu:Double, baseVA:Double)
 {
@@ -518,8 +514,9 @@ class PCH_Winding
     let NIperL:Double
     let isTaps:Bool
     let termName:String
+    let bil:PCH_WindingBIL
     
-    init(termName:String, position:Int, volts:Double, amps:Double, axialGaps:[axialGap], type:WindingType, staticRings:Int, NIperL:Double, isTaps:Bool)
+    init(termName:String, position:Int, volts:Double, amps:Double, axialGaps:[axialGap], type:WindingType, staticRings:Int, NIperL:Double, isTaps:Bool, bil:PCH_WindingBIL)
     {
         self.termName = termName
         self.position = position
@@ -530,6 +527,7 @@ class PCH_Winding
         self.staticRings = staticRings
         self.NIperL = NIperL
         self.isTaps = isTaps
+        self.bil = bil
     }
     
     // Axial space factor is defined as conductor_axial_space / total_axial_space
@@ -626,6 +624,9 @@ class PCH_Winding
     
 }
 
+
+
+
 // Note that NIperL and baseVA should be the highest rating of the transformer (.onaf)
 func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA:Double) -> [PCH_Winding]
 {
@@ -657,7 +658,7 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
             
             let tertVA = terminal.terminalVA.onaf
             
-            let nextWinding = PCH_Winding(termName: terminal.name, position: currentPos, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: [], type: PCH_Winding.WindingTypesForBIL(bil: termBIL.line)[0], staticRings: totalStaticRings, NIperL: NIperL * tertVA / baseVA, isTaps:false)
+            let nextWinding = PCH_Winding(termName: terminal.name, position: currentPos, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: [], type: PCH_Winding.WindingTypesForBIL(bil: termBIL.line)[0], staticRings: totalStaticRings, NIperL: NIperL * tertVA / baseVA, isTaps:false, bil:PCH_WindingBIL(bottom: terminal.bil.neutral, middle: terminal.bil.dv, top: terminal.bil.line))
             
             result.append(nextWinding)
             
@@ -736,7 +737,7 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
             axialGaps[1] = PCH_Winding.axialGap(thisCoil: tapGapThisCoil, otherCoils: tapGapOtherCoils)
         }
         
-        let newMainWinding = PCH_Winding(termName: terminal.name, position: currentPos + i, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: axialGaps, type: PCH_Winding.WindingTypesForBIL(bil: terminal.bil.line)[0], staticRings: totalStaticRings, NIperL: NIperL, isTaps:false)
+        let newMainWinding = PCH_Winding(termName: terminal.name, position: currentPos + i, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: axialGaps, type: PCH_Winding.WindingTypesForBIL(bil: terminal.bil.line)[0], staticRings: totalStaticRings, NIperL: NIperL, isTaps:false, bil:PCH_WindingBIL(bottom: terminal.bil.neutral, middle: terminal.bil.dv, top: terminal.bil.line))
         
         result.append(newMainWinding)
         
@@ -764,8 +765,10 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
                 axialGaps[1].otherCoils = deltaCenterGapMain
             }
             
+            let rvBIL = (terminal.connection == .delta ? terminal.bil.line : terminal.bil.neutral)
+            
             let tapName = terminal.name + "RV"
-            let newTapWinding = PCH_Winding(termName:tapName, position: tapPos, volts: tapVolts, amps: tapAmps, axialGaps: axialGaps, type: tapWdgType, staticRings: 0, NIperL: tapNIperL, isTaps:true)
+            let newTapWinding = PCH_Winding(termName:tapName, position: tapPos, volts: tapVolts, amps: tapAmps, axialGaps: axialGaps, type: tapWdgType, staticRings: 0, NIperL: tapNIperL, isTaps:true, bil:PCH_WindingBIL(bottom: rvBIL, middle: rvBIL, top: rvBIL))
             
             result.append(newTapWinding)
         }
