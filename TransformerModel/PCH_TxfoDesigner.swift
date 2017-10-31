@@ -12,11 +12,36 @@ import Foundation
 // For now, we'll create a constant for the frequency since I don't remember a single time where I needed something else. If this changes with TME, I'll create a variable to pass to the routines instead.
 let PCH_StdFrequency = 60.0
 
+// Some consants in this convenient location
+let PCH_ImpedanceTolerance = (min:-0.075, max:0.075)
+let PCH_CurrentDensityRange = (min:1.5E6, max:3.0E6)
+let PCH_CurrentDensityIncrement = 0.250E6
+
 struct PCH_WindingBIL
 {
     let bottom:BIL_Level
     let middle:BIL_Level
     let top:BIL_Level
+    
+    var max:BIL_Level
+    {
+        get
+        {
+            var result = top
+            
+            if (self.middle.Value() > result.Value())
+            {
+                result = middle
+            }
+            
+            if self.bottom.Value() > result.Value()
+            {
+                result = bottom
+            }
+            
+            return result
+        }
+    }
 }
 
 struct PCH_ImpedancePair
@@ -238,13 +263,13 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                     let windowHt = maxWindowHt + 0.010
                     let core = PCH_Core(numWoundLegs: 3, numLegs: 3, mainLegCenters: legCenters, windowHt: windowHt, yokeCoreCircle: coreCircle, mainLegCoreCircle: coreCircle)
                     
+                    totalDesigns += 1
+                    
                     // we only allow a 3.5m high core
                     if core.PhysicalHeight() > 3.5
                     {
                         continue
                     }
-                    
-                    totalDesigns += 1
                     
                     let newActivePart = PCH_SimplifiedActivePart(coils: coils, core: core)
                     
@@ -396,6 +421,79 @@ struct PCH_SimplifiedActivePart
     
 }
 
+
+
+class PCH_CoilNode
+{
+    let parent:PCH_CoilNode?
+    let coil:PCH_SimplifiedCoilSection
+    
+    init(parent:PCH_CoilNode?, coil:PCH_SimplifiedCoilSection)
+    {
+        self.parent = parent
+        self.coil = coil
+    }
+    
+    func ListEvaluatedCost(atTemp:Double, llEval:Double) -> Double
+    {
+        var result = self.coil.EvaluatedCost(atTemp: atTemp, costPerKW: llEval)
+        
+        if let parent = self.parent
+        {
+            result += parent.ListEvaluatedCost(atTemp: atTemp, llEval: llEval)
+        }
+        
+        return result
+    }
+    
+    func MeetsImpedanceRequirements(onanImpedances:[PCH_ImpedancePair]) -> Bool
+    {
+        for nextImpedance in onanImpedances
+        {
+            var coil1:PCH_SimplifiedCoilSection? = nil
+            var coil2:PCH_SimplifiedCoilSection? = nil
+            
+            var nextNode:PCH_CoilNode? = self
+            while nextNode != nil
+            {
+                let nextCoil = nextNode!.coil
+                if nextImpedance.Contains(termName: nextCoil.winding.termName)
+                {
+                    if coil1 == nil
+                    {
+                        coil1 = nextCoil
+                    }
+                    else
+                    {
+                        coil2 = nextCoil
+                        break
+                    }
+                }
+                
+                nextNode = nextNode!.parent
+            }
+            
+            if coil2 == nil
+            {
+                return false
+            }
+            
+            let theImp = SimplifiedImpedance(coil1: coil1!, coil2: coil2!)
+            let impedance = theImp.pu * nextImpedance.baseVA / theImp.baseVA
+            
+            if impedance > nextImpedance.impedancePU * (1.0 + PCH_ImpedanceTolerance.max) || impedance < nextImpedance.impedancePU * (1.0 + PCH_ImpedanceTolerance.min)
+            {
+                return false
+            }
+        }
+        
+        return true
+    }
+}
+
+
+
+
 struct PCH_SimplifiedCoilSection:CustomStringConvertible
 {
     let winding:PCH_Winding
@@ -410,7 +508,10 @@ struct PCH_SimplifiedCoilSection:CustomStringConvertible
     {
         get
         {
-            return "Coil Name: \(self.winding.termName); AT/m: \(self.winding.NIperL) Onaf Current Density: \(self.onafCurrentDensity); Inner Diameter: \(self.ID); Radial Build: \(self.RB)\n"
+            let NIperLString = String(format:"%.1f AT/m", self.winding.NIperL)
+            let idString = String(format:"%0.4f m", self.ID)
+            let rbString = String(format:"%0.4f m", self.RB)
+            return "Coil Name: \(self.winding.termName); AT/m: \(NIperLString) Onaf Current Density: \(self.onafCurrentDensity); Inner Diameter: \(idString); Radial Build: \(rbString)\n"
         }
     }
     
@@ -482,9 +583,6 @@ struct PCH_SimplifiedCoilSection:CustomStringConvertible
         let cost = self.LoadLoss(tempInC:atTemp) / 1000.0 * costPerKW
         return cost
     }
-    
-    
-    
 }
 
 // Helper class used to create the separate windings required for a given set of terminals
@@ -497,6 +595,7 @@ class PCH_Winding
         case helix
         case disc
         case multistart // actually a specialized layer
+        case programDecide // let the program decide the winding type
     }
     
     struct axialGap {
@@ -624,7 +723,10 @@ class PCH_Winding
     
 }
 
-
+func PCH_CreateChildNodes(parent:PCH_CoilNode?, windings:PCH_Winding, windingLevel:Int, previousOD:Double, maxWindHt:inout Double, cheapestCoils:inout PCH_CoilNode?, cheapestCost:inout Double)
+{
+    
+}
 
 
 // Note that NIperL and baseVA should be the highest rating of the transformer (.onaf)

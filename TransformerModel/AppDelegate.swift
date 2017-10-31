@@ -58,13 +58,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         print("Area: \(area)")
         */
         
-        let terminal1 = PCH_TxfoTerminal(name: "LV", terminalVA: (39.6E6, 66.0E6), lineVoltage: 26400.0, numPhases: 3, connection: .delta, phaseAngle: π / 5.0, lineBIL: BIL_Level.kv125, neutralBIL: BIL_Level.kv125)
+        let terminal1 = PCH_TxfoTerminal(name: "LV", terminalVA: (12.0E6, 12.0E6), lineVoltage: 34500, numPhases: 3, connection: .star, phaseAngle: π / 5.0, lineBIL: BIL_Level.kv200, neutralBIL: BIL_Level.kv200)
         
-        let terminal2 = PCH_TxfoTerminal(name: "HV", terminalVA: (39.6E6, 66.0E6), lineVoltage: 230000.0, numPhases: 3, connection: .star, phaseAngle: 0.0, lineBIL: BIL_Level.kv850, neutralBIL: BIL_Level.kv95)
+        let terminal2 = PCH_TxfoTerminal(name: "HV", terminalVA: (12.0E6, 12.0E6), lineVoltage: 44000, numPhases: 3, connection: .delta, phaseAngle: 0.0, lineBIL: BIL_Level.kv250, neutralBIL: BIL_Level.kv250)
         
-        let requiredImpedance = PCH_ImpedancePair(term1: terminal1.name, term2: terminal2.name, impedancePU: 0.255, baseVA: 66.0E6 / 3.0)
+        let requiredImpedance = PCH_ImpedancePair(term1: terminal1.name, term2: terminal2.name, impedancePU: 0.0575, baseVA: 12.0E6 / 3.0)
         
-        let eval = PCH_LossEvaluation(noLoad: 16000.0, onanLoad: 3100.0 * 25.0/9.0, onafLoad: 3100.0)
+        let eval = PCH_LossEvaluation(noLoad: 1000.0, onanLoad: 3000.0, onafLoad: 3000.0)
         
         let bestDesigns = CreateActivePartDesigns(forTerminals: [terminal1, terminal2], forOnanImpedances: [requiredImpedance], withEvals: eval)
         
@@ -92,17 +92,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         {
             let refCoil = nextActivePart.coils[refCoilIndex]
             let vpn = refCoil.winding.volts / refCoil.turns
+            let vpnString = String(format:"%0.3f", vpn)
             let niPerM = refCoil.winding.NIperL
+            let niPerMString = String(format:"%0.1f", niPerM)
             let Bmax = nextActivePart.BMax
+            let bMaxString = String(format:"%0.3f", Bmax)
             
-            outputString += "Active part #\(bestCount)\nCORE\n====\nVolts Per Turn: \(vpn); Amp-Turns/Meter: \(niPerM); Bmax: \(Bmax)\n\(nextActivePart.core)\nCOILS\n=====\n"
+            outputString += "Active part #\(bestCount)\nCORE\n====\nVolts Per Turn: \(vpnString); Amp-Turns/Meter: \(niPerMString); Bmax: \(bMaxString)\n\(nextActivePart.core)\nCOILS\n=====\n"
             
             for nextCoil in nextActivePart.coils
             {
                 outputString += "\(nextCoil)"
             }
             
-            outputString += "\nMaterial Cost: \(nextActivePart.MaterialCosts()); Evaluated Cost \(nextActivePart.EvaluatedCost(atTemp: 85.0, atBmax: Bmax, withEval: eval))\n\n"
+            let matCostString = String(format:"%0.2f", nextActivePart.MaterialCosts())
+            let evalCostString = String(format:"%0.2f", nextActivePart.EvaluatedCost(atTemp: 85.0, atBmax: Bmax, withEval: eval))
+            
+            outputString += "\nMaterial Cost: $\(matCostString); Evaluated Cost \(evalCostString)\n\n"
             
             bestCount += 1
         }

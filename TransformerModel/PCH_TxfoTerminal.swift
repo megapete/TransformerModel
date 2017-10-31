@@ -155,6 +155,9 @@ class PCH_TxfoTerminal {
     /// An array of PCH_Coils that belong to this terminal. This is made an optional so that we don't have to have the coils defined before we actually create the terminal.
     var coils:[PCH_Coil]?
     
+    /// The preferred coil type, for use in the automatic design process
+    var wdgType:PCH_Winding.WindingType
+    
     /**
         Designated initializer, that allows the caller to enter **everything**.
     
@@ -172,7 +175,7 @@ class PCH_TxfoTerminal {
         - parameter dvLineVolts: The line voltage of the dual voltage, if any (ignored unless hasDualVoltages is true)
         - parameter dvBIL: The BIL level of the DV, if any (ignored inless hasDualVoltages is true)
     */
-    init(name:String, terminalVA:(onan:Double, onaf:Double), lineVoltage:Double, preferredWindingLocation:Int = -1, numPhases:UInt, connection:Connections, phaseAngle:Double, lineBIL:BIL_Level, neutralBIL:BIL_Level, offloadTaps:[Double]? = nil, onloadTaps:[Double]? = nil, preferredTapWindingLocation:Int = -1, hasDualVoltage:Bool = false, dvLineVolts:Double = 0.0, dvBIL:BIL_Level = BIL_Level.kv10)
+    init(name:String, terminalVA:(onan:Double, onaf:Double), lineVoltage:Double, preferredWindingLocation:Int = -1, preferredWindingType:PCH_Winding.WindingType = .programDecide, numPhases:UInt, connection:Connections, phaseAngle:Double, lineBIL:BIL_Level, neutralBIL:BIL_Level, offloadTaps:[Double]? = nil, onloadTaps:[Double]? = nil, preferredTapWindingLocation:Int = -1, hasDualVoltage:Bool = false, dvLineVolts:Double = 0.0, dvBIL:BIL_Level = BIL_Level.kv10)
     {
         self.name = name
         self.terminalVA = terminalVA
@@ -198,5 +201,6 @@ class PCH_TxfoTerminal {
         self.hasDualVoltage = hasDualVoltage
         self.dvLineVolts = dvLineVolts
         self.bil.dv = dvBIL
+        self.wdgType = preferredWindingType
     }
 }

@@ -65,8 +65,11 @@ class PCH_Core:CustomStringConvertible {
     {
         get
         {
+            let coreDiameterString = String(format:"%0.3f m", self.mainLegCoreCircle.diameter)
+            let legCentersString = String(format:"%0.3f m", self.mainLegCenters)
+            let windowHtString = String(format:"%0.3f m", self.windowHeight)
             // For now, this only returns the info for a standard 3-legged core
-            return "Steel: \(self.mainLegCoreCircle.steps[0].lamination!.steelType.type.rawValue); Diameter: \(self.mainLegCoreCircle.diameter); Leg Centers: \(self.mainLegCenters); Window Height:\(self.windowHeight)\n"
+            return "Steel: \(self.mainLegCoreCircle.steps[0].lamination!.steelType.type.rawValue); Diameter: \(coreDiameterString); Leg Centers: \(legCentersString); Window Height:\(windowHtString)\n"
         }
     }
     
