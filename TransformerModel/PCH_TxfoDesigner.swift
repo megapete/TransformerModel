@@ -723,9 +723,68 @@ class PCH_Winding
     
 }
 
-func PCH_CreateChildNodes(parent:PCH_CoilNode?, windings:PCH_Winding, windingLevel:Int, previousOD:Double, maxWindHt:inout Double, cheapestCoils:inout PCH_CoilNode?, cheapestCost:inout Double)
+func PCH_CreateChildNodes(parent:PCH_CoilNode?, vPerN:Double, windings:[PCH_Winding], windingLevel:Int, previousOD:Double, lowestCurrentDensity:Double, onanImpedances:[PCH_ImpedancePair], maxWindHt:inout Double, evalTemp:Double, evalDollars:Double, cheapestCoils:inout PCH_CoilNode?, cheapestCost:inout Double)
 {
+    guard windingLevel < windings.count
+    else
+    {
+        if let path = parent
+        {
+            if path.MeetsImpedanceRequirements(onanImpedances: onanImpedances)
+            {
+                let pathCost = path.ListEvaluatedCost(atTemp: evalTemp, llEval: evalDollars)
+                if pathCost < cheapestCost
+                {
+                    cheapestCost = pathCost
+                    cheapestCoils = path
+                }
+            }
+        }
+        
+        return
+    }
     
+    let clearances = PCH_ClearanceData.sharedInstance
+    for nextCurrentDensity in stride(from: lowestCurrentDensity, through: PCH_CurrentDensityRange.max, by: PCH_CurrentDensityIncrement)
+    {
+        let winding = windings[windingLevel]
+        let turns = round(winding.volts / vPerN)
+        var hiloBIL = winding.bil.max
+        if let lastCoilParent = parent
+        {
+            if lastCoilParent.coil.winding.bil.max > hiloBIL
+            {
+                hiloBIL = lastCoilParent.coil.winding.bil.max
+            }
+        }
+        
+        let ID = previousOD + 2.0 * clearances.HiloDataForBIL(hiloBIL).total
+        let ampTurns = winding.amps * turns
+        let condArea = ampTurns / nextCurrentDensity
+        let coilHt = ampTurns / winding.NIperL
+        let topClearance = clearances.EdgeDistanceForBIL(winding.bil.top)
+        let bottomClearance = clearances.EdgeDistanceForBIL(winding.bil.bottom)
+        maxWindHt = max(maxWindHt, coilHt + topClearance + bottomClearance)
+        
+        let totalGaps = winding.axialGaps[0].thisCoil + winding.axialGaps[1].thisCoil + winding.axialGaps[2].thisCoil
+        let condAxial = (coilHt - totalGaps) * winding.AxialSpaceFactorWithBIL(bil: winding.bil.max)
+        let condRadial = condArea / condAxial
+        
+        let typicalCondR = 0.0025
+        let numRadialConds = round(condRadial / typicalCondR + 0.5)
+        var radialBuild = condRadial / winding.RadialSpaceFactorWithBIL(bil: winding.bil.max, amps:winding.amps)
+        
+        if winding.type == .layer || winding.type == .sheet
+        {
+            radialBuild += min(numRadialConds - 1.0, 2.0) * 0.25 * 25.4 / 1000.0
+        }
+        
+        let newCoil = PCH_SimplifiedCoilSection(winding: winding, turns: turns, ID: ID, RB: radialBuild, condArea: condArea, conductor: .copper, onafCurrentDensity: nextCurrentDensity)
+        
+        let newCoilNode = PCH_CoilNode(parent: parent, coil: newCoil)
+        
+        PCH_CreateChildNodes(parent: newCoilNode, vPerN: vPerN, windings: windings, windingLevel: windingLevel + 1, previousOD: newCoil.OD, lowestCurrentDensity: lowestCurrentDensity, onanImpedances: onanImpedances, maxWindHt: &maxWindHt, evalTemp: evalTemp, evalDollars: evalDollars, cheapestCoils: &cheapestCoils, cheapestCost: &cheapestCost)
+    }
 }
 
 

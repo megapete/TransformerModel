@@ -76,6 +76,16 @@ enum BIL_Level {
         return result
     }
     
+    static func >(lhs:BIL_Level, rhs:BIL_Level) -> Bool
+    {
+        return lhs.Value() > rhs.Value()
+    }
+    
+    static func <(lhs:BIL_Level, rhs:BIL_Level) -> Bool
+    {
+        return lhs.Value() < rhs.Value()
+    }
+    
     static func BilLevelWithValue(bilValue:UInt) -> BIL_Level?
     {
         let stringValue = "\(bilValue)"
