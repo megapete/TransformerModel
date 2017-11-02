@@ -15,4 +15,5 @@ struct PCH_LossEvaluation {
     let noLoad:Double
     let onanLoad:Double
     let onafLoad:Double
+    let llTemp:Double
 }

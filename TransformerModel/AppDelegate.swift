@@ -58,13 +58,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         print("Area: \(area)")
         */
         
-        let terminal1 = PCH_TxfoTerminal(name: "LV", terminalVA: (12.0E6, 12.0E6), lineVoltage: 34500, numPhases: 3, connection: .star, phaseAngle: π / 5.0, lineBIL: BIL_Level.kv200, neutralBIL: BIL_Level.kv200)
+        let terminal1 = PCH_TxfoTerminal(name: "LV", terminalVA: (28.2E6, 47.0E6), lineVoltage: 26400, numPhases: 3, connection: .delta, phaseAngle: π / 5.0, lineBIL: BIL_Level.kv125, neutralBIL: BIL_Level.kv125)
         
-        let terminal2 = PCH_TxfoTerminal(name: "HV", terminalVA: (12.0E6, 12.0E6), lineVoltage: 44000, numPhases: 3, connection: .delta, phaseAngle: 0.0, lineBIL: BIL_Level.kv250, neutralBIL: BIL_Level.kv250)
+        let terminal2 = PCH_TxfoTerminal(name: "HV", terminalVA: (28.2E6, 47.0E6), lineVoltage: 120000, numPhases: 3, connection: .star, phaseAngle: 0.0, lineBIL: BIL_Level.kv550, neutralBIL: BIL_Level.kv250)
         
-        let requiredImpedance = PCH_ImpedancePair(term1: terminal1.name, term2: terminal2.name, impedancePU: 0.0575, baseVA: 12.0E6 / 3.0)
+        let requiredImpedance = PCH_ImpedancePair(term1: terminal1.name, term2: terminal2.name, impedancePU: 0.185, baseVA: 47.0E6 / 3.0)
         
-        let eval = PCH_LossEvaluation(noLoad: 1000.0, onanLoad: 3000.0, onafLoad: 3000.0)
+        let eval = PCH_LossEvaluation(noLoad: 5000.0, onanLoad: 2000.0 * 25.0 / 9.0, onafLoad: 2000.0, llTemp: 85.0)
         
         let bestDesigns = CreateActivePartDesigns(forTerminals: [terminal1, terminal2], forOnanImpedances: [requiredImpedance], withEvals: eval)
         
@@ -106,9 +106,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             
             let matCostString = String(format:"%0.2f", nextActivePart.MaterialCosts())
-            let evalCostString = String(format:"%0.2f", nextActivePart.EvaluatedCost(atTemp: 85.0, atBmax: Bmax, withEval: eval))
+            let evalCostString = String(format:"%0.2f", nextActivePart.EvaluatedCost(atBmax: Bmax, withEval: eval))
             
-            outputString += "\nMaterial Cost: $\(matCostString); Evaluated Cost \(evalCostString)\n\n"
+            outputString += "\nMaterial Cost: $\(matCostString); Evaluated Cost: $\(evalCostString)\n\n"
             
             bestCount += 1
         }

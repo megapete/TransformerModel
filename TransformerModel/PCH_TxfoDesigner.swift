@@ -95,15 +95,14 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     let NIperLmax = 120000.0 * vaMaxMinRatio
     let NIperLIncrement = (NIperLmax - NIperLmin) / 50.0
     
-    let NIperLrangePercentage = 0.15
-    let NIperLIncrementPercentage = 0.01
+    // OLD METHOD let NIperLrangePercentage = 0.15
+    // OLD METHOD let NIperLIncrementPercentage = 0.01
     
     // There's no easy way to iterate through an enum, so we just manually set up an array with each of the core steel types (there are only 4 of them!)
     let coreSteelTypes = [PCH_CoreSteel.SteelType.M080, PCH_CoreSteel.SteelType.M085, PCH_CoreSteel.SteelType.M090, PCH_CoreSteel.SteelType.ZDKH]
     
     // Debugging stats
     var totalDesigns = 0
-    var designsInImpedanceRange = 0
     
     for vpnFactor:Double in stride(from: vpnFactorRange.min, through: vpnFactorRange.max, by: vpnFactorIncrement)
     {
@@ -136,134 +135,41 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                     // create designs (easy!)
                     let nextArrangement = CoilArrangementForTerminals(terms: forTerminals, NIperL: NIperL, baseVA: forTerminals[0].terminalVA.onaf)
                     
-                    var prevOD = coreCircle.diameter
-                    var prevOuterHilo = 0.0
                     var maxWindowHt = 0.0
                     
                     var coils:[PCH_SimplifiedCoilSection] = []
                     
-                    for nextWinding in nextArrangement
+                    // we'll only try playing with the current density if there's a value for the load loss evaluation
+                    var startingCurrentDensity = PCH_CurrentDensityRange.max
+                    if (withEvals.onanLoad != 0.0)
                     {
-                        let coilTurns = round(nextWinding.volts / vpnExact)
-                        let ampTurns = nextWinding.amps * coilTurns
-                        let coilHt = ampTurns / NIperL
-                        let topClearance = clearances.EdgeDistanceForBIL(nextWinding.bil.top)
-                        let bottomClearance = clearances.EdgeDistanceForBIL(nextWinding.bil.bottom)
-                        maxWindowHt = max(maxWindowHt, coilHt + topClearance + bottomClearance)
-                        
-                        let totalGaps = nextWinding.axialGaps[0].thisCoil + nextWinding.axialGaps[1].thisCoil + nextWinding.axialGaps[2].thisCoil
-                        let condAxial = (coilHt - totalGaps) * nextWinding.AxialSpaceFactorWithBIL(bil: nextWinding.bil.top)
-                        
-                        var innerHilo = clearances.HiloDataForBIL(nextWinding.bil.top).total
-                        let requiredHilo = innerHilo
-                        if (innerHilo < prevOuterHilo)
-                        {
-                            innerHilo = prevOuterHilo
-                        }
-                        prevOuterHilo = requiredHilo
-                        
-                        let coilID = prevOD + 2.0 * innerHilo
-                        
-                        // we'll only try playing with the current density if there's a value for the load loss evaluation
-                        var startingCurrentDensity = 3.0E6
-                        let currentDensityIncrement = 0.1E6
-                        if (withEvals.onanLoad != 0.0)
-                        {
-                            startingCurrentDensity = 1.0E6
-                        }
-                        
-                        // For now, the strategy for finding the best evaluated cost for load loss is a bit simplistic. We basically get the lowest evaluated cost for one coil, then move on to the next coil. It may be better to find the lowest evaluated cost for ALL the coils simultaneously, but that will add another bunch of loops to an already loop-happy algorithm. If the current method obviously does not work, I will fix this.
-                        var bestCoil:PCH_SimplifiedCoilSection? = nil
-                        
-                        for currentDensity in stride(from: startingCurrentDensity, through: 3.0E6, by: currentDensityIncrement)
-                        {
-                            let condArea = ampTurns / currentDensity
-                            let condRadial = condArea / condAxial
-                            
-                            let typicalCondR = 0.0025
-                            let numRadialConds = round(condRadial / typicalCondR + 0.5)
-                            var radialBuild = condRadial / nextWinding.RadialSpaceFactorWithBIL(bil: nextWinding.bil.top, amps:nextWinding.amps)
-                            
-                            if nextWinding.type == .layer || nextWinding.type == .sheet
-                            {
-                                radialBuild += min(numRadialConds - 1.0, 2.0) * 0.25 * 25.4 / 1000.0
-                            }
-                            
-                            let newCoil = PCH_SimplifiedCoilSection(winding: nextWinding, turns: coilTurns, ID: coilID, RB: radialBuild, condArea: condArea, conductor: .copper, onafCurrentDensity:currentDensity)
-                            
-                            if let lastCoil = bestCoil
-                            {
-                                if newCoil.EvaluatedCost(atTemp: 85.0, costPerKW: withEvals.onafLoad) + newCoil.CoilMaterialCost() < lastCoil.EvaluatedCost(atTemp: 85.0, costPerKW: withEvals.onafLoad) + lastCoil.CoilMaterialCost()
-                                {
-                                    bestCoil = newCoil
-                                }
-                            }
-                            else
-                            {
-                                bestCoil = newCoil
-                            }
-                        } // end for currentDensity
-                        
-                        coils.append(bestCoil!)
-                        prevOD = coils.last!.OD
-                        
-                    } // end for nextWinding
-                    
-                    
-                    
-                    // we only continue if we meet the impedance requirements for all terminals
-                    var impedanceOk = true
-                    for nextImpedance in forOnanImpedances
-                    {
-                        var coil1:PCH_SimplifiedCoilSection? = nil
-                        var coil2:PCH_SimplifiedCoilSection? = nil
-                        
-                        for nextCoil in coils
-                        {
-                            if nextImpedance.Contains(termName: nextCoil.winding.termName)
-                            {
-                                if coil1 == nil
-                                {
-                                    coil1 = nextCoil
-                                }
-                                else
-                                {
-                                    coil2 = nextCoil
-                                    break
-                                }
-                            }
-                        }
-                        
-                        if coil2 == nil
-                        {
-                            impedanceOk = false
-                            break
-                        }
-                        
-                        let theImp = SimplifiedImpedance(coil1: coil1!, coil2: coil2!)
-                        let impedance = theImp.pu * nextImpedance.baseVA / theImp.baseVA
-                        
-                        if impedance > nextImpedance.impedancePU * 1.075 || impedance < nextImpedance.impedancePU * 0.925
-                        {
-                            impedanceOk = false
-                            break
-                        }
+                        startingCurrentDensity = PCH_CurrentDensityRange.min
                     }
                     
-                    guard impedanceOk else
+                    var lowestCost = Double.greatestFiniteMagnitude
+                    var coilList:PCH_CoilNode? = nil
+                    
+                    PCH_CreateChildNodes(parent: nil, vPerN: vpnExact, windings: nextArrangement, windingLevel: 0, previousOD: coreCircle.diameter, lowestCurrentDensity: startingCurrentDensity, onanImpedances: forOnanImpedances, maxWindHt: &maxWindowHt, evalTemp: withEvals.llTemp, evalDollars: withEvals.onafLoad, cheapestCoils: &coilList, cheapestCost: &lowestCost)
+                    
+                    if coilList == nil
                     {
                         continue
                     }
                     
-                    designsInImpedanceRange += 1
+                    // The last coil is pointed to by coilList, so:
+                    let outerOD = coilList!.coil.OD
+                    let betweenPhases = clearances.HiloDataForBIL(coilList!.coil.winding.bil.max).total * 1.5
                     
-                    let betweenPhases = prevOuterHilo * 1.5
-                    let outerOD = prevOD
+                    while coilList != nil
+                    {
+                        coils.insert(coilList!.coil, at: 0)
+                        
+                        coilList = coilList?.parent
+                    }
+                    
                     let legCenters = outerOD + betweenPhases
                     let windowHt = maxWindowHt + 0.010
                     let core = PCH_Core(numWoundLegs: 3, numLegs: 3, mainLegCenters: legCenters, windowHt: windowHt, yokeCoreCircle: coreCircle, mainLegCoreCircle: coreCircle)
-                    
-                    totalDesigns += 1
                     
                     // we only allow a 3.5m high core
                     if core.PhysicalHeight() > 3.5
@@ -271,9 +177,11 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                         continue
                     }
                     
+                    totalDesigns += 1
+                    
                     let newActivePart = PCH_SimplifiedActivePart(coils: coils, core: core)
                     
-                    let newEvalCost = newActivePart.EvaluatedCost(atTemp: 85.0, atBmax: newActivePart.BMax, withEval: withEvals)
+                    let newEvalCost = newActivePart.EvaluatedCost(atBmax: newActivePart.BMax, withEval: withEvals)
                     
                     if cheapestResults.isEmpty
                     {
@@ -283,11 +191,11 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                     else
                     {
                         // if the new active part cost is greater than all the values already in the array, index will be nil
-                        if let index = cheapestResults.index(where: {$0.EvaluatedCost(atTemp: 85.0, atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
+                        if let index = cheapestResults.index(where: {$0.EvaluatedCost(atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
                         {
                             if index == 0
                             {
-                                DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atTemp: 85.0, atBmax: cheapestResults[0].BMax, withEval: withEvals)), New: $\(newEvalCost)")
+                                DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atBmax: cheapestResults[0].BMax, withEval: withEvals)), New: $\(newEvalCost)")
                             }
                             
                             cheapestResults.insert(newActivePart, at: index)
@@ -309,7 +217,6 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     }
     
     DLog("Total designs created: \(totalDesigns)")
-    DLog("Designs in impedance range: \(designsInImpedanceRange)")
     
     return cheapestResults
 }
@@ -404,12 +311,12 @@ struct PCH_SimplifiedActivePart
         return (π * (self.coils.last!.OD * self.coils.last!.OD * 1.0E6 / (25.4 * 25.4) - self.core.mainLegCoreCircle.diameter * self.core.mainLegCoreCircle.diameter * 1.0E6 / (25.4 * 25.4)) / 4.0 * self.core.windowHeight * 1000.0 / 25.4 * 3.0 - coilVol) * insulPrice / exchangeRate
     }
     
-    func EvaluatedCost(atTemp:Double, atBmax:Double, withEval:PCH_LossEvaluation) -> Double
+    func EvaluatedCost(atBmax:Double, withEval:PCH_LossEvaluation) -> Double
     {
         var loadLossEval = 0.0
         for nextCoil in self.coils
         {
-            loadLossEval += nextCoil.EvaluatedCost(atTemp: atTemp, costPerKW: withEval.onafLoad)
+            loadLossEval += nextCoil.EvaluatedCost(atTemp: withEval.llTemp, costPerKW: withEval.onafLoad)
         }
         
         // loadLossEval *= 3.0
