@@ -144,16 +144,16 @@ class PCH_ClearanceData {
     {
         var result = (0.0, 0.0)
         
-        let keyName = BIL_Level.bilNames[bil]
-        
-        if let levelDict = clearanceDictionary?[keyName!] as? [String:Double]
-        {
-            result = (levelDict["HiloTotal"]!, levelDict["HiloSolid"]!)
-        }
+        guard let dict = self.clearanceDictionary
         else
         {
-            ALog("Could not access data in dictionary")
+            ALog("Bad dictionary")
+            return result
         }
+        
+        let keyName = BIL_Level.bilNames[bil]!
+        let entry = dict[keyName] as! [String:Double]
+        result = (entry["HiloTotal"]!, entry["HiloSolid"]!)
         
         return result
     }
@@ -169,16 +169,17 @@ class PCH_ClearanceData {
     {
         var result = 0.0
         
-        let keyName = BIL_Level.bilNames[bil]
+        guard let dict = self.clearanceDictionary
+            else
+        {
+            ALog("Bad dictionary")
+            return result
+        }
         
-        if let levelDict = clearanceDictionary?[keyName!] as? [String:Double]
-        {
-            result = levelDict["EdgeDistance"]!
-        }
-        else
-        {
-            ALog("Could not access data in dictionary")
-        }
+        let keyName = BIL_Level.bilNames[bil]!
+        let entry = dict[keyName] as! [String:Double]
+        
+        result = entry["EdgeDistance"]!
         
         return result
     }
@@ -209,16 +210,16 @@ class PCH_ClearanceData {
     {
         var result = 0.0
         
-        let keyName = BIL_Level.bilNames[bil]
+        guard let dict = self.clearanceDictionary
+            else
+        {
+            ALog("Bad dictionary")
+            return result
+        }
         
-        if let levelDict = clearanceDictionary?[keyName!] as? [String:Double]
-        {
-            result = levelDict["Interphase"]!
-        }
-        else
-        {
-            ALog("Could not access data in dictionary")
-        }
+        let keyName = BIL_Level.bilNames[bil]!
+        let entry = dict[keyName] as! [String:Double]
+        result = entry["Interphase"]!
         
         return result
     }
@@ -234,16 +235,16 @@ class PCH_ClearanceData {
     {
         var result = 0.0
         
-        let keyName = BIL_Level.bilNames[bil]
+        guard let dict = self.clearanceDictionary
+            else
+        {
+            ALog("Bad dictionary")
+            return result
+        }
         
-        if let levelDict = clearanceDictionary?[keyName!] as? [String:Double]
-        {
-            result = levelDict["ConductorCover"]!
-        }
-        else
-        {
-            ALog("Could not access data in dictionary")
-        }
+        let keyName = BIL_Level.bilNames[bil]!
+        let entry = dict[keyName] as! [String:Double]
+        result = entry["ConductorCover"]!
         
         return result
     }
@@ -259,16 +260,16 @@ class PCH_ClearanceData {
     {
         var result = 0.0
         
-        let keyName = BIL_Level.bilNames[bil]
+        guard let dict = self.clearanceDictionary
+            else
+        {
+            ALog("Bad dictionary")
+            return result
+        }
         
-        if let levelDict = clearanceDictionary?[keyName!] as? [String:Double]
-        {
-            result = levelDict["BetweenDisks"]!
-        }
-        else
-        {
-            ALog("Could not access data in dictionary")
-        }
+        let keyName = BIL_Level.bilNames[bil]!
+        let entry = dict[keyName] as! [String:Double]
+        result = entry["BetweenDisks"]!
         
         return result
     }

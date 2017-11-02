@@ -86,10 +86,10 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
         highestMainBIL = forTerminals[0].bil.line
     }
     let clearances = PCH_ClearanceData.sharedInstance
-    let mainHilo = clearances.HiloDataForBIL(highestMainBIL).total
-    let typicalCoilRB = 75.0 // hmmm
-    let impDimnFactor = mainHilo * 1000.0 + 2.0 * typicalCoilRB / 3.0 // mm
-    let mainImpedance = forOnanImpedances[0].impedancePU
+    // OLD METHOD let mainHilo = clearances.HiloDataForBIL(highestMainBIL).total
+    // OLD METHOD let typicalCoilRB = 75.0 // hmmm
+    // OLD METHOD let impDimnFactor = mainHilo * 1000.0 + 2.0 * typicalCoilRB / 3.0 // mm
+    // OLD METHOD let mainImpedance = forOnanImpedances[0].impedancePU
     
     let NIperLmin = 20000.0 * vaMaxMinRatio
     let NIperLmax = 120000.0 * vaMaxMinRatio
@@ -122,13 +122,13 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
             {
                 let coreCircle = PCH_CoreCircle(targetBmax: approxBMax, voltsPerTurn: vpnExact, steelType: PCH_CoreSteel(type:coreSteelType), frequency: PCH_StdFrequency)
                 
-                let bMax = coreCircle.BmaxAtVperN(vpnExact, frequency: PCH_StdFrequency)
+                // OLD METHOD let bMax = coreCircle.BmaxAtVperN(vpnExact, frequency: PCH_StdFrequency)
                 
                 // The terminals should have been set up with "preferred" winding locations for their main windings and tap windings (if any). We will make the following assumptions when onload taps are required: if the winding location for taps is the outermost winding, we assume that it is a "double-axial" winding, while if it is an inner winding, we assume that it is a multistart winding.
                 
-                // We define a range to use for NI/l (AmpTurns/m) so that we don't try every single height under the sun. We use the simplified formula from the Blue Book for impedances and allow 15% on either side of it.
-                let LMTave = (coreCircle.diameter * 1000.0 + 2.0 * typicalCoilRB + mainHilo * 1000.0) * π
-                let targetNIperL = mainImpedance * 1.0E12 / ((7.9 * LMTave * PCH_StdFrequency * impDimnFactor) / vpnExact) // AmpTurns per Meter
+                // OLD METHOD  We define a range to use for NI/l (AmpTurns/m) so that we don't try every single height under the sun. We use the simplified formula from the Blue Book for impedances and allow 15% on either side of it.
+                // OLD METHOD let LMTave = (coreCircle.diameter * 1000.0 + 2.0 * typicalCoilRB + mainHilo * 1000.0) * π
+                // OLD METHOD let targetNIperL = mainImpedance * 1.0E12 / ((7.9 * LMTave * PCH_StdFrequency * impDimnFactor) / vpnExact) // AmpTurns per Meter
                
                 for NIperL in stride(from: NIperLmin, through: NIperLmax, by: NIperLIncrement)
                 {
