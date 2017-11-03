@@ -65,7 +65,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     let numDesignsToKeep = 10
     let maxVperN = 100.0
     
-    var cheapestResults:[PCH_SimplifiedActivePart] = []
+    var cheapestResults = SynchronizedArray<PCH_SimplifiedActivePart>()
     
     let numPhases = forTerminals[0].numPhases
     let refVoltage = forTerminals[0].legVolts
@@ -74,9 +74,9 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     let vaMaxMinRatio = forTerminals[0].terminalVA.onaf / forTerminals[0].terminalVA.onan
     
     // constraints on constants
-    let vpnFactorRange = (min:0.4, max:0.9)
+    let vpnFactorRange = (min:0.4, max:0.75)
     let vpnFactorIncrement = 0.01
-    let bmaxRange = (min:1.40, max:1.60)
+    let bmaxRange = (min:1.45, max:1.60)
     let bmaxIncrement = 0.01
     
     // other constants used later on
@@ -195,7 +195,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                         {
                             if index == 0
                             {
-                                DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atBmax: cheapestResults[0].BMax, withEval: withEvals)), New: $\(newEvalCost)")
+                                DLog("Previous: $\(cheapestResults[0]!.EvaluatedCost(atBmax: cheapestResults[0]!.BMax, withEval: withEvals)), New: $\(newEvalCost)")
                             }
                             
                             cheapestResults.insert(newActivePart, at: index)
@@ -218,7 +218,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     
     DLog("Total designs created: \(totalDesigns)")
     
-    return cheapestResults
+    return cheapestResults.GetArray()
 }
 
 

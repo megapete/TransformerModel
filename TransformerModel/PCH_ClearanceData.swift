@@ -106,13 +106,17 @@ enum BIL_Level {
 }
 
 /// Singeleton class that provides access to a dictionary of clearance values based on BIL level.
+private let _sharedInstance = PCH_ClearanceData()
 
 class PCH_ClearanceData {
     
     /**
         The one and only PCH_ClearanceData instance, which calling routines must reference
     */
-    static let sharedInstance = PCH_ClearanceData()
+    class var sharedInstance:PCH_ClearanceData
+    {
+        return _sharedInstance
+    }
     
     /// A private dictionary that holds the actual clearance data
     fileprivate let clearanceDictionary:NSDictionary?
