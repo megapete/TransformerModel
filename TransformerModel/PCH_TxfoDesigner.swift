@@ -131,9 +131,19 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                 // OLD METHOD let LMTave = (coreCircle.diameter * 1000.0 + 2.0 * typicalCoilRB + mainHilo * 1000.0) * π
                 // OLD METHOD let targetNIperL = mainImpedance * 1.0E12 / ((7.9 * LMTave * PCH_StdFrequency * impDimnFactor) / vpnExact) // AmpTurns per Meter
                
+                var cheapestForThisCore:PCH_SimplifiedActivePart? = nil
+                var cheapestEval = Double.greatestFiniteMagnitude
+                let concQueue = DispatchQueue(label: "com.huberistech.txfo_designer.niperl", attributes: .concurrent)
                 
-                for NIperL in stride(from: NIperLmin, through: NIperLmax, by: NIperLIncrement)
+                DispatchQueue.concurrentPerform(iterations: NI_NumIterations)
                 {
+                    (i:Int) -> Void in
+                    
+                    let NIperL = NIperLmin + Double(i) * NIperLIncrement
+                
+                // for NIperL in stride(from: NIperLmin, through: NIperLmax, by: NIperLIncrement)
+                // {
+                    
                     // create designs (easy!)
                     let nextArrangement = CoilArrangementForTerminals(terms: forTerminals, NIperL: NIperL, baseVA: forTerminals[0].terminalVA.onaf)
                     
@@ -176,9 +186,18 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                             totalDesigns += 1
                             
                             let newActivePart = PCH_SimplifiedActivePart(coils: coils, core: core)
-                            
                             let newEvalCost = newActivePart.EvaluatedCost(atBmax: newActivePart.BMax, withEval: withEvals)
                             
+                            concQueue.async(flags: .barrier)
+                            {
+                                if newEvalCost < cheapestEval
+                                {
+                                    cheapestEval = newEvalCost
+                                    cheapestForThisCore = newActivePart
+                                }
+                            }
+                            
+                            /*
                             if cheapestResults.isEmpty
                             {
                                 DLog("First: \(newEvalCost)")
@@ -205,14 +224,49 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                                 else if cheapestResults.count < numDesignsToKeep
                                 {
                                     cheapestResults.append(newActivePart)
-                                }
+                             }
                             } // END else [if cheapestResults.isEmpty]
-                            
+                             
+                            */
                         } // END if core.PhysicalHeight()
                         
                     } // END if let cList
                     
                 } // END for NIperL
+                
+                if let newActivePart = cheapestForThisCore
+                {
+                    let newEvalCost = newActivePart.EvaluatedCost(atBmax: newActivePart.BMax, withEval: withEvals)
+                    
+                    if cheapestResults.isEmpty
+                    {
+                        DLog("First: \(newEvalCost)")
+                        cheapestResults.append(newActivePart)
+                    }
+                    else
+                    {
+                        // if the new active part cost is greater than all the values already in the array, index will be nil
+                        if let index = cheapestResults.index(where: {$0.EvaluatedCost(atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
+                        {
+                            if index == 0
+                            {
+                                DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atBmax: cheapestResults[0].BMax, withEval: withEvals)), New: $\(newEvalCost)")
+                            }
+                            
+                            cheapestResults.insert(newActivePart, at: index)
+                            
+                            if cheapestResults.count > numDesignsToKeep
+                            {
+                                // DLog("Current: \(cheapestResults[0].EvaluatedCost(atTemp: 85.0, atBmax: cheapestResults[0].BMax, withEval: withEvals))")
+                                cheapestResults.removeLast()
+                            }
+                        }
+                        else if cheapestResults.count < numDesignsToKeep
+                        {
+                            cheapestResults.append(newActivePart)
+                        }
+                    } // END else [if cheapestResults.isEmpty]
+                }
                 
             } // END for coreSteelType
             

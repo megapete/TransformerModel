@@ -64,7 +64,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         let requiredImpedance = PCH_ImpedancePair(term1: terminal1.name, term2: terminal2.name, impedancePU: 0.185, baseVA: 47.0E6 / 3.0)
         
-        let eval = PCH_LossEvaluation(noLoad: 000.0, onanLoad: 000.0 * 25.0 / 9.0, onafLoad: 000.0, llTemp: 85.0)
+        let eval = PCH_LossEvaluation(noLoad: 6000.0, onanLoad: 2000.0 * 25.0 / 9.0, onafLoad: 2000.0, llTemp: 85.0)
         
         let bestDesigns = CreateActivePartDesigns(forTerminals: [terminal1, terminal2], forOnanImpedances: [requiredImpedance], withEvals: eval)
         
