@@ -93,7 +93,8 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     
     let NIperLmin = 20000.0 * vaMaxMinRatio
     let NIperLmax = 120000.0 * vaMaxMinRatio
-    let NIperLIncrement = (NIperLmax - NIperLmin) / 50.0
+    let NI_NumIterations = 50
+    let NIperLIncrement = (NIperLmax - NIperLmin) / Double(NI_NumIterations)
     
     // OLD METHOD let NIperLrangePercentage = 0.15
     // OLD METHOD let NIperLIncrementPercentage = 0.01
@@ -130,6 +131,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                 // OLD METHOD let LMTave = (coreCircle.diameter * 1000.0 + 2.0 * typicalCoilRB + mainHilo * 1000.0) * π
                 // OLD METHOD let targetNIperL = mainImpedance * 1.0E12 / ((7.9 * LMTave * PCH_StdFrequency * impDimnFactor) / vpnExact) // AmpTurns per Meter
                
+                
                 for NIperL in stride(from: NIperLmin, through: NIperLmax, by: NIperLIncrement)
                 {
                     // create designs (easy!)
@@ -151,70 +153,72 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                     
                     PCH_CreateChildNodes(parent: nil, vPerN: vpnExact, windings: nextArrangement, windingLevel: 0, previousOD: coreCircle.diameter, lowestCurrentDensity: startingCurrentDensity, onanImpedances: forOnanImpedances, maxWindHt: &maxWindowHt, evalTemp: withEvals.llTemp, evalDollars: withEvals.onafLoad, cheapestCoils: &coilList, cheapestCost: &lowestCost)
                     
-                    if coilList == nil
+                    if coilList != nil
                     {
-                        continue
-                    }
-                    
-                    // The last coil is pointed to by coilList, so:
-                    let outerOD = coilList!.coil.OD
-                    let betweenPhases = clearances.HiloDataForBIL(coilList!.coil.winding.bil.max).total * 1.5
-                    
-                    while coilList != nil
-                    {
-                        coils.insert(coilList!.coil, at: 0)
+                        // The last coil is pointed to by coilList, so:
+                        let outerOD = coilList!.coil.OD
+                        let betweenPhases = clearances.HiloDataForBIL(coilList!.coil.winding.bil.max).total * 1.5
                         
-                        coilList = coilList?.parent
-                    }
-                    
-                    let legCenters = outerOD + betweenPhases
-                    let windowHt = maxWindowHt + 0.010
-                    let core = PCH_Core(numWoundLegs: 3, numLegs: 3, mainLegCenters: legCenters, windowHt: windowHt, yokeCoreCircle: coreCircle, mainLegCoreCircle: coreCircle)
-                    
-                    // we only allow a 3.5m high core
-                    if core.PhysicalHeight() > 3.5
-                    {
-                        continue
-                    }
-                    
-                    totalDesigns += 1
-                    
-                    let newActivePart = PCH_SimplifiedActivePart(coils: coils, core: core)
-                    
-                    let newEvalCost = newActivePart.EvaluatedCost(atBmax: newActivePart.BMax, withEval: withEvals)
-                    
-                    if cheapestResults.isEmpty
-                    {
-                        DLog("First: \(newEvalCost)")
-                        cheapestResults.append(newActivePart)
-                    }
-                    else
-                    {
-                        // if the new active part cost is greater than all the values already in the array, index will be nil
-                        if let index = cheapestResults.index(where: {$0.EvaluatedCost(atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
+                        while coilList != nil
                         {
-                            if index == 0
-                            {
-                                DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atBmax: cheapestResults[0].BMax, withEval: withEvals)), New: $\(newEvalCost)")
-                            }
+                            coils.insert(coilList!.coil, at: 0)
                             
-                            cheapestResults.insert(newActivePart, at: index)
-                            
-                            if cheapestResults.count > numDesignsToKeep
-                            {
-                                // DLog("Current: \(cheapestResults[0].EvaluatedCost(atTemp: 85.0, atBmax: cheapestResults[0].BMax, withEval: withEvals))")
-                                cheapestResults.removeLast()
-                            }
+                            coilList = coilList!.parent
                         }
-                        else if cheapestResults.count < numDesignsToKeep
+                        
+                        let legCenters = outerOD + betweenPhases
+                        let windowHt = maxWindowHt + 0.010
+                        let core = PCH_Core(numWoundLegs: 3, numLegs: 3, mainLegCenters: legCenters, windowHt: windowHt, yokeCoreCircle: coreCircle, mainLegCoreCircle: coreCircle)
+                        
+                        // we only allow a 3.5m (max) high core
+                        if core.PhysicalHeight() <= 3.5
                         {
-                            cheapestResults.append(newActivePart)
-                        }
-                    }
-                }
-            }
-        }
-    }
+                            totalDesigns += 1
+                            
+                            let newActivePart = PCH_SimplifiedActivePart(coils: coils, core: core)
+                            
+                            let newEvalCost = newActivePart.EvaluatedCost(atBmax: newActivePart.BMax, withEval: withEvals)
+                            
+                            if cheapestResults.isEmpty
+                            {
+                                DLog("First: \(newEvalCost)")
+                                cheapestResults.append(newActivePart)
+                            }
+                            else
+                            {
+                                // if the new active part cost is greater than all the values already in the array, index will be nil
+                                if let index = cheapestResults.index(where: {$0.EvaluatedCost(atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
+                                {
+                                    if index == 0
+                                    {
+                                        DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atBmax: cheapestResults[0].BMax, withEval: withEvals)), New: $\(newEvalCost)")
+                                    }
+                                    
+                                    cheapestResults.insert(newActivePart, at: index)
+                                    
+                                    if cheapestResults.count > numDesignsToKeep
+                                    {
+                                        // DLog("Current: \(cheapestResults[0].EvaluatedCost(atTemp: 85.0, atBmax: cheapestResults[0].BMax, withEval: withEvals))")
+                                        cheapestResults.removeLast()
+                                    }
+                                }
+                                else if cheapestResults.count < numDesignsToKeep
+                                {
+                                    cheapestResults.append(newActivePart)
+                                }
+                            } // END else [if cheapestResults.isEmpty]
+                            
+                        } // END if core.PhysicalHeight()
+                        
+                    } // END if let cList
+                    
+                } // END for NIperL
+                
+            } // END for coreSteelType
+            
+        } // END for approxBMax:Double
+        
+    } // END for vpnFactor:Double
     
     DLog("Total designs created: \(totalDesigns)")
     
