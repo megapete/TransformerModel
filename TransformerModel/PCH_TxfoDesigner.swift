@@ -86,18 +86,11 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
         highestMainBIL = forTerminals[0].bil.line
     }
     let clearances = PCH_ClearanceData.sharedInstance
-    // OLD METHOD let mainHilo = clearances.HiloDataForBIL(highestMainBIL).total
-    // OLD METHOD let typicalCoilRB = 75.0 // hmmm
-    // OLD METHOD let impDimnFactor = mainHilo * 1000.0 + 2.0 * typicalCoilRB / 3.0 // mm
-    // OLD METHOD let mainImpedance = forOnanImpedances[0].impedancePU
     
     let NIperLmin = 20000.0 * vaMaxMinRatio
     let NIperLmax = 120000.0 * vaMaxMinRatio
     let NI_NumIterations = 50
     let NIperLIncrement = (NIperLmax - NIperLmin) / Double(NI_NumIterations)
-    
-    // OLD METHOD let NIperLrangePercentage = 0.15
-    // OLD METHOD let NIperLIncrementPercentage = 0.01
     
     // There's no easy way to iterate through an enum, so we just manually set up an array with each of the core steel types (there are only 4 of them!)
     let coreSteelTypes = [PCH_CoreSteel.SteelType.M080, PCH_CoreSteel.SteelType.M085, PCH_CoreSteel.SteelType.M090, PCH_CoreSteel.SteelType.ZDKH]
@@ -123,13 +116,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
             {
                 let coreCircle = PCH_CoreCircle(targetBmax: approxBMax, voltsPerTurn: vpnExact, steelType: PCH_CoreSteel(type:coreSteelType), frequency: PCH_StdFrequency)
                 
-                // OLD METHOD let bMax = coreCircle.BmaxAtVperN(vpnExact, frequency: PCH_StdFrequency)
-                
                 // The terminals should have been set up with "preferred" winding locations for their main windings and tap windings (if any). We will make the following assumptions when onload taps are required: if the winding location for taps is the outermost winding, we assume that it is a "double-axial" winding, while if it is an inner winding, we assume that it is a multistart winding.
-                
-                // OLD METHOD  We define a range to use for NI/l (AmpTurns/m) so that we don't try every single height under the sun. We use the simplified formula from the Blue Book for impedances and allow 15% on either side of it.
-                // OLD METHOD let LMTave = (coreCircle.diameter * 1000.0 + 2.0 * typicalCoilRB + mainHilo * 1000.0) * π
-                // OLD METHOD let targetNIperL = mainImpedance * 1.0E12 / ((7.9 * LMTave * PCH_StdFrequency * impDimnFactor) / vpnExact) // AmpTurns per Meter
                
                 var cheapestForThisCore:PCH_SimplifiedActivePart? = nil
                 var cheapestEval = Double.greatestFiniteMagnitude
@@ -197,37 +184,6 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                                 }
                             }
                             
-                            /*
-                            if cheapestResults.isEmpty
-                            {
-                                DLog("First: \(newEvalCost)")
-                                cheapestResults.append(newActivePart)
-                            }
-                            else
-                            {
-                                // if the new active part cost is greater than all the values already in the array, index will be nil
-                                if let index = cheapestResults.index(where: {$0.EvaluatedCost(atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
-                                {
-                                    if index == 0
-                                    {
-                                        DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atBmax: cheapestResults[0].BMax, withEval: withEvals)), New: $\(newEvalCost)")
-                                    }
-                                    
-                                    cheapestResults.insert(newActivePart, at: index)
-                                    
-                                    if cheapestResults.count > numDesignsToKeep
-                                    {
-                                        // DLog("Current: \(cheapestResults[0].EvaluatedCost(atTemp: 85.0, atBmax: cheapestResults[0].BMax, withEval: withEvals))")
-                                        cheapestResults.removeLast()
-                                    }
-                                }
-                                else if cheapestResults.count < numDesignsToKeep
-                                {
-                                    cheapestResults.append(newActivePart)
-                             }
-                            } // END else [if cheapestResults.isEmpty]
-                             
-                            */
                         } // END if core.PhysicalHeight()
                         
                     } // END if let cList
@@ -240,7 +196,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                     
                     if cheapestResults.isEmpty
                     {
-                        DLog("First: \(newEvalCost)")
+                        // DLog("First: \(newEvalCost)")
                         cheapestResults.append(newActivePart)
                     }
                     else
@@ -248,10 +204,12 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                         // if the new active part cost is greater than all the values already in the array, index will be nil
                         if let index = cheapestResults.index(where: {$0.EvaluatedCost(atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
                         {
+                            /*
                             if index == 0
                             {
                                 DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atBmax: cheapestResults[0].BMax, withEval: withEvals)), New: $\(newEvalCost)")
                             }
+                            */
                             
                             cheapestResults.insert(newActivePart, at: index)
                             
@@ -266,7 +224,8 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                             cheapestResults.append(newActivePart)
                         }
                     } // END else [if cheapestResults.isEmpty]
-                }
+                
+                } // END if let newActivePart
                 
             } // END for coreSteelType
             
@@ -383,7 +342,6 @@ struct PCH_SimplifiedActivePart
         
         return self.MaterialCosts() + loadLossEval + noloadLossEval
     }
-    
 }
 
 
@@ -455,9 +413,6 @@ class PCH_CoilNode
         return true
     }
 }
-
-
-
 
 struct PCH_SimplifiedCoilSection:CustomStringConvertible
 {
@@ -684,8 +639,6 @@ class PCH_Winding
     {
         return bil.Value() >= 170
     }
-    
-    
 }
 
 func PCH_CreateChildNodes(parent:PCH_CoilNode?, vPerN:Double, windings:[PCH_Winding], windingLevel:Int, previousOD:Double, lowestCurrentDensity:Double, onanImpedances:[PCH_ImpedancePair], maxWindHt:inout Double, evalTemp:Double, evalDollars:Double, cheapestCoils:inout PCH_CoilNode?, cheapestCost:inout Double)
@@ -784,7 +737,7 @@ func CoilArrangementForTerminals(terms:[PCH_TxfoTerminal], NIperL:Double, baseVA
             
             let tertVA = terminal.terminalVA.onaf
             
-            let nextWinding = PCH_Winding(termName: terminal.name, position: currentPos, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: [], type: PCH_Winding.WindingTypesForBIL(bil: termBIL.line)[0], staticRings: totalStaticRings, NIperL: NIperL * tertVA / baseVA, isTaps:false, bil:PCH_WindingBIL(bottom: terminal.bil.neutral, middle: terminal.bil.dv, top: terminal.bil.line))
+            let nextWinding = PCH_Winding(termName: terminal.name, position: currentPos, volts: terminal.legVolts, amps: terminal.legAmps.onaf, axialGaps: [], type: (terminal.wdgType != .programDecide ? terminal.wdgType : PCH_Winding.WindingTypesForBIL(bil: termBIL.line)[0]), staticRings: totalStaticRings, NIperL: NIperL * tertVA / baseVA, isTaps:false, bil:PCH_WindingBIL(bottom: terminal.bil.neutral, middle: terminal.bil.dv, top: terminal.bil.line))
             
             result.append(nextWinding)
             
