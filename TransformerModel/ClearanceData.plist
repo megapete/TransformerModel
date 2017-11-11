@@ -262,15 +262,15 @@
 		<key>EdgeDistance</key>
 		<real>0.153</real>
 		<key>HiloTotal</key>
-		<real>0.07000000000000001</real>
+		<real>0.0635</real>
 		<key>HiloSolid</key>
 		<real>0.02</real>
 		<key>Interphase</key>
-		<real>0.105</real>
+		<real>0.095</real>
 		<key>ConductorCover</key>
-		<real>0.002</real>
+		<real>0.0015</real>
 		<key>BetweenDisks</key>
-		<real>0.0056</real>
+		<real>0.0051</real>
 	</dict>
 	<key>650</key>
 	<dict>

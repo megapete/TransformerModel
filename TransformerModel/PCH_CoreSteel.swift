@@ -24,7 +24,7 @@ class PCH_CoreSteel: PCH_RawMaterial
     struct SteelInfo {
         let type:String // The name of the steel type
         let thickness:Double // The thickness of a single lamination in mm
-        let lossCoeffs:[Double] // The loss coefficients from 0th to 4th degree of the material
+        let lossCoeffs:[Double] // The loss coefficients from 0th to 4th degree of the material (per kg)
         let price:Double // The price per kg in C$
     }
     
@@ -66,8 +66,7 @@ class PCH_CoreSteel: PCH_RawMaterial
             result += selfInfo.lossCoeffs[i] * x[i]
         }
         
-        // at this point, the result is in watts per pound, so we convert to watts/kg
-        return result * 2.2
+        return result
     }
     
     func CanadianDollarValue(weight:Double) -> Double

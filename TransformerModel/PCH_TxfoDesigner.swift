@@ -16,6 +16,8 @@ let PCH_StdFrequency = 60.0
 let PCH_ImpedanceTolerance = (min:-0.075, max:0.075)
 let PCH_CurrentDensityRange = (min:1.5E6, max:3.0E6)
 let PCH_CurrentDensityIncrement = 0.250E6
+let PCH_TypicalConductorRadialDim = 0.09 * 25.4 / 1000.0
+let PCH_StaticRingAxialDim = 0.75 * 25.4 / 1000.0
 
 struct PCH_WindingBIL
 {
@@ -320,7 +322,7 @@ struct PCH_SimplifiedActivePart
     func InsulationMaterialsEstimate() -> Double
     {
         // this is a quick-and-dirty guesstimate of the insulation material costs (it really should use PCH_Costs class instead, but who's got the time?). This is the same calculation as is used in the Excel design sheet
-        let exchangeRate = 0.8 // fall 2017
+        let exchangeRate = 0.75 // fall 2017
         let insulPrice = 0.4   // fall 2017
         
         let coilVol = self.TotalCoilVolume() * 1.0E9 / (25.4 * 25.4 * 25.4)
@@ -431,7 +433,8 @@ struct PCH_SimplifiedCoilSection:CustomStringConvertible
             let NIperLString = String(format:"%.1f AT/m", self.winding.NIperL)
             let idString = String(format:"%0.4f m", self.ID)
             let rbString = String(format:"%0.4f m", self.RB)
-            return "Coil Name: \(self.winding.termName); AT/m: \(NIperLString) Onaf Current Density: \(self.onafCurrentDensity); Inner Diameter: \(idString); Radial Build: \(rbString)\n"
+            let loss = self.LoadLoss(tempInC: 85.0)
+            return "Coil Name: \(self.winding.termName); AT/m: \(NIperLString) Onaf Current Density: \(self.onafCurrentDensity); ONAF Loss: \(loss); Inner Diameter: \(idString); Radial Build: \(rbString)\n"
         }
     }
     
@@ -467,9 +470,22 @@ struct PCH_SimplifiedCoilSection:CustomStringConvertible
         return height
     }
     
+    // This function uses the admittedly crappy method from the Excel design sheet
+    func EddyLossPU() -> Double
+    {
+        let ampturnsPerInch = winding.NIperL / 1000.0 * 25.4
+        let D = PCH_TypicalConductorRadialDim * 1000.0 / 25.4
+        let currDensity = self.onafCurrentDensity / 1.0E6 * 25.4 * 25.4
+        let cubicInchesPerAmp = D / currDensity
+        let freqFactor = 60.0 / 50.0
+        let eddyPercent = ampturnsPerInch * ampturnsPerInch * (20.0 / 0.02551) * cubicInchesPerAmp * cubicInchesPerAmp * freqFactor * freqFactor
+        
+        return eddyPercent / 100.0
+    }
+    
     func LoadLoss(tempInC:Double) -> Double
     {
-        let defaultEddyLossPU = 0.10
+        let defaultEddyLossPU = self.EddyLossPU()
         
         let copper = PCH_Conductor(conductor: self.conductor)
         let resistance = copper.Resistance(condArea, length: self.LMT, temperature: tempInC)
@@ -582,15 +598,22 @@ class PCH_Winding
         let clearance = PCH_ClearanceData.sharedInstance
         
         // we will assume that a reasonably sized conductor will be some multiple of 2.5mm in the radial direction
-        var typCondR = 0.0025
+        var typCondR = PCH_TypicalConductorRadialDim
         var result = 0.0
         // If the amps are high and it's a disc winding (the BIL is high enough), we'll probably use twin or CTC instead of a single strand, both of which have a much better space factor.
-        // Our algorithm uses 10mm wide conductor and the maximum current density is 3A/mm2, so
+        // Our algorithm uses 10mm wide conductor (2 x 5mm) and the maximum current density is 3A/mm2, so
         if bil.Value() >= 350 && amps > 150.0
         {
-            // ignore the varnish on the CTC
-            typCondR = (amps / 3.0E6) / 0.010
-            result = typCondR / (typCondR + clearance.ConductorCoverForBIL(bil))
+            
+            let sectionRequired = amps / 3.0E6
+            let typicalAxialDim = 2.0 * 0.005
+            let totalRadial = sectionRequired / typicalAxialDim
+            let numRadialStrands = round(totalRadial / typCondR + 0.5)
+            let radialConductorSpace = numRadialStrands * (typCondR + 0.005 * 25.4 / 1000)
+            
+            result = totalRadial / (radialConductorSpace + clearance.ConductorCoverForBIL(bil))
+            
+            // result = typCondR / (typCondR + clearance.ConductorCoverForBIL(bil))
         }
         else if bil.Value() >= 350 && amps > 75.0
         {
@@ -682,13 +705,13 @@ func PCH_CreateChildNodes(parent:PCH_CoilNode?, vPerN:Double, windings:[PCH_Wind
         let coilHt = ampTurns / winding.NIperL
         let topClearance = clearances.EdgeDistanceForBIL(winding.bil.top)
         let bottomClearance = clearances.EdgeDistanceForBIL(winding.bil.bottom)
-        maxWindHt = max(maxWindHt, coilHt + topClearance + bottomClearance)
+        maxWindHt = max(maxWindHt, coilHt + Double(winding.staticRings) * PCH_StaticRingAxialDim + topClearance + bottomClearance)
         
         let totalGaps = winding.axialGaps[0].thisCoil + winding.axialGaps[1].thisCoil + winding.axialGaps[2].thisCoil
         let condAxial = (coilHt - totalGaps) * winding.AxialSpaceFactorWithBIL(bil: winding.bil.max)
         let condRadial = condArea / condAxial
         
-        let typicalCondR = 0.0025
+        let typicalCondR = PCH_TypicalConductorRadialDim
         let numRadialConds = round(condRadial / typicalCondR + 0.5)
         var radialBuild = condRadial / winding.RadialSpaceFactorWithBIL(bil: winding.bil.max, amps:winding.amps)
         

@@ -96,9 +96,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let niPerM = refCoil.winding.NIperL
             let niPerMString = String(format:"%0.1f", niPerM)
             let Bmax = nextActivePart.BMax
+            let nlLoss = nextActivePart.core.LossAtBmax(Bmax)
             let bMaxString = String(format:"%0.3f", Bmax)
             
-            outputString += "Active part #\(bestCount)\nCORE\n====\nVolts Per Turn: \(vpnString); Amp-Turns/Meter: \(niPerMString); Bmax: \(bMaxString)\n\(nextActivePart.core)\nCOILS\n=====\n"
+            outputString += "Active part #\(bestCount)\nCORE\n====\nVolts Per Turn: \(vpnString); Amp-Turns/Meter: \(niPerMString); Bmax: \(bMaxString); Loss: \(nlLoss)\n\(nextActivePart.core)\nCOILS\n=====\n"
             
             for nextCoil in nextActivePart.coils
             {
