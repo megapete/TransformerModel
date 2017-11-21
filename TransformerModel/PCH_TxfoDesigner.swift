@@ -519,6 +519,47 @@ struct PCH_SimplifiedCoilSection:CustomStringConvertible
         let cost = self.LoadLoss(tempInC:atTemp) / 1000.0 * costPerKW
         return cost
     }
+    
+    func AsDiskSectionArray(lowestZ0:Double, withCore:PCH_Core) -> [PCH_DiskSection]
+    {
+        var result:[PCH_DiskSection] = []
+        
+        var numSections = 1
+        for nextGap in self.winding.axialGaps
+        {
+            if nextGap.thisCoil > 0.0
+            {
+                numSections += 1
+            }
+        }
+        
+        let gapCentersOffset = self.CoilHeight() / Double(numSections)
+        var currentGapIndex = 0
+        var nextZ0 = lowestZ0
+        let turnsPerSection = self.turns / Double(numSections)
+        let spaceFactor = self.winding.AxialSpaceFactorWithBIL(bil: self.winding.bil.max) * self.winding.RadialSpaceFactorWithBIL(bil: self.winding.bil.max, amps: self.winding.amps)
+        
+        for nextSection in 0..<numSections
+        {
+            let sectionName = "\(self.winding.termName)\(nextSection)"
+            let newSectionData = PCH_SectionData(sectionID: sectionName, serNum: 0, inNode: 0, outNode: 0)
+            
+            let nextGapCenter = Double(nextSection + 1) * gapCentersOffset
+            let nextGap = self.winding.axialGaps[currentGapIndex].thisCoil
+            let nextHeight = nextGapCenter - nextGap / 2.0 - nextZ0
+            let newSectionRect = NSRect(x: self.ID / 2.0, y: nextZ0, width: self.RB, height: nextHeight)
+            let newJ = self.onafCurrentDensity * spaceFactor
+            
+            let newSection = PCH_DiskSection(coilRef: 0, diskRect: newSectionRect, N: turnsPerSection, J: newJ, windHt: withCore.windowHeight, coreRadius: withCore.mainLegCoreCircle.diameter / 2.0, secData: newSectionData)
+            
+            result.append(newSection)
+            
+            currentGapIndex += 1
+            nextZ0 += Double(newSectionRect.size.height) + nextGap
+        }
+        
+        return result
+    }
 }
 
 // Helper class used to create the separate windings required for a given set of terminals

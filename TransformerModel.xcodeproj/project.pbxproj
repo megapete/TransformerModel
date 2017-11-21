@@ -45,6 +45,10 @@
 		D39E46D81B67D16E00A5EBAD /* PCH_ConnectionNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39E46D71B67D16E00A5EBAD /* PCH_ConnectionNode.swift */; };
 		D39E46DA1B67FA3E00A5EBAD /* PCH_CoilSectionHelix.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39E46D91B67FA3E00A5EBAD /* PCH_CoilSectionHelix.swift */; };
 		D3B72EE61FABCD1100317E96 /* PCH_SynchronizedArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B72EE51FABCD1100317E96 /* PCH_SynchronizedArray.swift */; };
+		D3B72EEB1FC39D6F00317E96 /* PCH_SectionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B72EE81FC39D6E00317E96 /* PCH_SectionData.swift */; };
+		D3B72EEC1FC39D6F00317E96 /* PCH_BlueBookFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B72EE91FC39D6E00317E96 /* PCH_BlueBookFunctions.swift */; };
+		D3B72EED1FC39D6F00317E96 /* PCH_DiskSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B72EEA1FC39D6F00317E96 /* PCH_DiskSection.swift */; };
+		D3B72EF01FC39FE800317E96 /* libgsl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B72EEF1FC39FE800317E96 /* libgsl.a */; };
 		D3C27ADD1B5C328D00FC553E /* PCH_RadialSpacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C27ADC1B5C328D00FC553E /* PCH_RadialSpacer.swift */; };
 		D3C27ADF1B5C492E00FC553E /* PCH_WdgTurn.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C27ADE1B5C492E00FC553E /* PCH_WdgTurn.swift */; };
 		D3CC87D31B5AA8FC00EBD121 /* PCH_WdgCable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3CC87D21B5AA8FC00EBD121 /* PCH_WdgCable.swift */; };
@@ -100,6 +104,11 @@
 		D39E46D71B67D16E00A5EBAD /* PCH_ConnectionNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_ConnectionNode.swift; sourceTree = "<group>"; };
 		D39E46D91B67FA3E00A5EBAD /* PCH_CoilSectionHelix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoilSectionHelix.swift; sourceTree = "<group>"; };
 		D3B72EE51FABCD1100317E96 /* PCH_SynchronizedArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCH_SynchronizedArray.swift; sourceTree = "<group>"; };
+		D3B72EE81FC39D6E00317E96 /* PCH_SectionData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_SectionData.swift; sourceTree = "<group>"; };
+		D3B72EE91FC39D6E00317E96 /* PCH_BlueBookFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_BlueBookFunctions.swift; sourceTree = "<group>"; };
+		D3B72EEA1FC39D6F00317E96 /* PCH_DiskSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_DiskSection.swift; sourceTree = "<group>"; };
+		D3B72EEF1FC39FE800317E96 /* libgsl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgsl.a; path = ../GNU_Scientific_Library/lib/libgsl.a; sourceTree = "<group>"; };
+		D3B72EF11FC3A12100317E96 /* TransformerModel-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TransformerModel-Bridging-Header.h"; sourceTree = "<group>"; };
 		D3C27ADC1B5C328D00FC553E /* PCH_RadialSpacer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_RadialSpacer.swift; sourceTree = "<group>"; };
 		D3C27ADE1B5C492E00FC553E /* PCH_WdgTurn.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_WdgTurn.swift; sourceTree = "<group>"; };
 		D3CC87D21B5AA8FC00EBD121 /* PCH_WdgCable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_WdgCable.swift; sourceTree = "<group>"; };
@@ -119,6 +128,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3B72EF01FC39FE800317E96 /* libgsl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,6 +140,7 @@
 			children = (
 				D37FFBE91B471B86008DBDDA /* TransformerModel */,
 				D37FFBE81B471B86008DBDDA /* Products */,
+				D3B72EEE1FC39FE800317E96 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -192,6 +203,7 @@
 				D3CE0CF61B5F19FC0060B71C /* PCH_DuctStrip.swift */,
 				D3C27ADC1B5C328D00FC553E /* PCH_RadialSpacer.swift */,
 				D3E13C6E1B4DFDCE006E75AD /* PCH_Paper.swift */,
+				D3B72EE71FC39D3500317E96 /* InductanceCalcs */,
 				D37FFBEE1B471B86008DBDDA /* Images.xcassets */,
 				D37FFBF01B471B86008DBDDA /* MainMenu.xib */,
 				D37FFBEA1B471B86008DBDDA /* Supporting Files */,
@@ -205,6 +217,25 @@
 				D37FFBEB1B471B86008DBDDA /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D3B72EE71FC39D3500317E96 /* InductanceCalcs */ = {
+			isa = PBXGroup;
+			children = (
+				D3B72EE91FC39D6E00317E96 /* PCH_BlueBookFunctions.swift */,
+				D3B72EEA1FC39D6F00317E96 /* PCH_DiskSection.swift */,
+				D3B72EE81FC39D6E00317E96 /* PCH_SectionData.swift */,
+				D3B72EF11FC3A12100317E96 /* TransformerModel-Bridging-Header.h */,
+			);
+			path = InductanceCalcs;
+			sourceTree = "<group>";
+		};
+		D3B72EEE1FC39FE800317E96 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D3B72EEF1FC39FE800317E96 /* libgsl.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -240,7 +271,7 @@
 				TargetAttributes = {
 					D37FFBE61B471B86008DBDDA = {
 						CreatedOnToolsVersion = 6.4;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 0910;
 					};
 				};
 			};
@@ -286,12 +317,14 @@
 				D37D84EA1B612E7D00549E5C /* PCH_Board.swift in Sources */,
 				D342BF111B56BC1E00BCD3E7 /* PCH_Costs.swift in Sources */,
 				D39E46D61B66F7EF00A5EBAD /* PCH_Plate.swift in Sources */,
+				D3B72EEB1FC39D6F00317E96 /* PCH_SectionData.swift in Sources */,
 				D37FFBED1B471B86008DBDDA /* AppDelegate.swift in Sources */,
 				D37698991B7D63FC00220924 /* PCH_FanBank.swift in Sources */,
 				D3CE0CF71B5F19FC0060B71C /* PCH_DuctStrip.swift in Sources */,
 				D3EE6B661B763CDD00332EEC /* PCH_CoreStep.swift in Sources */,
 				D3CC87D31B5AA8FC00EBD121 /* PCH_WdgCable.swift in Sources */,
 				D39E46D01B66A9F100A5EBAD /* PCH_CoilSectionLayer.swift in Sources */,
+				D3B72EEC1FC39D6F00317E96 /* PCH_BlueBookFunctions.swift in Sources */,
 				D37FFC0C1B494EDD008DBDDA /* PCH_Strand.swift in Sources */,
 				D3CE0CF51B5F16DE0060B71C /* PCH_WdgDisk.swift in Sources */,
 				D37698911B7D5D2E00220924 /* PCH_Transformer.swift in Sources */,
@@ -302,6 +335,7 @@
 				D341931F1B62B29000C4A7F8 /* PCH_CoilSection.swift in Sources */,
 				D35654521B651D3000A1259E /* PCH_CoilSectionDisk.swift in Sources */,
 				D35654501B6514E900A1259E /* PCH_WdgTappedLayer.swift in Sources */,
+				D3B72EED1FC39D6F00317E96 /* PCH_DiskSection.swift in Sources */,
 				D3433ED51F8EB06A007F45A1 /* PCH_TxfoDesigner.swift in Sources */,
 				D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */,
 				D3C27ADF1B5C492E00FC553E /* PCH_WdgTurn.swift in Sources */,
@@ -448,12 +482,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_USE_OPTIMIZATION_PROFILE = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				HEADER_SEARCH_PATHS = /Users/peterhub/Documents/MyProjects/GNU_Scientific_Library/include;
 				INFOPLIST_FILE = TransformerModel/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = /Users/peterhub/Documents/MyProjects/GNU_Scientific_Library/lib;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huberis-tech.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "TransformerModel/InductanceCalcs/TransformerModel-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 			};
@@ -463,12 +502,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_USE_OPTIMIZATION_PROFILE = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				HEADER_SEARCH_PATHS = /Users/peterhub/Documents/MyProjects/GNU_Scientific_Library/include;
 				INFOPLIST_FILE = TransformerModel/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = /Users/peterhub/Documents/MyProjects/GNU_Scientific_Library/lib;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huberis-tech.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "TransformerModel/InductanceCalcs/TransformerModel-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 			};
