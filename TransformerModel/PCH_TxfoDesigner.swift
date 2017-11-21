@@ -62,6 +62,9 @@ struct PCH_ImpedancePair
 // This is the entry point for the transformer designing program. The idea is that this function will take care of finding the 10 most suitable (and cheapest) designs for the set of terminals passed in, then return those transformers to the calling routine as an array of PCH_Transformer. It is assumed that the forTerminals parameter has been sorted so that the lowest "main" voltage is at index 0 and the highest main voltage is at index 1.
 func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:[PCH_ImpedancePair], withEvals:PCH_LossEvaluation) -> [PCH_SimplifiedActivePart]
 {
+    var simpImpTime:TimeInterval = 0.0
+    var rabImpTime:TimeInterval = 0.0
+    
     ZAssert(forOnanImpedances.count > 0, message: "There must be at least one impedance pair defined!")
     
     let numDesignsToKeep = 10
@@ -194,6 +197,17 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                 
                 if let newActivePart = cheapestForThisCore
                 {
+                    let simpImpStartTime = ProcessInfo.processInfo.systemUptime
+                    let simpImp = SimplifiedImpedance(coil1: newActivePart.coils[0], coil2: newActivePart.coils[1])
+                    let simpImpEndTime = ProcessInfo.processInfo.systemUptime
+                    simpImpTime += (simpImpEndTime - simpImpStartTime)
+                    let rabImpStartTime = ProcessInfo.processInfo.systemUptime
+                    let rabImp = RabinsMethodImpedance(refCoil: newActivePart.coils[0], otherCoil: newActivePart.coils[1], withCore: newActivePart.core)
+                    let rabImpEndTime = ProcessInfo.processInfo.systemUptime
+                    rabImpTime += (rabImpEndTime - rabImpStartTime)
+                    
+                    // DLog("Simplified impedance (pu): \(simpImp); Rabin's method: \(rabImp)")
+                    
                     let newEvalCost = newActivePart.EvaluatedCost(atBmax: newActivePart.BMax, withEval: withEvals)
                     
                     if cheapestResults.isEmpty
@@ -237,9 +251,41 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     
     DLog("Total designs created: \(totalDesigns)")
     
+    DLog("Simplified impedance calculation time: \(simpImpTime)")
+    DLog("Rabin's impedance calculation time: \(rabImpTime)")
+    
     return cheapestResults
 }
 
+func RabinsMethodImpedance(refCoil:PCH_SimplifiedCoilSection, otherCoil:PCH_SimplifiedCoilSection, withCore:PCH_Core) -> (pu:Double, baseVA:Double)
+{
+    let refVA = refCoil.winding.volts * refCoil.winding.amps
+    let otherCoilMultiplier = -refVA / (otherCoil.winding.volts * otherCoil.winding.amps)
+    
+    let clearances = PCH_ClearanceData.sharedInstance
+    let lowestZ0 = max(clearances.EdgeDistanceForBIL(refCoil.winding.bil.bottom), clearances.EdgeDistanceForBIL(otherCoil.winding.bil.bottom))
+    
+    var coilSections = refCoil.AsDiskSectionArray(coilRef:0, currentMultiplier: 1.0, lowestZ0: lowestZ0, withCore: withCore)
+    coilSections.append(contentsOf: otherCoil.AsDiskSectionArray(coilRef:1, currentMultiplier: otherCoilMultiplier, lowestZ0: lowestZ0, withCore: withCore))
+    
+    var energy = 0.0
+    for i in 0..<coilSections.count
+    {
+        let iAmps = sqrt(2.0) * (coilSections[i].coilRef == 0 ? refCoil.winding.amps : otherCoil.winding.amps * otherCoilMultiplier)
+        energy += 0.5 * coilSections[i].SelfInductance(3.0) * iAmps * iAmps
+        
+        for j in i+1..<coilSections.count
+        {
+            let jAmps = sqrt(2.0) * (coilSections[j].coilRef == 0 ? refCoil.winding.amps : otherCoil.winding.amps * otherCoilMultiplier)
+            
+            energy += coilSections[i].MutualInductanceTo(coilSections[j], windHtFactor: 3.0) * iAmps * jAmps
+        }
+    }
+    
+    let xPU = 2.0 * π * PCH_StdFrequency * energy / refVA
+    
+    return (xPU, refVA)
+}
 
 func SimplifiedImpedance(coil1:PCH_SimplifiedCoilSection, coil2:PCH_SimplifiedCoilSection) -> (pu:Double, baseVA:Double)
 {
@@ -404,6 +450,7 @@ class PCH_CoilNode
             }
             
             let theImp = SimplifiedImpedance(coil1: coil1!, coil2: coil2!)
+            
             let impedance = theImp.pu * nextImpedance.baseVA / theImp.baseVA
             
             if impedance > nextImpedance.impedancePU * (1.0 + PCH_ImpedanceTolerance.max) || impedance < nextImpedance.impedancePU * (1.0 + PCH_ImpedanceTolerance.min)
@@ -520,7 +567,7 @@ struct PCH_SimplifiedCoilSection:CustomStringConvertible
         return cost
     }
     
-    func AsDiskSectionArray(lowestZ0:Double, withCore:PCH_Core) -> [PCH_DiskSection]
+    func AsDiskSectionArray(coilRef:Int, currentMultiplier:Double, lowestZ0:Double, withCore:PCH_Core) -> [PCH_DiskSection]
     {
         var result:[PCH_DiskSection] = []
         
@@ -548,9 +595,9 @@ struct PCH_SimplifiedCoilSection:CustomStringConvertible
             let nextGap = self.winding.axialGaps[currentGapIndex].thisCoil
             let nextHeight = nextGapCenter - nextGap / 2.0 - nextZ0
             let newSectionRect = NSRect(x: self.ID / 2.0, y: nextZ0, width: self.RB, height: nextHeight)
-            let newJ = self.onafCurrentDensity * spaceFactor
+            let newJ = self.onafCurrentDensity * spaceFactor * currentMultiplier
             
-            let newSection = PCH_DiskSection(coilRef: 0, diskRect: newSectionRect, N: turnsPerSection, J: newJ, windHt: withCore.windowHeight, coreRadius: withCore.mainLegCoreCircle.diameter / 2.0, secData: newSectionData)
+            let newSection = PCH_DiskSection(coilRef: coilRef, diskRect: newSectionRect, N: turnsPerSection, J: newJ, windHt: withCore.windowHeight, coreRadius: withCore.mainLegCoreCircle.diameter / 2.0, secData: newSectionData)
             
             result.append(newSection)
             
