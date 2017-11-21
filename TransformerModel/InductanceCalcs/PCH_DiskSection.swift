@@ -336,6 +336,74 @@ class PCH_DiskSection:NSObject, NSCoding, NSCopying {
         return Rg
     }
     
+    func B(r:Double, z:Double, windHtFactor:Double = 3.0) -> (r:Double, z:Double)
+    {
+        var Br = 0.0
+        var Bz = 0.0
+        
+        if (r <= self.coreRadius) || (z <= 0.0) || (z >= self.windHt)
+        {
+            return (0.0, 0.0)
+        }
+        else if (r < Double(self.diskRect.origin.x))
+        // Region I
+        {
+            Bz = self.J0(windHtFactor) * Double(self.diskRect.size.width)
+            
+            for n in 1...200
+            {
+                let m = Double(n) * π / (windHtFactor * self.windHt)
+                let x = m * r
+                let x1 = m * Double(self.diskRect.origin.x)
+                // let x2 = m * Double(self.diskRect.origin.x + self.diskRect.size.width)
+                let xc = m * self.coreRadius
+                
+                // Take care of the radial stuff first
+                let CnI1x = self.ScaledC(n, windHtFactor: windHtFactor) * gsl_sf_bessel_I1_scaled(x) * exp(x - x1)
+                let DnK1x = self.ScaledD(n, windHtFactor: windHtFactor) * gsl_sf_bessel_K1_scaled(x) * exp(2.0 * xc - x1 - x)
+                
+                Br += (J(n, windHtFactor: windHtFactor) / m) * (CnI1x + DnK1x) * sin(m * z)
+                
+                // Now axial
+                let CnI0x = self.ScaledC(n, windHtFactor: windHtFactor) * gsl_sf_bessel_I0_scaled(x) * exp(x - x1)
+                let DnK0x = self.ScaledD(n, windHtFactor: windHtFactor) * gsl_sf_bessel_K0_scaled(x) * exp(2.0 * xc - x1 - x)
+                
+                Bz += (J(n, windHtFactor: windHtFactor) / m) * (CnI0x - DnK0x) * cos(m * z)
+            }
+        }
+        else if (r <= Double(self.diskRect.origin.x + self.diskRect.size.width))
+        // Region II
+        {
+            Bz = self.J0(windHtFactor) * Double(self.diskRect.size.width)
+            
+            for n in 1...200
+            {
+                let m = Double(n) * π / (windHtFactor * self.windHt)
+                let x = m * r
+                let x1 = m * Double(self.diskRect.origin.x)
+                // let x2 = m * Double(self.diskRect.origin.x + self.diskRect.size.width)
+                let xc = m * self.coreRadius
+                
+                let FnK1 = self.ScaledF(n, windHtFactor: windHtFactor) * gsl_sf_bessel_K1_scaled(x) * exp(2.0 * xc - x1 - x)
+                let EnI1minusL1term = (self.E(n, windHtFactor: windHtFactor) - π / 2.0) * gsl_sf_bessel_I1(x) + (π / 2.0) * M1(x)
+                
+                Br += (J(n, windHtFactor: windHtFactor) / m) * (FnK1 + EnI1minusL1term) * sin(m * z)
+                
+                let FnK0 = self.ScaledF(n, windHtFactor: windHtFactor) * gsl_sf_bessel_K0_scaled(x) * exp(2.0 * xc - x1 - x)
+                let EnI0minusL0term = (self.E(n, windHtFactor: windHtFactor) - π / 2.0) * gsl_sf_bessel_I0(x) + (π / 2.0) * M0(x)
+                
+                Bz += (J(n, windHtFactor: windHtFactor) / m) * (EnI0minusL0term - FnK0) * cos(m * z)
+            }
+        }
+        else
+        // Region III
+        {
+            
+        }
+        
+        return (µ0 * Br, µ0 * Bz)
+    }
+    
     /// Rabins' method for calculating self-inductance
     func SelfInductance(_ windHtFactor:Double) -> Double
     {

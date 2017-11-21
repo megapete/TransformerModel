@@ -187,7 +187,7 @@ func M0(_ x:Double) -> Double
     
     var params = x
     
-    //var tst = gsl_function(function: <#T##((Double, UnsafeMutableRawPointer?) -> Double)!##((Double, UnsafeMutableRawPointer?) -> Double)!##(Double, UnsafeMutableRawPointer?) -> Double#>, params: <#T##UnsafeMutableRawPointer!#>)
+    // var tst = gsl_function(function: <#T##((Double, UnsafeMutableRawPointer?) -> Double)!##((Double, UnsafeMutableRawPointer?) -> Double)!##(Double, UnsafeMutableRawPointer?) -> Double#>, params: <#T##UnsafeMutableRawPointer!#>)
     
     var integrand:gsl_function = gsl_function(function: {(theta:Double, p:UnsafeMutableRawPointer?) -> Double in
         
