@@ -341,7 +341,7 @@ class PCH_DiskSection:NSObject, NSCoding, NSCopying {
         var Br = 0.0
         var Bz = 0.0
         
-        if (r <= self.coreRadius) || (z <= 0.0) || (z >= self.windHt)
+        if (r < self.coreRadius) || (z <= 0.0) || (z >= self.windHt)
         {
             return (0.0, 0.0)
         }
@@ -398,7 +398,26 @@ class PCH_DiskSection:NSObject, NSCoding, NSCopying {
         else
         // Region III
         {
+            Bz = self.J0(windHtFactor) * Double(self.diskRect.size.width)
             
+            for n in 1...200
+            {
+                let m = Double(n) * π / (windHtFactor * self.windHt)
+                let x = m * r
+                let x1 = m * Double(self.diskRect.origin.x)
+                // let x2 = m * Double(self.diskRect.origin.x + self.diskRect.size.width)
+                // let xc = m * self.coreRadius
+                
+                let GnK1x = self.ScaledG(n, windHtFactor: windHtFactor) * gsl_sf_bessel_K1_scaled(x) * exp(x1 - x)
+                
+                Br += (J(n, windHtFactor: windHtFactor) / m) * GnK1x * sin(m * z)
+                
+                let GnK0x = self.ScaledG(n, windHtFactor: windHtFactor) * gsl_sf_bessel_K0_scaled(x) * exp(x1 - x)
+                
+                Bz += (J(n, windHtFactor: windHtFactor) / m) * GnK0x * cos(m * z)
+            }
+            
+            Bz *= -1.0
         }
         
         return (µ0 * Br, µ0 * Bz)
