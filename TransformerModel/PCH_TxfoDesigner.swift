@@ -17,6 +17,7 @@ let PCH_ImpedanceTolerance = (min:-0.075, max:0.075)
 let PCH_CurrentDensityRange = (min:1.5E6, max:3.0E6)
 let PCH_CurrentDensityIncrement = 0.250E6
 let PCH_TypicalConductorRadialDim = 0.09 * 25.4 / 1000.0
+let PCH_TypicalConductorAxialDim = 0.010
 let PCH_StaticRingAxialDim = 0.75 * 25.4 / 1000.0
 
 struct PCH_WindingBIL
@@ -197,6 +198,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                 
                 if let newActivePart = cheapestForThisCore
                 {
+                    /*
                     let simpImpStartTime = ProcessInfo.processInfo.systemUptime
                     let simpImp = SimplifiedImpedance(coil1: newActivePart.coils[0], coil2: newActivePart.coils[1])
                     let simpImpEndTime = ProcessInfo.processInfo.systemUptime
@@ -205,6 +207,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                     let rabImp = RabinsMethodImpedance(refCoil: newActivePart.coils[0], otherCoil: newActivePart.coils[1], withCore: newActivePart.core)
                     let rabImpEndTime = ProcessInfo.processInfo.systemUptime
                     rabImpTime += (rabImpEndTime - rabImpStartTime)
+                    */
                     
                     // DLog("Simplified impedance (pu): \(simpImp); Rabin's method: \(rabImp)")
                     
@@ -661,7 +664,7 @@ class PCH_Winding
         let clearance = PCH_ClearanceData.sharedInstance
         
         // we will assume that a reasonably sized conductor will be some multiple of 10mm in the axial direction
-        let typCondA = 0.010
+        let typCondA = PCH_TypicalConductorAxialDim
         
         switch self.type {
             
@@ -686,15 +689,15 @@ class PCH_Winding
         let clearance = PCH_ClearanceData.sharedInstance
         
         // we will assume that a reasonably sized conductor will be some multiple of 2.5mm in the radial direction
-        var typCondR = PCH_TypicalConductorRadialDim
+        let typCondR = PCH_TypicalConductorRadialDim
         var result = 0.0
         // If the amps are high and it's a disc winding (the BIL is high enough), we'll probably use twin or CTC instead of a single strand, both of which have a much better space factor.
-        // Our algorithm uses 10mm wide conductor (2 x 5mm) and the maximum current density is 3A/mm2, so
-        if bil.Value() >= 350 && amps > 150.0
+        // Our algorithm uses 10mm wide conductor (or 2 x 5mm for CTC) and the maximum current density is 3A/mm2, so
+        if self.type == .disc && amps > 137.0
         {
             
             let sectionRequired = amps / 3.0E6
-            let typicalAxialDim = 2.0 * 0.005
+            let typicalAxialDim = PCH_TypicalConductorAxialDim
             let totalRadial = sectionRequired / typicalAxialDim
             let numRadialStrands = round(totalRadial / typCondR + 0.5)
             let radialConductorSpace = numRadialStrands * (typCondR + 0.005 * 25.4 / 1000)
@@ -703,7 +706,7 @@ class PCH_Winding
             
             // result = typCondR / (typCondR + clearance.ConductorCoverForBIL(bil))
         }
-        else if bil.Value() >= 350 && amps > 75.0
+        else if self.type == .disc && amps > 68.5
         {
             // twin
             let totalRadialPaperPerTurn = clearance.ConductorCoverForBIL(bil) + 0.012 * 25.4 / 1000.0
