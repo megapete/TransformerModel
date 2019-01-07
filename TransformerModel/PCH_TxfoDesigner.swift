@@ -8,6 +8,7 @@
 
 
 import Foundation
+import Cocoa
 
 // For now, we'll create a constant for the frequency since I don't remember a single time where I needed something else. If this changes with TME, I'll create a variable to pass to the routines instead.
 let PCH_StdFrequency = 60.0
@@ -69,7 +70,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     ZAssert(forOnanImpedances.count > 0, message: "There must be at least one impedance pair defined!")
     
     let numDesignsToKeep = 10
-    let maxVperN = 100.0
+    let maxVperN = 200.0
     
     var cheapestResults:[PCH_SimplifiedActivePart] = []
     
@@ -80,7 +81,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     let vaMaxMinRatio = forTerminals[0].terminalVA.onaf / forTerminals[0].terminalVA.onan
     
     // constraints on constants
-    let vpnFactorRange = (min:0.4, max:0.9)
+    let vpnFactorRange = (min:0.5, max:0.65)
     let vpnFactorIncrement = 0.01
     let bmaxRange = (min:1.40, max:1.60)
     let bmaxIncrement = 0.01
@@ -104,160 +105,259 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     // Debugging stats
     var totalDesigns = 0
     
-    for vpnFactor:Double in stride(from: vpnFactorRange.min, through: vpnFactorRange.max, by: vpnFactorIncrement)
+    let progInd = PCH_ProgressIndicatorWindow()
+    progInd.UpdateIndicator(value: vpnFactorRange.min, minValue: vpnFactorRange.min, maxValue: vpnFactorRange.max, text: "Creating active parts...")
+    
+    // create a queue so we can use our progress indicator
+    let vpnQueue = DispatchQueue(label: "com.huberis.txfodesigner.vpn")
+    
+    guard let mainWindow = NSApplication.shared.mainWindow else
     {
-        DLog("Executing VPN factor: \(vpnFactor)")
-        let vpnApprox = vpnFactor * sqrt(vpnRefKVA)
-        let refTurns = round(refVoltage / vpnApprox)
-        let vpnExact = refVoltage / refTurns
+        DLog("No main window!")
+        return []
+    }
+    
+    mainWindow.beginSheet(progInd.window!, completionHandler: nil)
+    
+    vpnQueue.async {
         
-        if vpnExact > maxVperN
+        for vpnFactor:Double in stride(from: vpnFactorRange.min, through: vpnFactorRange.max, by: vpnFactorIncrement)
         {
-            break
-        }
-        
-        for approxBMax:Double in stride(from: bmaxRange.min, to: bmaxRange.max, by: bmaxIncrement)
-        {
-            for coreSteelType in coreSteelTypes
+            DLog("Executing VPN factor: \(vpnFactor)")
+            let vpnApprox = vpnFactor * sqrt(vpnRefKVA)
+            let refTurns = round(refVoltage / vpnApprox)
+            let vpnExact = refVoltage / refTurns
+            
+            if vpnExact > maxVperN
             {
-                let coreCircle = PCH_CoreCircle(targetBmax: approxBMax, voltsPerTurn: vpnExact, steelType: PCH_CoreSteel(type:coreSteelType), frequency: PCH_StdFrequency)
-                
-                // The terminals should have been set up with "preferred" winding locations for their main windings and tap windings (if any). We will make the following assumptions when onload taps are required: if the winding location for taps is the outermost winding, we assume that it is a "double-axial" winding, while if it is an inner winding, we assume that it is a multistart winding.
-               
-                var cheapestForThisCore:PCH_SimplifiedActivePart? = nil
-                var cheapestEval = Double.greatestFiniteMagnitude
-                let concQueue = DispatchQueue(label: "com.huberistech.txfo_designer.niperl", attributes: .concurrent)
-                
-                DispatchQueue.concurrentPerform(iterations: NI_NumIterations)
+                break
+            }
+            
+            DispatchQueue.main.async { progInd.UpdateIndicator(value: vpnFactor) }
+            
+            for approxBMax:Double in stride(from: bmaxRange.min, to: bmaxRange.max, by: bmaxIncrement)
+            {
+                for coreSteelType in coreSteelTypes
                 {
-                    (i:Int) -> Void in
+                    let coreCircle = PCH_CoreCircle(targetBmax: approxBMax, voltsPerTurn: vpnExact, steelType: PCH_CoreSteel(type:coreSteelType), frequency: PCH_StdFrequency)
                     
-                    let NIperL = NIperLmin + Double(i) * NIperLIncrement
-                
-                // for NIperL in stride(from: NIperLmin, through: NIperLmax, by: NIperLIncrement)
-                // {
+                    // The terminals should have been set up with "preferred" winding locations for their main windings and tap windings (if any). We will make the following assumptions when onload taps are required: if the winding location for taps is the outermost winding, we assume that it is a "double-axial" winding, while if it is an inner winding, we assume that it is a multistart winding.
                     
-                    // create designs (easy!)
-                    let nextArrangement = CoilArrangementForTerminals(terms: forTerminals, NIperL: NIperL, baseVA: forTerminals[0].terminalVA.onaf)
+                    var cheapestForThisCore:PCH_SimplifiedActivePart? = nil
+                    var cheapestEval = Double.greatestFiniteMagnitude
+                    let concQueue = DispatchQueue(label: "com.huberistech.txfo_designer.niperl", attributes: .concurrent)
                     
-                    var maxWindowHt = 0.0
-                    
-                    var coils:[PCH_SimplifiedCoilSection] = []
-                    
-                    // we'll only try playing with the current density if there's a value for the load loss evaluation
-                    var startingCurrentDensity = PCH_CurrentDensityRange.max
-                    if (withEvals.onanLoad != 0.0)
+                    DispatchQueue.concurrentPerform(iterations: NI_NumIterations)
                     {
-                        startingCurrentDensity = PCH_CurrentDensityRange.min
-                    }
-                    
-                    var lowestCost = Double.greatestFiniteMagnitude
-                    var coilList:PCH_CoilNode? = nil
-                    
-                    PCH_CreateChildNodes(parent: nil, vPerN: vpnExact, windings: nextArrangement, windingLevel: 0, previousOD: coreCircle.diameter, lowestCurrentDensity: startingCurrentDensity, onanImpedances: forOnanImpedances, maxWindHt: &maxWindowHt, evalTemp: withEvals.llTemp, evalDollars: withEvals.onafLoad, cheapestCoils: &coilList, cheapestCost: &lowestCost)
-                    
-                    if coilList != nil
-                    {
-                        // The last coil is pointed to by coilList, so:
-                        let outerOD = coilList!.coil.OD
-                        let betweenPhases = clearances.HiloDataForBIL(coilList!.coil.winding.bil.max).total * 1.5
+                        (i:Int) -> Void in
                         
-                        while coilList != nil
+                        let NIperL = NIperLmin + Double(i) * NIperLIncrement
+                        
+                        // for NIperL in stride(from: NIperLmin, through: NIperLmax, by: NIperLIncrement)
+                        // {
+                        
+                        // create designs (easy!)
+                        let nextArrangement = CoilArrangementForTerminals(terms: forTerminals, NIperL: NIperL, baseVA: forTerminals[0].terminalVA.onaf)
+                        
+                        var maxWindowHt = 0.0
+                        
+                        var coils:[PCH_SimplifiedCoilSection] = []
+                        
+                        // we'll only try playing with the current density if there's a value for the load loss evaluation
+                        var startingCurrentDensity = PCH_CurrentDensityRange.max
+                        if (withEvals.onanLoad != 0.0)
                         {
-                            coils.insert(coilList!.coil, at: 0)
-                            
-                            coilList = coilList!.parent
+                            startingCurrentDensity = PCH_CurrentDensityRange.min
                         }
                         
-                        let legCenters = outerOD + betweenPhases
-                        let windowHt = maxWindowHt + 0.010
-                        let core = PCH_Core(numWoundLegs: 3, numLegs: 3, mainLegCenters: legCenters, windowHt: windowHt, yokeCoreCircle: coreCircle, mainLegCoreCircle: coreCircle)
+                        var lowestCost = Double.greatestFiniteMagnitude
+                        var coilList:PCH_CoilNode? = nil
                         
-                        // we only allow a 3.5m (max) high core
-                        if core.PhysicalHeight() <= 3.5
+                        PCH_CreateChildNodes(parent: nil, vPerN: vpnExact, windings: nextArrangement, windingLevel: 0, previousOD: coreCircle.diameter, lowestCurrentDensity: startingCurrentDensity, onanImpedances: forOnanImpedances, maxWindHt: &maxWindowHt, evalTemp: withEvals.llTemp, evalDollars: withEvals.onafLoad, cheapestCoils: &coilList, cheapestCost: &lowestCost)
+                        
+                        if coilList != nil
                         {
-                            totalDesigns += 1
+                            // The last coil is pointed to by coilList, so:
+                            let outerOD = coilList!.coil.OD
+                            let betweenPhases = clearances.HiloDataForBIL(coilList!.coil.winding.bil.max).total * 1.5
                             
-                            let newActivePart = PCH_SimplifiedActivePart(coils: coils, core: core)
-                            let newEvalCost = newActivePart.EvaluatedCost(atBmax: newActivePart.BMax, withEval: withEvals)
-                            
-                            concQueue.async(flags: .barrier)
+                            while coilList != nil
                             {
-                                if newEvalCost < cheapestEval
+                                coils.insert(coilList!.coil, at: 0)
+                                
+                                coilList = coilList!.parent
+                            }
+                            
+                            let legCenters = outerOD + betweenPhases
+                            let windowHt = maxWindowHt + 0.010
+                            let core = PCH_Core(numWoundLegs: 3, numLegs: 3, mainLegCenters: legCenters, windowHt: windowHt, yokeCoreCircle: coreCircle, mainLegCoreCircle: coreCircle)
+                            
+                            // we only allow a 3.5m (max) high core
+                            if core.PhysicalHeight() <= 3.5
+                            {
+                                totalDesigns += 1
+                                
+                                let newActivePart = PCH_SimplifiedActivePart(coils: coils, core: core)
+                                let newEvalCost = newActivePart.EvaluatedCost(atBmax: newActivePart.BMax, withEval: withEvals)
+                                
+                                concQueue.async(flags: .barrier)
                                 {
-                                    cheapestEval = newEvalCost
-                                    cheapestForThisCore = newActivePart
+                                    if newEvalCost < cheapestEval
+                                    {
+                                        cheapestEval = newEvalCost
+                                        cheapestForThisCore = newActivePart
+                                    }
                                 }
-                            }
+                                
+                            } // END if core.PhysicalHeight()
                             
-                        } // END if core.PhysicalHeight()
+                        } // END if let cList
                         
-                    } // END if let cList
+                    } // END for NIperL
                     
-                } // END for NIperL
-                
-                if let newActivePart = cheapestForThisCore
-                {
-                    /*
-                    let simpImpStartTime = ProcessInfo.processInfo.systemUptime
-                    let simpImp = SimplifiedImpedance(coil1: newActivePart.coils[0], coil2: newActivePart.coils[1])
-                    let simpImpEndTime = ProcessInfo.processInfo.systemUptime
-                    simpImpTime += (simpImpEndTime - simpImpStartTime)
-                    let rabImpStartTime = ProcessInfo.processInfo.systemUptime
-                    let rabImp = RabinsMethodImpedance(refCoil: newActivePart.coils[0], otherCoil: newActivePart.coils[1], withCore: newActivePart.core)
-                    let rabImpEndTime = ProcessInfo.processInfo.systemUptime
-                    rabImpTime += (rabImpEndTime - rabImpStartTime)
-                    */
-                    
-                    // DLog("Simplified impedance (pu): \(simpImp); Rabin's method: \(rabImp)")
-                    
-                    let newEvalCost = newActivePart.EvaluatedCost(atBmax: newActivePart.BMax, withEval: withEvals)
-                    
-                    if cheapestResults.isEmpty
+                    if let newActivePart = cheapestForThisCore
                     {
-                        // DLog("First: \(newEvalCost)")
-                        cheapestResults.append(newActivePart)
-                    }
-                    else
-                    {
-                        // if the new active part cost is greater than all the values already in the array, index will be nil
-                        if let index = cheapestResults.index(where: {$0.EvaluatedCost(atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
+                        /*
+                         let simpImpStartTime = ProcessInfo.processInfo.systemUptime
+                         let simpImp = SimplifiedImpedance(coil1: newActivePart.coils[0], coil2: newActivePart.coils[1])
+                         let simpImpEndTime = ProcessInfo.processInfo.systemUptime
+                         simpImpTime += (simpImpEndTime - simpImpStartTime)
+                         let rabImpStartTime = ProcessInfo.processInfo.systemUptime
+                         let rabImp = RabinsMethodImpedance(refCoil: newActivePart.coils[0], otherCoil: newActivePart.coils[1], withCore: newActivePart.core)
+                         let rabImpEndTime = ProcessInfo.processInfo.systemUptime
+                         rabImpTime += (rabImpEndTime - rabImpStartTime)
+                         */
+                        
+                        // DLog("Simplified impedance (pu): \(simpImp); Rabin's method: \(rabImp)")
+                        
+                        let newEvalCost = newActivePart.EvaluatedCost(atBmax: newActivePart.BMax, withEval: withEvals)
+                        
+                        if cheapestResults.isEmpty
                         {
-                            /*
-                            if index == 0
-                            {
-                                DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atBmax: cheapestResults[0].BMax, withEval: withEvals)), New: $\(newEvalCost)")
-                            }
-                            */
-                            
-                            cheapestResults.insert(newActivePart, at: index)
-                            
-                            if cheapestResults.count > numDesignsToKeep
-                            {
-                                // DLog("Current: \(cheapestResults[0].EvaluatedCost(atTemp: 85.0, atBmax: cheapestResults[0].BMax, withEval: withEvals))")
-                                cheapestResults.removeLast()
-                            }
-                        }
-                        else if cheapestResults.count < numDesignsToKeep
-                        {
+                            // DLog("First: \(newEvalCost)")
                             cheapestResults.append(newActivePart)
                         }
-                    } // END else [if cheapestResults.isEmpty]
+                        else
+                        {
+                            // if the new active part cost is greater than all the values already in the array, index will be nil
+                            if let index = cheapestResults.index(where: {$0.EvaluatedCost(atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
+                            {
+                                /*
+                                 if index == 0
+                                 {
+                                 DLog("Previous: $\(cheapestResults[0].EvaluatedCost(atBmax: cheapestResults[0].BMax, withEval: withEvals)), New: $\(newEvalCost)")
+                                 }
+                                 */
+                                
+                                cheapestResults.insert(newActivePart, at: index)
+                                
+                                if cheapestResults.count > numDesignsToKeep
+                                {
+                                    // DLog("Current: \(cheapestResults[0].EvaluatedCost(atTemp: 85.0, atBmax: cheapestResults[0].BMax, withEval: withEvals))")
+                                    cheapestResults.removeLast()
+                                }
+                            }
+                            else if cheapestResults.count < numDesignsToKeep
+                            {
+                                cheapestResults.append(newActivePart)
+                            }
+                        } // END else [if cheapestResults.isEmpty]
+                        
+                    } // END if let newActivePart
+                    
+                } // END for coreSteelType
                 
-                } // END if let newActivePart
-                
-            } // END for coreSteelType
+            } // END for approxBMax:Double
             
-        } // END for approxBMax:Double
+        } // END for vpnFactor:Double
         
-    } // END for vpnFactor:Double
+        // Next line crashes in XCode 10.1
+        // mainWindow.endSheet(progInd.window!)
+        
+        DLog("Total designs created: \(totalDesigns)")
+        
+        DLog("Simplified impedance calculation time: \(simpImpTime)")
+        DLog("Rabin's impedance calculation time: \(rabImpTime)")
+        
+        // we want to save the resulting designs in a file using an NSSavePanel, but that is UI, which CANNOT be done in any thread except the main thread. We dispatch a sync call to the main thread to take care of this.
+        DispatchQueue.main.sync {
+            
+            mainWindow.endSheet(progInd.window!)
+            
+            let saveFilePanel = NSSavePanel()
+            
+            saveFilePanel.title = "Save Top 10 Results"
+            saveFilePanel.canCreateDirectories = true
+            saveFilePanel.allowedFileTypes = ["txt"]
+            saveFilePanel.allowsOtherFileTypes = false
+            
+            if (saveFilePanel.runModal().rawValue == NSFileHandlingPanelOKButton)
+            {
+                if let newFileURL = saveFilePanel.url
+                {
+                    // we want to use the LV coil for volts-per-turn and amp-turns per meter
+                    let referenceTerm = forTerminals[0]
+                    var refCoilIndex = -1
+                    for i in 0..<cheapestResults[0].coils.count
+                    {
+                        if cheapestResults[0].coils[i].winding.termName == referenceTerm.name
+                        {
+                            refCoilIndex = i
+                            break
+                        }
+                    }
+                    
+                    var bestCount = 1
+                    var outputString = ""
+                    for nextActivePart in cheapestResults
+                    {
+                        let refCoil = nextActivePart.coils[refCoilIndex]
+                        let vpn = refCoil.winding.volts / refCoil.turns
+                        let vpnString = String(format:"%0.3f", vpn)
+                        let niPerM = refCoil.winding.NIperL
+                        let niPerMString = String(format:"%0.1f", niPerM)
+                        let Bmax = nextActivePart.BMax
+                        let nlLoss = nextActivePart.core.LossAtBmax(Bmax)
+                        let bMaxString = String(format:"%0.3f", Bmax)
+                        
+                        outputString += "Active part #\(bestCount)\nCORE\n====\nVolts Per Turn: \(vpnString); Amp-Turns/Meter: \(niPerMString); Bmax: \(bMaxString); Loss: \(nlLoss)\n\(nextActivePart.core)\nCOILS\n=====\n"
+                        
+                        for nextCoil in nextActivePart.coils
+                        {
+                            outputString += "\(nextCoil)"
+                        }
+                        
+                        let matCostString = String(format:"%0.2f", nextActivePart.MaterialCosts())
+                        let evalCostString = String(format:"%0.2f", nextActivePart.EvaluatedCost(atBmax: Bmax, withEval: withEvals))
+                        
+                        outputString += "\nMaterial Cost: $\(matCostString); Evaluated Cost: $\(evalCostString)\n\n"
+                        
+                        bestCount += 1
+                    }
+                    
+                    do
+                    {
+                        try outputString.write(to: newFileURL, atomically: true, encoding: .unicode)
+                        
+                        DLog("Finished writing file")
+                    }
+                    catch
+                    {
+                        DLog("Error writing active part data")
+                    }
+                }
+                else
+                {
+                    DLog("Bad file URL!")
+                }
+            }
+        }
+        
+    } // END vpnQueue.async
     
-    DLog("Total designs created: \(totalDesigns)")
     
-    DLog("Simplified impedance calculation time: \(simpImpTime)")
-    DLog("Rabin's impedance calculation time: \(rabImpTime)")
     
-    return cheapestResults
+    return []
 }
 
 func RabinsMethodImpedance(refCoil:PCH_SimplifiedCoilSection, otherCoil:PCH_SimplifiedCoilSection, withCore:PCH_Core) -> (pu:Double, baseVA:Double)
@@ -682,6 +782,8 @@ class PCH_Winding
         
         return result
     }
+    
+    // Class function for the axial space factor of "typical" coils of the given BIL
     
     // Radial space factor is defined as conductor_radial_space / total_radial_space. Note that this function only returns the space factor of a single conductor (that is, things like inter-layer insulation and ducts need to be considered elsewhere)
     func RadialSpaceFactorWithBIL(bil:BIL_Level, amps:Double) -> Double

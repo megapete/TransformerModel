@@ -60,77 +60,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         
         
-        let testString = PCH_FLD12_Library.fld12("This is a test", outputType: .metric)!
+        // let testString = PCH_FLD12_Library.fld12("This is a test", outputType: .metric)!
         
-        DLog("RESULT:\n\(testString)")
+        // DLog("RESULT:\n\(testString)")
         
-        let terminal1 = PCH_TxfoTerminal(name: "LV", terminalVA: (28.2E6, 47.0E6), lineVoltage: 26400, preferredWindingType:.disc, numPhases: 3, connection: .delta, phaseAngle: π / 5.0, lineBIL: BIL_Level.kv125, neutralBIL: BIL_Level.kv125)
+        let terminal1 = PCH_TxfoTerminal(name: "LV", terminalVA: (7.5E6, 7.5E6), lineVoltage: 72500.0, preferredWindingType:.disc, numPhases: 3, connection: .star, phaseAngle: 0.0, lineBIL: BIL_Level.kv350, neutralBIL: BIL_Level.kv350)
         
-        let terminal2 = PCH_TxfoTerminal(name: "HV", terminalVA: (28.2E6, 47.0E6), lineVoltage: 120000, numPhases: 3, connection: .star, phaseAngle: 0.0, lineBIL: BIL_Level.kv550, neutralBIL: BIL_Level.kv250)
+        let terminal2 = PCH_TxfoTerminal(name: "HV", terminalVA: (7.5E6, 7.5E6), lineVoltage: 12500.0, preferredWindingType:.disc, numPhases: 3, connection: .delta, phaseAngle: -0.5235, lineBIL: BIL_Level.kv125, neutralBIL: BIL_Level.kv125)
         
-        let requiredImpedance = PCH_ImpedancePair(term1: terminal1.name, term2: terminal2.name, impedancePU: 0.185, baseVA: 47.0E6 / 3.0)
+        let requiredImpedance = PCH_ImpedancePair(term1: terminal1.name, term2: terminal2.name, impedancePU: 0.065, baseVA: 7.5E6 / 3.0)
         
-        let eval = PCH_LossEvaluation(noLoad: 16000.0, onanLoad: 3100.0 * 25.0 / 9.0, onafLoad: 3100.0, llTemp: 85.0)
+        let eval = PCH_LossEvaluation(noLoad: 8000.0, onanLoad: 2500.0, onafLoad: 2500.0, llTemp: 85.0)
         
         let bestDesigns = CreateActivePartDesigns(forTerminals: [terminal1, terminal2], forOnanImpedances: [requiredImpedance], withEvals: eval)
-        
-        // we want to use the LV coil for volts-per-turn and amp-turns per meter
-        let referenceTerm = terminal1
-        var refCoilIndex = -1
-        for i in 0..<bestDesigns[0].coils.count
-        {
-            if bestDesigns[0].coils[i].winding.termName == referenceTerm.name
-            {
-                refCoilIndex = i
-                break
-            }
-        }
-        
-        guard refCoilIndex >= 0 else
-        {
-            ALog("Could not find reference coil!!!")
-            return
-        }
-        
-        var bestCount = 1
-        var outputString = ""
-        for nextActivePart in bestDesigns
-        {
-            let refCoil = nextActivePart.coils[refCoilIndex]
-            let vpn = refCoil.winding.volts / refCoil.turns
-            let vpnString = String(format:"%0.3f", vpn)
-            let niPerM = refCoil.winding.NIperL
-            let niPerMString = String(format:"%0.1f", niPerM)
-            let Bmax = nextActivePart.BMax
-            let nlLoss = nextActivePart.core.LossAtBmax(Bmax)
-            let bMaxString = String(format:"%0.3f", Bmax)
-            
-            outputString += "Active part #\(bestCount)\nCORE\n====\nVolts Per Turn: \(vpnString); Amp-Turns/Meter: \(niPerMString); Bmax: \(bMaxString); Loss: \(nlLoss)\n\(nextActivePart.core)\nCOILS\n=====\n"
-            
-            for nextCoil in nextActivePart.coils
-            {
-                outputString += "\(nextCoil)"
-            }
-            
-            let matCostString = String(format:"%0.2f", nextActivePart.MaterialCosts())
-            let evalCostString = String(format:"%0.2f", nextActivePart.EvaluatedCost(atBmax: Bmax, withEval: eval))
-            
-            outputString += "\nMaterial Cost: $\(matCostString); Evaluated Cost: $\(evalCostString)\n\n"
-            
-            bestCount += 1
-        }
-        
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentsDirectoryURL = paths[0]
-        
-        do
-        {
-            try outputString.write(to: documentsDirectoryURL.appendingPathComponent("ActiveParts.txt"), atomically: true, encoding: .unicode)
-        }
-        catch
-        {
-            DLog("Error writing active part data")
-        }
         
         PCH_Costs.sharedInstance.FlushCostsFile()
         

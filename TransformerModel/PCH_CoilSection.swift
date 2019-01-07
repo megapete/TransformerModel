@@ -44,7 +44,7 @@ class PCH_CoilSection
     {
         get
         {
-            return self.innerDiameter * 2.0
+            return self.innerRadius * 2.0
         }
         
         set(newDiameter)

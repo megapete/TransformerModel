@@ -37,6 +37,9 @@
 		D37FFC0E1B4952EA008DBDDA /* PCH_Insulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */; };
 		D37FFC101B495CCA008DBDDA /* GlobalDefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */; };
 		D388F38E1B80A61E007C880C /* FanData.plist in Resources */ = {isa = PBXBuildFile; fileRef = D388F38D1B80A61E007C880C /* FanData.plist */; };
+		D3941CFE21E23A7C00CF775F /* PCH_ProgressIndicatorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3941CFC21E23A7C00CF775F /* PCH_ProgressIndicatorWindow.swift */; };
+		D3941CFF21E23A7C00CF775F /* PCH_ProgressIndicatorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3941CFD21E23A7C00CF775F /* PCH_ProgressIndicatorWindow.xib */; };
+		D3941D0121E3A87E00CF775F /* libPCH_FLD12_Library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3941D0021E3A87E00CF775F /* libPCH_FLD12_Library.a */; };
 		D3956A891B5728D900676FF5 /* PCH_Defs.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3956A881B5728D900676FF5 /* PCH_Defs.swift */; };
 		D39E46D01B66A9F100A5EBAD /* PCH_CoilSectionLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39E46CF1B66A9F100A5EBAD /* PCH_CoilSectionLayer.swift */; };
 		D39E46D21B66EF8C00A5EBAD /* PCH_Coil.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39E46D11B66EF8C00A5EBAD /* PCH_Coil.swift */; };
@@ -61,7 +64,6 @@
 		D3EE6B661B763CDD00332EEC /* PCH_CoreStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B651B763CDD00332EEC /* PCH_CoreStep.swift */; };
 		D3EE6B681B76665100332EEC /* PCH_CoreCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B671B76665100332EEC /* PCH_CoreCircle.swift */; };
 		D3EE6B6A1B76678400332EEC /* PCH_CoreDuct.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EE6B691B76678400332EEC /* PCH_CoreDuct.swift */; };
-		D3F4B2D71FC6155800DDA73A /* libPCH_FLD12_Library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3F4B2D61FC6155800DDA73A /* libPCH_FLD12_Library.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -97,6 +99,9 @@
 		D37FFC0D1B4952EA008DBDDA /* PCH_Insulation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Insulation.swift; sourceTree = "<group>"; };
 		D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalDefs.swift; sourceTree = "<group>"; };
 		D388F38D1B80A61E007C880C /* FanData.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = FanData.plist; sourceTree = "<group>"; };
+		D3941CFC21E23A7C00CF775F /* PCH_ProgressIndicatorWindow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_ProgressIndicatorWindow.swift; sourceTree = "<group>"; };
+		D3941CFD21E23A7C00CF775F /* PCH_ProgressIndicatorWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PCH_ProgressIndicatorWindow.xib; sourceTree = "<group>"; };
+		D3941D0021E3A87E00CF775F /* libPCH_FLD12_Library.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPCH_FLD12_Library.a; path = ../../../Documents/MyProjects/PCH_FLD12_Library_Release/Products/usr/local/lib/libPCH_FLD12_Library.a; sourceTree = "<group>"; };
 		D3956A881B5728D900676FF5 /* PCH_Defs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Defs.swift; sourceTree = "<group>"; };
 		D39E46CF1B66A9F100A5EBAD /* PCH_CoilSectionLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoilSectionLayer.swift; sourceTree = "<group>"; };
 		D39E46D11B66EF8C00A5EBAD /* PCH_Coil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_Coil.swift; sourceTree = "<group>"; };
@@ -122,7 +127,6 @@
 		D3EE6B651B763CDD00332EEC /* PCH_CoreStep.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoreStep.swift; sourceTree = "<group>"; };
 		D3EE6B671B76665100332EEC /* PCH_CoreCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoreCircle.swift; sourceTree = "<group>"; };
 		D3EE6B691B76678400332EEC /* PCH_CoreDuct.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PCH_CoreDuct.swift; sourceTree = "<group>"; };
-		D3F4B2D61FC6155800DDA73A /* libPCH_FLD12_Library.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPCH_FLD12_Library.a; path = "../../../Library/Developer/Xcode/DerivedData/PCH_FLD12_Library-gjvkjxkldblfsianwndszegwbrlt/Build/Products/Debug/libPCH_FLD12_Library.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,7 +135,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D3B72EF01FC39FE800317E96 /* libgsl.a in Frameworks */,
-				D3F4B2D71FC6155800DDA73A /* libPCH_FLD12_Library.a in Frameworks */,
+				D3941D0121E3A87E00CF775F /* libPCH_FLD12_Library.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,6 +167,8 @@
 				D37FFC0F1B495CCA008DBDDA /* GlobalDefs.swift */,
 				D3B72EE51FABCD1100317E96 /* PCH_SynchronizedArray.swift */,
 				D3433ED41F8EB06A007F45A1 /* PCH_TxfoDesigner.swift */,
+				D3941CFC21E23A7C00CF775F /* PCH_ProgressIndicatorWindow.swift */,
+				D3941CFD21E23A7C00CF775F /* PCH_ProgressIndicatorWindow.xib */,
 				D3433ED61F8EB37A007F45A1 /* PCH_LossEvaluation.swift */,
 				D37698901B7D5D2E00220924 /* PCH_Transformer.swift */,
 				D37698921B7D5EC500220924 /* PCH_Tank.swift */,
@@ -236,7 +242,7 @@
 		D3B72EEE1FC39FE800317E96 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D3F4B2D61FC6155800DDA73A /* libPCH_FLD12_Library.a */,
+				D3941D0021E3A87E00CF775F /* libPCH_FLD12_Library.a */,
 				D3B72EEF1FC39FE800317E96 /* libgsl.a */,
 			);
 			name = Frameworks;
@@ -304,6 +310,7 @@
 			files = (
 				D388F38E1B80A61E007C880C /* FanData.plist in Resources */,
 				D33DCCB01B7AB8EF00DCBF74 /* ClearanceData.plist in Resources */,
+				D3941CFF21E23A7C00CF775F /* PCH_ProgressIndicatorWindow.xib in Resources */,
 				D37FFBEF1B471B86008DBDDA /* Images.xcassets in Resources */,
 				D37FFBF21B471B86008DBDDA /* MainMenu.xib in Resources */,
 			);
@@ -336,6 +343,7 @@
 				D35CAC151B6EA9E90086EC0F /* PCH_Hilo.swift in Sources */,
 				D35CAC171B6EAABF0086EC0F /* PCH_Tube.swift in Sources */,
 				D39E46D81B67D16E00A5EBAD /* PCH_ConnectionNode.swift in Sources */,
+				D3941CFE21E23A7C00CF775F /* PCH_ProgressIndicatorWindow.swift in Sources */,
 				D341931F1B62B29000C4A7F8 /* PCH_CoilSection.swift in Sources */,
 				D35654521B651D3000A1259E /* PCH_CoilSectionDisk.swift in Sources */,
 				D35654501B6514E900A1259E /* PCH_WdgTappedLayer.swift in Sources */,
@@ -491,13 +499,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				HEADER_SEARCH_PATHS = (
 					/Users/peterhub/Documents/MyProjects/GNU_Scientific_Library/include,
-					"\"$(SRCROOT)/../../../Library/Developer/Xcode/DerivedData/PCH_FLD12_Library-gjvkjxkldblfsianwndszegwbrlt/Build/Products/Debug/usr/local/include\"",
+					/Users/peterhub/Documents/MyProjects/PCH_FLD12_Library_Release/Products/usr/local/include,
 				);
 				INFOPLIST_FILE = TransformerModel/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					/Users/peterhub/Documents/MyProjects/GNU_Scientific_Library/lib,
-					"/Users/peterhub/Library/Developer/Xcode/DerivedData/PCH_FLD12_Library-gjvkjxkldblfsianwndszegwbrlt/Build/Products/Debug/",
+					/Users/peterhub/Documents/MyProjects/PCH_FLD12_Library_Release/Products/usr/local/lib,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huberis-tech.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -517,13 +525,13 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				HEADER_SEARCH_PATHS = (
 					/Users/peterhub/Documents/MyProjects/GNU_Scientific_Library/include,
-					"\"$(SRCROOT)/../../../Library/Developer/Xcode/DerivedData/PCH_FLD12_Library-gjvkjxkldblfsianwndszegwbrlt/Build/Products/Debug/usr/local/include\"",
+					/Users/peterhub/Documents/MyProjects/PCH_FLD12_Library_Release/Products/usr/local/include,
 				);
 				INFOPLIST_FILE = TransformerModel/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					/Users/peterhub/Documents/MyProjects/GNU_Scientific_Library/lib,
-					"/Users/peterhub/Library/Developer/Xcode/DerivedData/PCH_FLD12_Library-gjvkjxkldblfsianwndszegwbrlt/Build/Products/Debug/",
+					/Users/peterhub/Documents/MyProjects/PCH_FLD12_Library_Release/Products/usr/local/lib,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.huberis-tech.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
