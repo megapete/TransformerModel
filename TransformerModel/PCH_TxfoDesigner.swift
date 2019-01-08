@@ -15,11 +15,31 @@ let PCH_StdFrequency = 60.0
 
 // Some consants in this convenient location
 let PCH_ImpedanceTolerance = (min:-0.075, max:0.075)
+
 let PCH_CurrentDensityRange = (min:1.5E6, max:3.0E6)
 let PCH_CurrentDensityIncrement = 0.250E6
+
 let PCH_TypicalConductorRadialDim = 0.09 * 25.4 / 1000.0
 let PCH_TypicalConductorAxialDim = 0.010
+
 let PCH_StaticRingAxialDim = 0.75 * 25.4 / 1000.0
+
+let PCH_VperNfactorRange = (min:0.45, max:0.65)
+let PCH_VperNfactorIncrement = 0.01
+let PCH_MaximumVoltsPerTurn = 200.0
+
+let PCH_BmaxRange = (min:1.40, max:1.65)
+let PCH_BmaxIncrement = 0.01
+
+let PCH_NIperLatOnanRange = (min:20000.0, max:120000.0)
+let PCH_NIperLnumIncrements = 50
+
+
+// We need to make sure that the progress indicator sticks around for as long as it's needed, so
+var PCH_TxfoDesignerProgressIndicator:PCH_ProgressIndicatorWindow? = nil
+
+// Same thing with the queue that we'll wrap the actual function in
+var PCH_TxfoDesignerQueue:DispatchQueue? = nil
 
 struct PCH_WindingBIL
 {
@@ -68,7 +88,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     var rabImpTime:TimeInterval = 0.0
     
     ZAssert(forOnanImpedances.count > 0, message: "There must be at least one impedance pair defined!")
-    
+    /*
     let numDesignsToKeep = 10
     let maxVperN = 200.0
     
@@ -104,12 +124,17 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     
     // Debugging stats
     var totalDesigns = 0
+    */
     
-    let progInd = PCH_ProgressIndicatorWindow()
-    progInd.UpdateIndicator(value: vpnFactorRange.min, minValue: vpnFactorRange.min, maxValue: vpnFactorRange.max, text: "Creating active parts...")
+    if PCH_TxfoDesignerProgressIndicator == nil
+    {
+        PCH_TxfoDesignerProgressIndicator = PCH_ProgressIndicatorWindow()
+    }
+    
+    PCH_TxfoDesignerProgressIndicator!.UpdateIndicator(value: PCH_VperNfactorRange.min, minValue: PCH_VperNfactorRange.min, maxValue: PCH_VperNfactorRange.max, text: "Creating active parts...")
     
     // create a queue so we can use our progress indicator
-    let vpnQueue = DispatchQueue(label: "com.huberis.txfodesigner.vpn")
+    PCH_TxfoDesignerQueue = DispatchQueue(label: "com.huberis.txfodesigner.vpn")
     
     guard let mainWindow = NSApplication.shared.mainWindow else
     {
@@ -117,9 +142,45 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
         return []
     }
     
-    mainWindow.beginSheet(progInd.window!, completionHandler: nil)
+    mainWindow.beginSheet(PCH_TxfoDesignerProgressIndicator!.window!, completionHandler: nil)
     
-    vpnQueue.async {
+    PCH_TxfoDesignerQueue!.async {
+        
+        let numDesignsToKeep = 10
+        let maxVperN = PCH_MaximumVoltsPerTurn
+        
+        var cheapestResults:[PCH_SimplifiedActivePart] = []
+        
+        let numPhases = forTerminals[0].numPhases
+        let refVoltage = forTerminals[0].legVolts
+        let vpnRefKVA = (numPhases == 1 ? 3.0 : 1.0) * forTerminals[0].terminalVA.onan / 1000.0
+        
+        let vaMaxMinRatio = forTerminals[0].terminalVA.onaf / forTerminals[0].terminalVA.onan
+        
+        // constraints on constants
+        let vpnFactorRange = PCH_VperNfactorRange
+        let vpnFactorIncrement = PCH_VperNfactorIncrement
+        let bmaxRange = PCH_BmaxRange
+        let bmaxIncrement = PCH_BmaxIncrement
+        
+        // other constants used later on
+        var highestMainBIL = forTerminals[1].bil.line
+        if (forTerminals[0].bil.line.Value() > highestMainBIL.Value())
+        {
+            highestMainBIL = forTerminals[0].bil.line
+        }
+        let clearances = PCH_ClearanceData.sharedInstance
+        
+        let NIperLmin = PCH_NIperLatOnanRange.min * vaMaxMinRatio
+        let NIperLmax = PCH_NIperLatOnanRange.max * vaMaxMinRatio
+        let NI_NumIterations = PCH_NIperLnumIncrements
+        let NIperLIncrement = (NIperLmax - NIperLmin) / Double(NI_NumIterations)
+        
+        // There's no easy way to iterate through an enum, so we just manually set up an array with each of the core steel types (there are only 4 of them!)
+        let coreSteelTypes = [PCH_CoreSteel.SteelType.M080, PCH_CoreSteel.SteelType.M085, PCH_CoreSteel.SteelType.M090, PCH_CoreSteel.SteelType.ZDKH]
+        
+        // Debugging stats
+        var totalDesigns = 0
         
         for vpnFactor:Double in stride(from: vpnFactorRange.min, through: vpnFactorRange.max, by: vpnFactorIncrement)
         {
@@ -133,7 +194,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                 break
             }
             
-            DispatchQueue.main.async { progInd.UpdateIndicator(value: vpnFactor) }
+            DispatchQueue.main.async { PCH_TxfoDesignerProgressIndicator!.UpdateIndicator(value: vpnFactor) }
             
             for approxBMax:Double in stride(from: bmaxRange.min, to: bmaxRange.max, by: bmaxIncrement)
             {
@@ -271,9 +332,6 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
             
         } // END for vpnFactor:Double
         
-        // Next line crashes in XCode 10.1
-        // mainWindow.endSheet(progInd.window!)
-        
         DLog("Total designs created: \(totalDesigns)")
         
         DLog("Simplified impedance calculation time: \(simpImpTime)")
@@ -282,7 +340,14 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
         // we want to save the resulting designs in a file using an NSSavePanel, but that is UI, which CANNOT be done in any thread except the main thread. We dispatch a sync call to the main thread to take care of this.
         DispatchQueue.main.sync {
             
-            mainWindow.endSheet(progInd.window!)
+            guard let mainWindow = NSApplication.shared.mainWindow else
+            {
+                DLog("No main window!")
+                assert(false, "Help!")
+                return
+            }
+            
+            mainWindow.endSheet(PCH_TxfoDesignerProgressIndicator!.window!)
             
             let saveFilePanel = NSSavePanel()
             
