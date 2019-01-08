@@ -81,7 +81,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     let vaMaxMinRatio = forTerminals[0].terminalVA.onaf / forTerminals[0].terminalVA.onan
     
     // constraints on constants
-    let vpnFactorRange = (min:0.5, max:0.65)
+    let vpnFactorRange = (min:0.45, max:0.65)
     let vpnFactorIncrement = 0.01
     let bmaxRange = (min:1.40, max:1.60)
     let bmaxIncrement = 0.01
@@ -354,8 +354,6 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
         }
         
     } // END vpnQueue.async
-    
-    
     
     return []
 }
