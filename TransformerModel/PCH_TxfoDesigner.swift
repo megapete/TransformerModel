@@ -301,7 +301,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                         else
                         {
                             // if the new active part cost is greater than all the values already in the array, index will be nil
-                            if let index = cheapestResults.index(where: {$0.EvaluatedCost(atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
+                            if let index = cheapestResults.firstIndex(where: {$0.EvaluatedCost(atBmax: $0.BMax, withEval: withEvals) > newEvalCost})
                             {
                                 /*
                                  if index == 0
