@@ -64,13 +64,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // DLog("RESULT:\n\(testString)")
         
-        let terminal1 = PCH_TxfoTerminal(name: "LV", terminalVA: (7.5E6, 7.5E6), lineVoltage: 72500.0, preferredWindingType:.disc, numPhases: 3, connection: .star, phaseAngle: 0.0, lineBIL: BIL_Level.kv350, neutralBIL: BIL_Level.kv350)
+        let onanMVA = 28.2E6
+        let onafMVA = onanMVA * 5.0 / 3.0
         
-        let terminal2 = PCH_TxfoTerminal(name: "HV", terminalVA: (7.5E6, 7.5E6), lineVoltage: 12500.0, preferredWindingType:.disc, numPhases: 3, connection: .delta, phaseAngle: -0.5235, lineBIL: BIL_Level.kv125, neutralBIL: BIL_Level.kv125)
+        let terminal1 = PCH_TxfoTerminal(name: "LV", terminalVA: (onanMVA, onafMVA), lineVoltage: 26400.0, preferredWindingType:.disc, numPhases: 3, connection: .delta, phaseAngle: 0.0, lineBIL: BIL_Level.kv150, neutralBIL: BIL_Level.kv150)
         
-        let requiredImpedance = PCH_ImpedancePair(term1: terminal1.name, term2: terminal2.name, impedancePU: 0.065, baseVA: 7.5E6 / 3.0)
+        let terminal2 = PCH_TxfoTerminal(name: "HV", terminalVA: (onanMVA, onafMVA), lineVoltage: 161000.0, preferredWindingType:.disc, numPhases: 3, connection: .star, phaseAngle: -0.5235, lineBIL: BIL_Level.kv750, neutralBIL: BIL_Level.kv650)
         
-        let eval = PCH_LossEvaluation(noLoad: 8000.0, onanLoad: 2500.0, onafLoad: 2500.0, llTemp: 85.0)
+        let requiredImpedance = PCH_ImpedancePair(term1: terminal1.name, term2: terminal2.name, impedancePU: 0.11, baseVA: onanMVA / 3.0)
+        
+        let onafEval = 3500.0 * (3.0 * 3.0) / (5.0 * 5.0)
+        let eval = PCH_LossEvaluation(noLoad: 17200.0, onanLoad: 3500.0, onafLoad: onafEval, llTemp: 85.0)
         
         let bestDesigns = CreateActivePartDesigns(forTerminals: [terminal1, terminal2], forOnanImpedances: [requiredImpedance], withEvals: eval)
         

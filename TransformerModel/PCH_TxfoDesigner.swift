@@ -24,7 +24,7 @@ let PCH_TypicalConductorAxialDim = 0.010
 
 let PCH_StaticRingAxialDim = 0.75 * 25.4 / 1000.0
 
-let PCH_VperNfactorRange = (min:0.45, max:0.65)
+let PCH_VperNfactorRange = (min:0.45, max:0.85)
 let PCH_VperNfactorIncrement = 0.01
 let PCH_MaximumVoltsPerTurn = 200.0
 
