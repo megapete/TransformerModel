@@ -64,6 +64,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // DLog("RESULT:\n\(testString)")
         
+        
+        
+        // PCH_Costs.sharedInstance.FlushCostsFile()
+        
+    }
+
+    @IBAction func handleDemo(_ sender: Any) {
+        
         let onanMVA = 30.0E6
         let onafMVA = onanMVA * 5.0 / 3.0
         
@@ -77,13 +85,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let eval = PCH_LossEvaluation(noLoad: 5200.0, onanLoad: 2700.0, onafLoad: onafEval, llTemp: 85.0)
         
         let bestDesigns = CreateActivePartDesigns(forTerminals: [terminal1, terminal2], forOnanImpedances: [requiredImpedance], withEvals: eval)
-        
-        PCH_Costs.sharedInstance.FlushCostsFile()
-        
     }
-
+    
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
+        PCH_Costs.sharedInstance.FlushCostsFile()
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool
