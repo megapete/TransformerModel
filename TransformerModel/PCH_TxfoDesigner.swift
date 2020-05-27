@@ -24,7 +24,7 @@ let PCH_TypicalConductorAxialDim = 0.010
 
 let PCH_StaticRingAxialDim = 0.75 * 25.4 / 1000.0
 
-let PCH_VperNfactorRange = (min:0.45, max:0.85)
+let PCH_VperNfactorRange = (min:0.45, max:0.75)
 let PCH_VperNfactorIncrement = 0.01
 let PCH_MaximumVoltsPerTurn = 200.0
 
@@ -33,6 +33,8 @@ let PCH_BmaxIncrement = 0.01
 
 let PCH_NIperLatOnanRange = (min:20000.0, max:120000.0)
 let PCH_NIperLnumIncrements = 50
+
+let PCH_MaxCoreHeight = 3.0 // meters
 
 
 // We need to make sure that the progress indicator sticks around for as long as it's needed, so
@@ -138,7 +140,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
     
     guard let mainWindow = NSApplication.shared.mainWindow else
     {
-        DLog("No main window!")
+        ALog("No main window!")
         return []
     }
     
@@ -254,7 +256,7 @@ func CreateActivePartDesigns(forTerminals:[PCH_TxfoTerminal], forOnanImpedances:
                             let core = PCH_Core(numWoundLegs: 3, numLegs: 3, mainLegCenters: legCenters, windowHt: windowHt, yokeCoreCircle: coreCircle, mainLegCoreCircle: coreCircle)
                             
                             // we only allow a 3.5m (max) high core
-                            if core.PhysicalHeight() <= 3.5
+                            if core.PhysicalHeight() <= PCH_MaxCoreHeight
                             {
                                 totalDesigns += 1
                                 
